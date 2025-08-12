@@ -51,6 +51,7 @@
                                     class: 'form-control' ~ (addressHasErrors ? ' is-invalid' : '')
                                 }
                             }) }}
+                            <datalist id="address-suggestions"></datalist>
                             {% if addressHasErrors %}
                                 <div class="invalid-feedback d-block">
                                     {{ form_errors(profileForm.address) }}
@@ -61,7 +62,11 @@
                         </div>
 
                         {# Nouveau mot de passe #}
-                        {% set passwordHasErrors = profileForm.newPassword.vars.errors|length > 0 %}
+                        {% set passwordHasErrors =
+                            profileForm.newPassword.vars.errors|length > 0
+                            or profileForm.newPassword.first.vars.errors|length > 0
+                            or profileForm.newPassword.second.vars.errors|length > 0
+                        %}
                         <div class="mb-3">
                             {{ form_label(profileForm.newPassword.first, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(profileForm.newPassword.first, {
@@ -71,6 +76,7 @@
                             }) }}
                             {% if passwordHasErrors %}
                                 <div class="invalid-feedback d-block">
+                                    {{ form_errors(profileForm.newPassword.first) }}
                                     {{ form_errors(profileForm.newPassword) }}
                                 </div>
                             {% else %}
@@ -105,4 +111,35 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function() {
+            const input = document.getElementById('{{ profileForm.address.vars.id }}');
+            const datalist = document.getElementById('address-suggestions');
+            if (!input || !datalist) {
+                return;
+            }
+            input.addEventListener('input', function () {
+                const query = this.value;
+                if (query.length < 3) {
+                    datalist.innerHTML = '';
+                    return;
+                }
+                fetch('https://api-adresse.data.gouv.fr/search/?limit=5&q=' + encodeURIComponent(query))
+                    .then(response => response.json())
+                    .then(data => {
+                        datalist.innerHTML = '';
+                        (data.features || []).forEach(feature => {
+                            const option = document.createElement('option');
+                            option.value = feature.properties.label;
+                            datalist.appendChild(option);
+                        });
+                    })
+                    .catch(err => console.error('Erreur API Adresse:', err));
+            });
+        })();
+    </script>
 {% endblock %}
