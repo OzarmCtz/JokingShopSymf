@@ -28,6 +28,11 @@
               {% else %}
                 <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i>Email non vérifié</span>
               {% endif %}
+              {% if 'ROLE_ADMIN' in user.roles %}
+                <span class="badge bg-success text-white shadow-sm"><i class="fas fa-check-circle me-1"></i>Compte Administrateur</span>
+              {% else %}
+                <span class="badge bg-success text-white shadow-sm"><i class="fas fa-user me-1"></i>Compte Client</span>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -54,7 +59,7 @@
                 </li>
                 <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
                   <div>
-                    <div class="small text-muted">Adresse</div>
+                    <div class="small text-muted">Adresse de facturation</div>
                     <div class="fw-semibold">{{ user.address ?: 'Non renseignée' }}</div>
                   </div>
                   <i class="fas fa-map-marker-alt text-muted"></i>

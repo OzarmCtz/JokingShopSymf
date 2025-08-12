@@ -60,13 +60,13 @@
             {# Adresse #}
             {% set addressHasErrors = profileForm.address.vars.errors|length > 0 %}
             <div class="mb-3">
-              {{ form_label(profileForm.address, 'Adresse', {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_label(profileForm.address, 'Adresse de facturation', {'label_attr': {'class': 'form-label'}}) }}
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
                 {{ form_widget(profileForm.address, {
                   attr: {
                     class: 'form-control' ~ (addressHasErrors ? ' is-invalid' : ''),
-                    placeholder: 'Votre adresse complète',
+                    placeholder: 'Votre adresse de facturation complète',
                     list: 'address-suggestions',
                     autocomplete: 'off'
                   }
