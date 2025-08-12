@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">Connexion</h1>
+<form class="mx-auto" style="max-width: 400px;">
+    <div class="mb-3">
+        <label for="inputEmail" class="form-label">Email</label>
+        <input type="email" class="form-control" id="inputEmail" placeholder="email@example.com">
+    </div>
+    <div class="mb-3">
+        <label for="inputPassword" class="form-label">Mot de passe</label>
+        <input type="password" class="form-control" id="inputPassword" placeholder="Mot de passe">
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+</form>
+{% endblock %}
