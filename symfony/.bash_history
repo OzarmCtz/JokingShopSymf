@@ -1,3 +1,0 @@
-composer
-exoit
-exit

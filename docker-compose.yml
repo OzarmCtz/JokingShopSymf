@@ -21,7 +21,7 @@ services:
       bash -c "
         if [ ! -f /var/www/html/composer.json ]; then
           rm -rf /var/www/html/* /var/www/html/.*[!.]* 2>/dev/null || true &&
-          composer create-project symfony/skeleton:\"7.0.*\" /tmp/symfony --no-interaction --prefer-dist &&
+          composer create-project symfony/skeleton:\"7.3.x\" /tmp/symfony --no-interaction --prefer-dist &&
           cp -r /tmp/symfony/* /var/www/html/ &&
           cp -r /tmp/symfony/.* /var/www/html/ 2>/dev/null || true &&
           rm -rf /tmp/symfony &&
@@ -34,7 +34,7 @@ services:
     image: nginx:alpine
     container_name: symfony_nginx_adeo_shop
     ports:
-      - "8090:80"
+      - "8080:80"
     volumes:
       - ./symfony:/var/www/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
@@ -50,7 +50,7 @@ services:
       MYSQL_USER: symfony
       MYSQL_PASSWORD: symfony
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
