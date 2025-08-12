@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+
+    {# Alerte globale si le formulaire a des erreurs #}
+    {% if registrationForm.vars.submitted and not registrationForm.vars.valid %}
+        <div class="alert alert-danger" role="alert">
+            Oups… des erreurs se sont glissées dans le formulaire. Merci de corriger les champs en rouge.
+        </div>
+    {% endif %}
+
+    {{ form_start(registrationForm, { attr: { class: 'mx-auto', style: 'max-width: 400px;' } }) }}
+        <h1 class="mb-4">Inscription</h1>
+
+        {# Email #}
+        {% set emailHasErrors = registrationForm.email.vars.errors|length > 0 %}
+        <div class="mb-3">
+            {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(registrationForm.email, {
+                attr: {
+                    class: 'form-control' ~ (emailHasErrors ? ' is-invalid' : ''),
+                    placeholder: 'email@example.com',
+                    autocomplete: 'email'
+                }
+            }) }}
+            {# Messages d’erreur du champ #}
+            {% if emailHasErrors %}
+                <div class="invalid-feedback d-block">
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+            {% else %}
+                <div class="form-text">Nous ne partagerons jamais votre e-mail.</div>
+            {% endif %}
+        </div>
+
+        {# Mot de passe #}
+        {% set pwdHasErrors = registrationForm.plainPassword.vars.errors|length > 0 %}
+        <div class="mb-3">
+            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(registrationForm.plainPassword, {
+                attr: {
+                    class: 'form-control' ~ (pwdHasErrors ? ' is-invalid' : ''),
+                    placeholder: 'Mot de passe',
+                    autocomplete: 'new-password'
+                }
+            }) }}
+            {% if pwdHasErrors %}
+                <div class="invalid-feedback d-block">
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
+            {% else %}
+                <div class="form-text">
+                    8 caractères minimum, avec au moins une lettre et un chiffre.
+                </div>
+            {% endif %}
+        </div>
+
+        {# Conditions (checkbox) #}
+        {% set termsHasErrors = registrationForm.agreeTerms.vars.errors|length > 0 %}
+        <div class="mb-3 form-check">
+            {{ form_widget(registrationForm.agreeTerms, {
+                attr: { class: 'form-check-input' ~ (termsHasErrors ? ' is-invalid' : '') }
+            }) }}
+            {{ form_label(registrationForm.agreeTerms, 'J’accepte les conditions d’utilisation', {'label_attr': {'class': 'form-check-label'}}) }}
+
+            {% if termsHasErrors %}
+                <div class="invalid-feedback d-block">
+                    {{ form_errors(registrationForm.agreeTerms) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">S'inscrire</button>
+    {{ form_end(registrationForm) }}
+{% endblock %}
