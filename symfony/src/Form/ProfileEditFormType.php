@@ -39,7 +39,9 @@ class ProfileEditFormType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Votre adresse complète'
+                    'placeholder' => 'Votre adresse complète',
+                    'list' => 'address-suggestions',
+                    'autocomplete' => 'off'
                 ],
             ])
             ->add('newPassword', RepeatedType::class, [
