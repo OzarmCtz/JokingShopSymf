@@ -2,29 +2,69 @@
 
 {% block title %}Accueil{% endblock %}
 
+{% block stylesheets %}
+ 
+{% endblock %}
+
+
 {% block body %}
-<h1 class="mb-4">Toutes les blagues</h1>
-<div class="row">
-    {% for joke in jokes %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                {% if joke.photo %}
-                    <img src="{{ asset('uploads/jokes/' ~ joke.photo) }}" class="card-img-top" alt="{{ joke.title }}">
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ joke.title }}</h5>
-                    <p class="card-text">{{ joke.bodyText|u.truncate(100, '...') }}</p>
-                    <div class="mt-auto">
-                        {% if joke.price %}
-                            <p class="fw-bold">{{ joke.price }} €</p>
-                        {% endif %}
-                        <a href="{{ path('shop_detail', {id: joke.id}) }}" class="btn btn-primary">Voir</a>
-                    </div>
-                </div>
-            </div>
+<h1 class="mb-4 text-white">Accueil</h1>
+<div  class="cards-grid">
+  {% for joke in jokes %}
+    <div class="card card-bundle">
+      <div class="bundle-media">
+        {% if joke.photo %}
+          <img src="{{ asset('uploads/jokes/' ~ joke.photo) }}" alt="{{ joke.title }}">
+        {% else %}
+          <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder">
+        {% endif %}
+      </div>
+      <div class="bundle-body">
+        <h5 class="bundle-title">{{ joke.title }}</h5>
+        <div class="bundle-action-slot">
+          <span class="bundle-price">€{{ joke.price|number_format(2, ',', ' ') }}</span>
+          <a href="{{ path('shop_detail', {id: joke.id}) }}"
+             class="bundle-cta"
+             aria-label="Acheter pour {{ joke.price|number_format(2, ',', ' ') }} euros">
+             Acheter pour €{{ joke.price|number_format(2, ',', ' ') }}
+          </a>
         </div>
-    {% else %}
-        <p>Aucune blague trouvée.</p>
-    {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="text-muted py-5">
+      Aucune blague trouvée.
+    </div>
+  {% endfor %}
+</div>
+
+
+
+
+
+{# <h1 class="mb-4 text-white">Toutes les blagues</h1> #}
+
+{# <div class="d-flex flex-wrap gap-10">
+  {% for joke in jokes %}
+    {% set price = joke.price ?? 0.99 %}
+    <article class="bundle-card" style="max-width:340px;">
+      <div class="media mb-3">
+        {% if joke.photo %}
+          <img src="{{ asset('uploads/jokes/' ~ joke.photo) }}" alt="{{ joke.title ?? 'Blague' }}">
+        {% else %}
+          <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder">
+        {% endif %}
+      </div>
+      <div class="d-flex align-items-center justify-content-between px-3" style="margin-bottom:0.5rem;">
+        <span class="price fw-bold text-white bg-dark rounded-pill px-3 py-2" style="position:static;font-size:1.1rem;">{{ price|number_format(2, ',', ' ') }} €</span>
+        <a href="{{ path('shop_detail', {id: joke.id}) }}" class="btn btn-dark btn-sm rounded-pill px-3 ms-auto">Voir</a>
+      </div>
+      <h5 class="mt-2 mb-0 text-truncate px-3" style="max-width:85%;">{{ joke.title ?? 'Bundle de blagues' }}</h5>
+    </article>
+  {% else %}
+    <div class="text-muted py-5">
+      Aucune blague trouvée.
+    </div> #}
+  {# {% endfor %} #}
 </div>
 {% endblock %}
