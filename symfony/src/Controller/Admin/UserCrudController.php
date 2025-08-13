@@ -22,6 +22,10 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
+use Symfony\Component\Validator\Constraints\Regex;
 
 #[IsGranted('ROLE_ADMIN')]
 class UserCrudController extends AbstractCrudController
@@ -78,7 +82,27 @@ class UserCrudController extends AbstractCrudController
             yield TextField::new('password')
                 ->setFormType(PasswordType::class)
                 ->setLabel('Mot de passe')
-                ->setRequired(true);
+                ->setRequired(true)
+                ->setFormTypeOptions([
+                    'attr' => ['autocomplete' => 'new-password'],
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Veuillez saisir un mot de passe.',
+                        ]),
+                        new Length([
+                            'min' => 8,
+                            'minMessage' => 'Votre mot de passe doit contenir au minimum {{ limit }} caractères.',
+                            'max' => 4096,
+                        ]),
+                        new Regex([
+                            'pattern' => '/^(?=.*[A-Za-z])(?=.*\d).+$/',
+                            'message' => 'Votre mot de passe doit contenir au moins une lettre et un chiffre.',
+                        ]),
+                        new NotCompromisedPassword([
+                            'message' => 'Ce mot de passe a été exposé lors d’une fuite de données. Veuillez en choisir un autre.',
+                        ]),
+                    ],
+                ]);
         } else {
             // Pour l'édition, on utilise un champ non mappé
             yield TextField::new('newPassword')
@@ -86,7 +110,26 @@ class UserCrudController extends AbstractCrudController
                 ->setLabel('Nouveau mot de passe')
                 ->setRequired(false)
                 ->setHelp('⚠️ Laissez VIDE pour conserver le mot de passe actuel')
-                ->setFormTypeOption('mapped', false);
+                ->setFormTypeOptions([
+                    'mapped' => false,
+                    'attr' => ['autocomplete' => 'new-password'],
+                    'constraints' => [
+                        new Length([
+                            'min' => 8,
+                            'minMessage' => 'Votre mot de passe doit contenir au minimum {{ limit }} caractères.',
+                            'max' => 4096,
+                            'allowEmptyString' => true,
+                        ]),
+                        new Regex([
+                            'pattern' => '/^(?=.*[A-Za-z])(?=.*\d).+|^$/',
+                            'message' => 'Votre mot de passe doit contenir au moins une lettre et un chiffre.',
+                        ]),
+                        new NotCompromisedPassword([
+                            'message' => 'Ce mot de passe a été exposé lors d’une fuite de données. Veuillez en choisir un autre.',
+                            'skipOnEmpty' => true,
+                        ]),
+                    ],
+                ]);
         }
 
         yield ChoiceField::new('roles')
@@ -104,7 +147,14 @@ class UserCrudController extends AbstractCrudController
 
         yield TextField::new('address')
             ->setLabel('Adresse')
-            ->hideOnIndex();
+            ->hideOnIndex()
+            ->setTemplatePath('admin/fields/address_autocomplete.html.twig')
+            ->setFormTypeOptions([
+                'attr' => [
+                    'list' => 'address-suggestions',
+                    'autocomplete' => 'off',
+                ],
+            ]);
 
         yield BooleanField::new('isVerified')
             ->setLabel('Email vérifié')

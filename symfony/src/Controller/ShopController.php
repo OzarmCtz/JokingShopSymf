@@ -2,74 +2,86 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Joke;
+use App\Repository\CategoryRepository;
+use App\Repository\JokeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ShopController extends AbstractController
 {
-    private array $articles = [
-        [
-            'id' => 1,
-            'name' => 'Article 1',
-            'price' => 19.99,
-            'description' => 'Description 1',
-            'image' => 'https://via.placeholder.com/300x200?text=Article+1'
-        ],
-        [
-            'id' => 2,
-            'name' => 'Article 2',
-            'price' => 29.99,
-            'description' => 'Description 2',
-            'image' => 'https://via.placeholder.com/300x200?text=Article+2'
-        ],
-        [
-            'id' => 3,
-            'name' => 'Article 3',
-            'price' => 39.99,
-            'description' => 'Description 3',
-            'image' => 'https://via.placeholder.com/300x200?text=Article+3'
-        ]
-    ];
-
     #[Route('/', name: 'shop_home')]
-    public function home(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
+    public function home(Request $request, JokeRepository $jokeRepository, CategoryRepository $categoryRepository): Response
     {
-        // $user = new User();
-        // $user->setEmail('test@example.com');
-        // $user->setPassword($hasher->hashPassword($user, 'password'));
+        $categoryId = $request->query->getInt('category') ?: null;
+        $minPrice = $request->query->get('minPrice');
+        $maxPrice = $request->query->get('maxPrice');
 
-        // $em->persist($user);
-        // $em->flush();
+        $jokes = $jokeRepository->findActiveJokes(
+            $categoryId,
+            $minPrice !== null && $minPrice !== '' ? (float) $minPrice : null,
+            $maxPrice !== null && $maxPrice !== '' ? (float) $maxPrice : null
+        );
+
+        $categories = $categoryRepository->findBy(['is_active' => true]);
 
         return $this->render('shop/home.html.twig', [
-            'articles' => $this->articles
+            'jokes' => $jokes,
+            'categories' => $categories,
+            'currentCategory' => $categoryId,
+            'minPrice' => $minPrice,
+            'maxPrice' => $maxPrice,
         ]);
     }
 
-    #[Route('/article/{id}', name: 'shop_detail')]
-    public function detail(int $id): Response
+    #[Route('/joke/{id}', name: 'shop_detail')]
+    public function detail(Joke $joke): Response
     {
-        $article = array_filter($this->articles, fn($a) => $a['id'] === $id);
-        $article = reset($article);
-
-        if (!$article) {
-            throw $this->createNotFoundException('Article not found');
+        if (!$joke->isActive()) {
+            throw $this->createNotFoundException();
         }
 
         return $this->render('shop/detail.html.twig', [
-            'article' => $article
+            'joke' => $joke,
         ]);
     }
 
-    #[Route('/cart', name: 'shop_cart')]
-    public function cart(): Response
+    #[Route('/cart/add/{id}', name: 'cart_add')]
+    public function addToCart(Joke $joke, SessionInterface $session): Response
     {
-        return $this->render('shop/cart.html.twig');
+        $cart = $session->get('cart', []);
+        $id = $joke->getId();
+
+        if (isset($cart[$id])) {
+            $cart[$id]['quantity']++;
+        } else {
+            $cart[$id] = [
+                'title' => $joke->getTitle(),
+                'price' => (float) $joke->getPrice(),
+                'quantity' => 1,
+            ];
+        }
+
+        $session->set('cart', $cart);
+
+        return $this->redirectToRoute('shop_cart');
+    }
+
+    #[Route('/cart', name: 'shop_cart')]
+    public function cart(SessionInterface $session): Response
+    {
+        $cart = $session->get('cart', []);
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        return $this->render('shop/cart.html.twig', [
+            'cart' => $cart,
+            'total' => $total,
+        ]);
     }
 }
