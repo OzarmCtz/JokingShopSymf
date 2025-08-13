@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
@@ -65,9 +66,13 @@ class JokeCrudController extends AbstractCrudController
             ->setLabel('Prix (€)')
             ->setHelp('Prix de la blague en euros (optionnel)');
 
-        yield TextField::new('photo')
+        yield ImageField::new('photo')
             ->setLabel('Photo')
-            ->setHelp('URL ou nom du fichier photo (optionnel)');
+            ->setBasePath('uploads/jokes')
+            ->setUploadDir('public/uploads/jokes')
+            ->setUploadedFileNamePattern('[slug]-[uuid].[extension]')
+            ->setRequired(false)
+            ->setHelp('Fichier image de la blague (optionnel)');
 
         yield ChoiceField::new('language')
             ->setLabel('Langue')
