@@ -10,6 +10,12 @@ RUN apt-get update && apt-get install -y \
     docker-php-ext-install pdo pdo_mysql && \
     rm -rf /var/lib/apt/lists/*
 
+# Install intl
+RUN apt-get update && apt-get install -y \
+    libicu-dev \
+    && docker-php-ext-install intl \
+    && docker-php-ext-enable intl
+
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

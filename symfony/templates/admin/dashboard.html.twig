@@ -1,0 +1,220 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}
+    <h1 class="content-title">
+        <i class="fas fa-tachometer-alt"></i>
+        Tableau de bord d'administration
+    </h1>
+{% endblock %}
+
+{% block main %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-primary" role="alert">
+                <i class="fas fa-info-circle"></i>
+                <strong>Bienvenue {{ app.user.email }} !</strong> 
+                Vous gérez actuellement votre blog avec les statistiques ci-dessous.
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Catégories</div>
+                            <div class="h1">{{ stats.categories_count }}</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-folder fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="text-white stretched-link" href="{{ ea_url().setController('App\\Controller\\Admin\\CategoryCrudController') }}">
+                        Gérer les catégories
+                    </a>
+                    <div class="text-white">
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Blagues totales</div>
+                            <div class="h1">{{ stats.jokes_total }}</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-laugh fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="text-white stretched-link" href="{{ ea_url().setController('App\\Controller\\Admin\\JokeCrudController') }}">
+                        Gérer les blagues
+                    </a>
+                    <div class="text-white">
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Blagues actives</div>
+                            <div class="h1">{{ stats.jokes_active }}</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-eye fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <small class="text-white">{{ ((stats.jokes_active / stats.jokes_total) * 100)|round }}% du total</small>
+                    <div class="text-white">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Utilisateurs</div>
+                            <div class="h1">{{ stats.users_count }}</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="text-white stretched-link" href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController') }}">
+                        Gérer les utilisateurs
+                    </a>
+                    <div class="text-white">
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-area me-1"></i>
+                    Statistiques récentes (7 derniers jours)
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-plus-circle text-success"></i> Nouvelles blagues</span>
+                            <span class="badge bg-success rounded-pill">{{ stats.recent_jokes }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-user-plus text-info"></i> Nouveaux utilisateurs</span>
+                            <span class="badge bg-info rounded-pill">{{ stats.recent_users }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-folder-plus text-primary"></i> Nouvelles catégories</span>
+                            <span class="badge bg-primary rounded-pill">{{ stats.recent_categories }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-tools me-1"></i>
+                    Actions rapides
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ ea_url().setController('App\\Controller\\Admin\\JokeCrudController').setAction('new') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Ajouter une blague
+                        </a>
+                        <a href="{{ ea_url().setController('App\\Controller\\Admin\\CategoryCrudController').setAction('new') }}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Ajouter une catégorie
+                        </a>
+                        <a href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController').setAction('new') }}" class="btn btn-info">
+                            <i class="fas fa-user-plus"></i> Ajouter un utilisateur
+                        </a>
+                        <hr>
+                        <a href="{{ path('shop_home') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-external-link-alt"></i> Voir le site public
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if stats.jokes_by_category %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Répartition des blagues par catégorie
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Catégorie</th>
+                                    <th>Nombre de blagues</th>
+                                    <th>Pourcentage</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in stats.jokes_by_category %}
+                                <tr>
+                                    <td><strong>{{ item.name }}</strong></td>
+                                    <td>{{ item.count }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ item.percentage }}%" 
+                                                 aria-valuenow="{{ item.percentage }}" 
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                                {{ item.percentage|round }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="{{ ea_url().setController('App\\Controller\\Admin\\CategoryCrudController').setAction('detail').setEntityId(item.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Voir
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

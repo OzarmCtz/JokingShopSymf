@@ -1,0 +1,41 @@
+# Traductions pour l'interface d'administration
+admin:
+    dashboard:
+        title: "Tableau de bord"
+        welcome: "Bienvenue dans l'interface d'administration"
+
+    actions:
+        new: "Nouveau"
+        edit: "Modifier"
+        delete: "Supprimer"
+        save: "Enregistrer"
+        cancel: "Annuler"
+        back: "Retour"
+
+    categories:
+        title: "Catégories"
+        name: "Nom"
+        slug: "Slug"
+        active: "Actif"
+        jokes_count: "Nombre de blagues"
+
+    jokes:
+        title: "Blagues"
+        content: "Contenu"
+        category: "Catégorie"
+        language: "Langue"
+        nsfw: "Contenu adulte"
+
+    users:
+        title: "Utilisateurs"
+        email: "Email"
+        roles: "Rôles"
+        verified: "Email vérifié"
+        address: "Adresse"
+
+    common:
+        created_at: "Créé le"
+        updated_at: "Modifié le"
+        id: "ID"
+        yes: "Oui"
+        no: "Non"
