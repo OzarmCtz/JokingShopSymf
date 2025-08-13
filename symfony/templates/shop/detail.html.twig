@@ -1,17 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ article.name }}{% endblock %}
+{% block title %}{{ joke.title }}{% endblock %}
 
 {% block body %}
 <div class="row">
     <div class="col-md-6">
-        <img src="{{ article.image }}" class="img-fluid" alt="{{ article.name }}">
+        {% if joke.photo %}
+            <img src="{{ joke.photo }}" class="img-fluid" alt="{{ joke.title }}">
+        {% endif %}
     </div>
     <div class="col-md-6">
-        <h1>{{ article.name }}</h1>
-        <p class="lead">{{ article.description }}</p>
-        <p class="h4">{{ article.price }} €</p>
-        <a href="#" class="btn btn-success">Ajouter au panier</a>
+        <h1>{{ joke.title }}</h1>
+        <p class="lead">{{ joke.bodyText }}</p>
+        {% if joke.price %}
+            <p class="h4">{{ joke.price }} €</p>
+        {% endif %}
+        <a href="{{ path('cart_add', {id: joke.id}) }}" class="btn btn-success">Ajouter au panier</a>
     </div>
 </div>
 {% endblock %}

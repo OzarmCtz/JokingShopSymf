@@ -4,5 +4,29 @@
 
 {% block body %}
 <h1>Votre panier</h1>
-<p class="text-muted">Votre panier est vide pour le moment.</p>
+{% if cart is empty %}
+    <p class="text-muted">Votre panier est vide pour le moment.</p>
+{% else %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Blague</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart %}
+                <tr>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }} €</td>
+                    <td>{{ (item.price * item.quantity)|number_format(2, '.', ' ') }} €</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p class="text-end fw-bold">Total : {{ total|number_format(2, '.', ' ') }} €</p>
+{% endif %}
 {% endblock %}

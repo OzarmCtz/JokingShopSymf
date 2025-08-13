@@ -1,0 +1,31 @@
+{% extends '@EasyAdmin/crud/field/text.html.twig' %}
+
+{% block field %}
+    {{ parent() }}
+    <datalist id="address-suggestions"></datalist>
+    <script>
+        (function() {
+            const input = document.getElementById('{{ field.id }}');
+            const datalist = document.getElementById('address-suggestions');
+            if (!input || !datalist) return;
+            input.addEventListener('input', function() {
+                const query = this.value;
+                if (query.length < 3) {
+                    datalist.innerHTML = '';
+                    return;
+                }
+                fetch('https://api-adresse.data.gouv.fr/search/?limit=5&q=' + encodeURIComponent(query))
+                    .then(response => response.json())
+                    .then(data => {
+                        datalist.innerHTML = '';
+                        (data.features || []).forEach(feature => {
+                            const option = document.createElement('option');
+                            option.value = feature.properties.label;
+                            datalist.appendChild(option);
+                        });
+                    })
+                    .catch(err => console.error('Erreur API Adresse:', err));
+            });
+        })();
+    </script>
+{% endblock %}
