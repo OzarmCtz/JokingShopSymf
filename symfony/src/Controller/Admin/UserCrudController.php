@@ -118,7 +118,6 @@ class UserCrudController extends AbstractCrudController
                             'min' => 8,
                             'minMessage' => 'Votre mot de passe doit contenir au minimum {{ limit }} caractères.',
                             'max' => 4096,
-                            'allowEmptyString' => true,
                         ]),
                         new Regex([
                             'pattern' => '/^(?=.*[A-Za-z])(?=.*\d).+|^$/',
@@ -126,7 +125,6 @@ class UserCrudController extends AbstractCrudController
                         ]),
                         new NotCompromisedPassword([
                             'message' => 'Ce mot de passe a été exposé lors d’une fuite de données. Veuillez en choisir un autre.',
-                            'skipOnEmpty' => true,
                         ]),
                     ],
                 ]);
