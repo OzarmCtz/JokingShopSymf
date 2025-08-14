@@ -2,6 +2,71 @@
 
 {% block title %}Mon Profil{% endblock %}
 
+{% block stylesheets %}
+<style>
+:root{
+  --bg-primary:#2B2D31; --bg-media:#1E1F22; --line:#3F4147;
+  --text:#DBDEE1; --muted:#B5BAC1;
+}
+
+/* Style sombre pour les cartes */
+.card {
+  background: var(--bg-primary) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--text) !important;
+}
+
+.card-header {
+  background: var(--bg-primary) !important;
+  border-bottom: 1px solid var(--line) !important;
+  color: var(--text) !important;
+}
+
+.text-muted {
+  color: var(--muted) !important;
+}
+
+.list-group-item {
+  background: var(--bg-primary) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+/* Boutons avec la couleur yellow */
+.btn-primary {
+  background: #757302 !important;
+  border: 1px solid #757302 !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover {
+  background: #5a5a02 !important;
+  border-color: #5a5a02 !important;
+  color: #fff !important;
+}
+
+.btn-danger {
+  background: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.btn-danger:hover {
+  background: #c82333 !important;
+  border-color: #bd2130 !important;
+}
+
+/* Badge styles */
+.badge.bg-success {
+  background: #198754 !important;
+}
+
+.badge.bg-warning {
+  background: #ffc107 !important;
+  color: #000 !important;
+}
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="container py-5">
   <div class="row justify-content-center">

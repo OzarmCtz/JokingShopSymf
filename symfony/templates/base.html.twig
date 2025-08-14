@@ -8,10 +8,69 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         <style>
+            :root{
+                --bg-primary:#2B2D31; --bg-media:#1E1F22; --line:#3F4147;
+                --text:#DBDEE1; --muted:#B5BAC1;
+                --sort-btn-w: 180px;
+            }
+
             /* Style global pour les icônes de sélection */
             .jk-check { 
-                color: #6c757d; 
+                color: var(--muted); 
                 margin-left: 8px; 
+            }
+
+            /* Styles communs pour les dropdown afin d'uniformiser avec la page home */
+            .jk-dropdown-toggle {
+                background: none !important;
+                border: none !important;
+                color: inherit !important;
+                text-decoration: none !important;
+                padding: 0.5rem 1rem !important;
+                border-radius: 6px !important;
+                transition: background-color 0.2s ease !important;
+            }
+
+            .jk-dropdown-toggle:hover {
+                background-color: #29292d !important;
+                color: var(--text) !important;
+            }
+
+            .jk-dropdown-toggle:focus,
+            .jk-dropdown-toggle:focus-visible {
+                outline: none !important;
+                box-shadow: none !important;
+            }
+
+            /* Navbar dropdown: exactement le même style que la page home */
+            .navbar .jk-menu {
+                background: var(--bg-primary);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: .5rem;
+                min-width: var(--sort-btn-w);
+            }
+
+            .navbar .jk-menu .dropdown-item {
+                color: var(--text);
+                border-radius: 6px;
+                padding: .55rem .75rem;
+                display:flex; justify-content:space-between; align-items:center;
+                transition: background-color 0.2s ease;
+            }
+
+            .navbar .jk-menu .dropdown-item:hover,
+            .navbar .jk-menu .dropdown-item:active,
+            .navbar .jk-menu .dropdown-item:focus {
+                background:#29292d;
+                color: var(--text);
+                outline:none !important;
+                box-shadow:none !important;
+            }
+
+            .navbar .jk-menu .dropdown-divider {
+                margin: 0.5rem 0;
+                border-color: var(--line);
             }
         </style>
         {% block stylesheets %}{% endblock %}

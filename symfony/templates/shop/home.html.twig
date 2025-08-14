@@ -81,58 +81,6 @@
   color: var(--muted); 
   margin-left: 8px; /* Espace entre le nom et l'icône */
 }
-
-/* Styles pour la navbar dropdown */
-.jk-dropdown-toggle {
-  background: none !important;
-  border: none !important;
-  color: inherit !important;
-  text-decoration: none !important;
-  padding: 0.5rem 1rem !important;
-  border-radius: 6px !important;
-  transition: background-color 0.2s ease !important;
-}
-
-.jk-dropdown-toggle:hover {
-  background-color: #f8f9fa !important;
-  color: #212529 !important;
-}
-
-.jk-dropdown-toggle:focus,
-.jk-dropdown-toggle:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.navbar .jk-menu {
-  background: white;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 0.5rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-.navbar .jk-menu .dropdown-item {
-  color: #212529;
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  transition: background-color 0.2s ease;
-}
-
-.navbar .jk-menu .dropdown-item:hover {
-  background-color: #f8f9fa;
-  color: #212529;
-}
-
-.navbar .jk-menu .dropdown-item i {
-  width: 1.2rem;
-  text-align: center;
-}
-
-.navbar .jk-menu .dropdown-divider {
-  margin: 0.5rem 0;
-  border-color: #dee2e6;
-}
 </style>
 {% endblock %}
 
@@ -141,17 +89,17 @@
 {% set currentCategoryId = app.request.query.get('category') %}
 {% set currentCategoryName = null %}
 {% if currentCategoryId %}
-    {% for category in categories %}
-        {% if category.id == currentCategoryId|number_format(0, '', '') %}
-            {% set currentCategoryName = category.name %}
-        {% endif %}
-    {% endfor %}
+  {% for category in categories %}
+    {% if category.id == currentCategoryId|number_format(0, '', '') %}
+      {% set currentCategoryName = category.name|capitalize %}
+    {% endif %}
+  {% endfor %}
 {% endif %}
 
 {% if currentCategoryName %}
-    <h1 class="mb-4 text-white">{{ currentCategoryName }} ({{ jokes|length }})</h1>
+  <h1 class="mb-4 text-white">Blagues {{ currentCategoryName }} ({{ jokes|length }})</h1>
 {% else %}
-    <h1 class="mb-4 text-white">Toutes les blagues ({{ jokes|length }})</h1>
+  <h1 class="mb-4 text-white">Toutes les blagues ({{ jokes|length }})</h1>
 {% endif %}
 
 {# SORT BAR #}
