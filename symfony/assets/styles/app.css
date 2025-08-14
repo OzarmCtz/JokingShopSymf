@@ -1,62 +1,108 @@
-:root{
-  --bg-primary:#2B2D31; --bg-media:#1E1F22; --line:#3F4147; --text:#DBDEE1; --yellow:#757302;
-}
+/* ============================================
+   STYLES SPÉCIFIQUES AUX COMPOSANTS
+   Variables CSS déjà définies dans base.html.twig
+   ============================================ */
 
-
+/* GRID LAYOUT POUR LES CARTES */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.5rem; /* espace constant */
+  gap: 1.5rem;
 }
 
-
-.card-bundle{
-  width:16rem; border-radius:16px; border:1px solid var(--line);
-  background:var(--bg-primary); box-shadow:0 2px 10px rgba(0,0,0,.35);
-  overflow:hidden; padding:0;
-}
-.bundle-media{height:280px; background:var(--bg-media);
-  display:flex; align-items:center; justify-content:center;}
-.bundle-media img{width:100%; height:100%; object-fit:contain; display:block;}
-
-.bundle-body{background:var(--bg-primary); padding:18px 16px 16px;}
-.bundle-title{color:var(--text); font-weight:700; font-size:1.1rem; margin:0 0 2.2rem 0;}
-
-/* Slot fixe : même hauteur avec prix OU bouton → pas de déplacement */
-.bundle-action-slot{
-  position:relative; height:42px;   /* garde la place */
+/* COMPOSANT CARTE PRODUIT */
+.card-bundle {
+  width: 16rem; 
+  border-radius: 16px; 
+  border: 1px solid var(--line);
+  background: var(--bg-primary); 
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
+  overflow: hidden; 
+  padding: 0;
 }
 
-/* Prix (visible par défaut) */
-.bundle-price{
-  position:absolute; left:0; bottom:0;
-  color:var(--text); font-weight:600; font-size:1rem;
-  transition:opacity .18s ease;
+.bundle-media {
+  height: 280px; 
+  background: var(--bg-media);
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
 }
 
-/* Bouton (caché au repos) */
-.bundle-cta{
-  position:absolute; left:0; right:0; bottom:0;
-  display:block; text-align:center; text-decoration:none;
-  background:var(--yellow); color:#fff; font-weight:700; font-size:.95rem;
-  padding:.5rem 1rem; border-radius:10px;
-  opacity:0; transform:translateY(6px);
-  transition:opacity .18s ease, transform .18s ease;
-  border:none;
+.bundle-media img {
+  width: 100%; 
+  height: 100%; 
+  object-fit: contain; 
+  display: block;
 }
 
-/* Hover: remplace le prix par le bouton, le titre ne bouge pas */
-.card-bundle:hover .bundle-price{ opacity:0; }
-.card-bundle:hover .bundle-cta{ opacity:1; transform:translateY(0); }
-
-/* Option mobile: pas de hover → montrer directement le bouton */
-@media (hover:none){
-  .bundle-price{ display:none; }
-  .bundle-cta{ opacity:1; transform:none; }
+.bundle-body {
+  background: var(--bg-primary); 
+  padding: 18px 16px 16px;
 }
 
+.bundle-title {
+  color: var(--text); 
+  font-weight: 700; 
+  font-size: 1.1rem; 
+  margin: 0 0 2.2rem 0;
+}
 
-/* Global background and navbar (keep if you like) */
-body{ background:#212025; color:#fff; font-family: Inter, Roboto, Arial, sans-serif; }
-.navbar{ background:#1b1b1e !important; border-bottom:3px solid var(--yellow) !important; }
-.navbar .navbar-brand, .navbar .nav-link{ color:#fff !important; }
+/* SLOT FIXE POUR ÉVITER LES DÉPLACEMENTS */
+.bundle-action-slot {
+  position: relative; 
+  height: 42px;
+}
+
+/* PRIX (VISIBLE PAR DÉFAUT) */
+.bundle-price {
+  position: absolute; 
+  left: 0; 
+  bottom: 0;
+  color: var(--text); 
+  font-weight: 600; 
+  font-size: 1rem;
+  transition: opacity .18s ease;
+}
+
+/* BOUTON CTA (CACHÉ AU REPOS) */
+.bundle-cta {
+  position: absolute; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  display: block; 
+  text-align: center; 
+  text-decoration: none;
+  background: #757302; 
+  color: #fff; 
+  font-weight: 700; 
+  font-size: .95rem;
+  padding: .5rem 1rem; 
+  border-radius: 10px;
+  opacity: 0; 
+  transform: translateY(6px);
+  transition: opacity .18s ease, transform .18s ease;
+  border: none;
+}
+
+/* EFFETS HOVER */
+.card-bundle:hover .bundle-price { 
+  opacity: 0; 
+}
+
+.card-bundle:hover .bundle-cta { 
+  opacity: 1; 
+  transform: translateY(0); 
+}
+
+/* OPTION MOBILE : PAS DE HOVER */
+@media (hover: none) {
+  .bundle-price { 
+    display: none; 
+  }
+  .bundle-cta { 
+    opacity: 1; 
+    transform: none; 
+  }
+}

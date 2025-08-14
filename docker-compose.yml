@@ -14,7 +14,6 @@ services:
       - PUID=${UID}
       - PGID=${GID}
       - HOME=/var/www/html
-      - MAILER_DSN=smtp://mailpit:1025
     user: "${UID}:${GID}"
     depends_on:
       - db
@@ -59,7 +58,7 @@ services:
 
   mailpit:
     image: axllent/mailpit
-    container_name: mailpit_adeo_shop
+    container_name: mailpit
     restart: unless-stopped
     volumes:
       - ./mailpit/data:/data
@@ -71,6 +70,27 @@ services:
       MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+  worker:
+    build:
+      context: ./docker/php
+      args:
+        PUID: ${UID}
+        PGID: ${GID}
+    container_name: symfony_worker_adeo_shop
+    volumes:
+      - ./symfony:/var/www/html
+    working_dir: /var/www/html
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+      - PUID=${UID}
+      - PGID=${GID}
+      - HOME=/var/www/html
+    user: "${UID}:${GID}"
+    depends_on:
+      - db
+      - mailpit
+    command: php bin/console messenger:consume async --time-limit=3600
 
 volumes:
   db_data:

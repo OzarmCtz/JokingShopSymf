@@ -2,71 +2,6 @@
 
 {% block title %}Mon Profil{% endblock %}
 
-{% block stylesheets %}
-<style>
-:root{
-  --bg-primary:#2B2D31; --bg-media:#1E1F22; --line:#3F4147;
-  --text:#DBDEE1; --muted:#B5BAC1;
-}
-
-/* Style sombre pour les cartes */
-.card {
-  background: var(--bg-primary) !important;
-  border: 1px solid var(--line) !important;
-  color: var(--text) !important;
-}
-
-.card-header {
-  background: var(--bg-primary) !important;
-  border-bottom: 1px solid var(--line) !important;
-  color: var(--text) !important;
-}
-
-.text-muted {
-  color: var(--muted) !important;
-}
-
-.list-group-item {
-  background: var(--bg-primary) !important;
-  border-color: var(--line) !important;
-  color: var(--text) !important;
-}
-
-/* Boutons avec la couleur yellow */
-.btn-primary {
-  background: #757302 !important;
-  border: 1px solid #757302 !important;
-  color: #fff !important;
-}
-
-.btn-primary:hover {
-  background: #5a5a02 !important;
-  border-color: #5a5a02 !important;
-  color: #fff !important;
-}
-
-.btn-danger {
-  background: #dc3545 !important;
-  border-color: #dc3545 !important;
-}
-
-.btn-danger:hover {
-  background: #c82333 !important;
-  border-color: #bd2130 !important;
-}
-
-/* Badge styles */
-.badge.bg-success {
-  background: #198754 !important;
-}
-
-.badge.bg-warning {
-  background: #ffc107 !important;
-  color: #000 !important;
-}
-</style>
-{% endblock %}
-
 {% block body %}
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -91,7 +26,9 @@
               {% if user.isVerified %}
                 <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Email vérifié</span>
               {% else %}
-                <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i>Email non vérifié</span>
+                <span class="badge bg-warning text-dark clickable-badge" data-bs-toggle="modal" data-bs-target="#resendVerificationModal" style="cursor: pointer;">
+                  <i class="fas fa-exclamation-triangle me-1"></i>Email non vérifié
+                </span>
               {% endif %}
               {% if 'ROLE_ADMIN' in user.roles %}
                 <span class="badge bg-success text-white shadow-sm"><i class="fas fa-check-circle me-1"></i>Compte Administrateur</span>
@@ -172,4 +109,97 @@
     </div>
   </div>
 </div>
+
+<!-- Modal pour renvoyer l'email de vérification -->
+{% if not user.isVerified %}
+<div class="modal fade" id="resendVerificationModal" tabindex="-1" aria-labelledby="resendVerificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background: var(--bg-primary); border: 1px solid var(--line); color: var(--text);">
+      <div class="modal-header" style="border-bottom: 1px solid var(--line);">
+        <h5 class="modal-title" id="resendVerificationModalLabel">
+          <i class="fas fa-envelope me-2"></i>Vérification de l'email
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-3">
+          <i class="fas fa-envelope-open-text fa-3x text-warning mb-3"></i>
+          <h6>Votre email n'est pas encore vérifié</h6>
+          <p class="text-muted mb-3">
+            Pour accéder à toutes les fonctionnalités, veuillez vérifier votre adresse email : 
+            <strong>{{ user.email }}</strong>
+          </p>
+        </div>
+        
+        <div id="modal-alert" class="alert" style="display: none;"></div>
+        
+        <div class="d-grid">
+          <button type="button" class="btn btn-primary" id="resendVerificationBtn">
+            <i class="fas fa-paper-plane me-2"></i>Renvoyer l'email de vérification
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid var(--line);">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resendBtn = document.getElementById('resendVerificationBtn');
+    const modalAlert = document.getElementById('modal-alert');
+    
+    if (resendBtn) {
+        resendBtn.addEventListener('click', function() {
+            // Désactiver le bouton et afficher un spinner
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
+            
+            // Cacher l'alerte précédente
+            modalAlert.style.display = 'none';
+            
+            // Envoyer la requête AJAX
+            fetch('{{ path("app_account_resend_verification") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Afficher le message de retour
+                modalAlert.className = data.success ? 'alert alert-success' : 'alert alert-danger';
+                modalAlert.textContent = data.message;
+                modalAlert.style.display = 'block';
+                
+                if (data.success) {
+                    // Changer le bouton en succès
+                    resendBtn.innerHTML = '<i class="fas fa-check me-2"></i>Email envoyé !';
+                    resendBtn.className = 'btn btn-success';
+                } else {
+                    // Réactiver le bouton en cas d'erreur
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Renvoyer l\'email de vérification';
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                modalAlert.className = 'alert alert-danger';
+                modalAlert.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+                modalAlert.style.display = 'block';
+                
+                // Réactiver le bouton
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Renvoyer l\'email de vérification';
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

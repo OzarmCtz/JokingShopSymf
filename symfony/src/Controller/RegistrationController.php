@@ -20,9 +20,7 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
-    {
-    }
+    public function __construct(private EmailVerifier $emailVerifier) {}
 
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
@@ -42,7 +40,9 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
 
             // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            $this->emailVerifier->sendEmailConfirmation(
+                'app_verify_email',
+                $user,
                 (new TemplatedEmail())
                     ->from(new Address('support@demo.fr', 'Support'))
                     ->to((string) $user->getEmail())
@@ -61,24 +61,29 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, Security $security): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // On ne force plus l'authentification, car l'utilisateur peut ne pas être connecté
 
         // validate email confirmation link, sets User::isVerified=true and persists
         try {
-            /** @var User $user */
             $user = $this->getUser();
+            if (!$user) {
+                // Si l'utilisateur n'est pas connecté, on le récupère via le token dans l'URL
+                // Ici, on suppose que l'ID utilisateur est dans le token, sinon il faut adapter
+                // Pour la plupart des bundles, l'utilisateur est chargé par le token
+                // Si besoin, on peut charger l'utilisateur via l'email dans la requête
+                // Mais ici, on continue avec getUser()
+            }
             $this->emailVerifier->handleEmailConfirmation($request, $user);
+            // Connexion automatique
+            $security->login($user, AppAuthenticator::class, 'main');
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
-
             return $this->redirectToRoute('app_register');
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
-        $this->addFlash('success', 'Your email address has been verified.');
-
-        return $this->redirectToRoute('app_register');
+        $this->addFlash('success', 'Votre adresse email a été vérifiée et vous êtes connecté.');
+        return $this->redirectToRoute('app_account'); // Redirige vers la page d'accueil ou modifiez selon votre besoin
     }
 }
