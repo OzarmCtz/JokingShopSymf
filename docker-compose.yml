@@ -14,9 +14,11 @@ services:
       - PUID=${UID}
       - PGID=${GID}
       - HOME=/var/www/html
+      - MAILER_DSN=smtp://mailpit:1025
     user: "${UID}:${GID}"
     depends_on:
       - db
+      - mailpit
     command: >
       bash -c "
         if [ ! -f /var/www/html/composer.json ]; then
