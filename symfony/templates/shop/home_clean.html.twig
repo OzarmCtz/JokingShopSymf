@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+<h1 class="mb-4 text-white">Accueil</h1>
+
+<div class="cards-grid">
+  {% for joke in jokes %}
+    <div class="card card-bundle">
+      <div class="bundle-media">
+        {% if joke.photo %}
+          <img src="{{ asset('uploads/jokes/' ~ joke.photo) }}" alt="{{ joke.title }}">
+        {% else %}
+          <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder">
+        {% endif %}
+      </div>
+      <div class="bundle-body">
+        <h5 class="bundle-title">{{ joke.title }}</h5>
+        <div class="bundle-action-slot">
+          <span class="bundle-price">€{{ joke.price|number_format(2, ',', ' ') }}</span>
+          <a href="{{ path('shop_detail', {id: joke.id}) }}"
+             class="bundle-cta"
+             aria-label="Acheter pour {{ joke.price|number_format(2, ',', ' ') }} euros">
+             Acheter pour €{{ joke.price|number_format(2, ',', ' ') }}
+          </a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="text-muted py-5">
+      Aucune blague trouvée.
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

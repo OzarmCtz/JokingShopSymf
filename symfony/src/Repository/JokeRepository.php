@@ -35,9 +35,10 @@ class JokeRepository extends ServiceEntityRepository
      * @param int|null $categoryId
      * @param float|null $minPrice
      * @param float|null $maxPrice
+     * @param string $sort
      * @return Joke[]
      */
-    public function findActiveJokes(?int $categoryId = null, ?float $minPrice = null, ?float $maxPrice = null): array
+    public function findActiveJokes(?int $categoryId = null, ?float $minPrice = null, ?float $maxPrice = null, string $sort = 'newest'): array
     {
         $qb = $this->createQueryBuilder('j')
             ->andWhere('j.is_active = :active')
@@ -53,6 +54,20 @@ class JokeRepository extends ServiceEntityRepository
         }
         if ($maxPrice !== null) {
             $qb->andWhere('j.price <= :max')->setParameter('max', $maxPrice);
+        }
+
+        // Add sorting
+        switch ($sort) {
+            case 'price_asc':
+                $qb->orderBy('j.price', 'ASC');
+                break;
+            case 'price_desc':
+                $qb->orderBy('j.price', 'DESC');
+                break;
+            case 'newest':
+            default:
+                $qb->orderBy('j.created_at', 'DESC');
+                break;
         }
 
         return $qb->getQuery()->getResult();

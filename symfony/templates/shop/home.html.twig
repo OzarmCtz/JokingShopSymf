@@ -3,13 +3,210 @@
 {% block title %}Accueil{% endblock %}
 
 {% block stylesheets %}
- 
+<style>
+:root{
+  --bg-primary:#2B2D31; --bg-media:#1E1F22; --line:#3F4147;
+  --text:#DBDEE1; --muted:#B5BAC1;
+  --sort-btn-w: 180px;
+}
+
+/* libellé à gauche de la dropdown */
+.jk-sortbar{ justify-content:flex-start; }
+
+/* bouton : texte aligné à gauche, caret forcé à droite, pas d'effet click/focus */
+.jk-sort-toggle{
+  width: var(--sort-btn-w);
+  background: var(--bg-primary);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: .45rem 2rem .45rem .75rem;
+  font-weight: 600;
+  text-align: left;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+.jk-sort-toggle::after{
+  filter: invert(1) opacity(.8);
+  position: absolute;
+  right: .6rem; top: 50%; transform: translateY(-50%);
+  margin-left: 0 !important;
+}
+.jk-sort-toggle:hover,
+.jk-sort-toggle:active{
+  background: var(--bg-primary);
+  color: var(--text);
+  border-color: var(--line);
+  box-shadow: none !important;
+  outline: none !important;
+}
+.jk-sort-toggle:focus,
+.jk-sort-toggle:focus-visible{
+  outline: none !important;
+  box-shadow: none !important;
+  background: var(--bg-primary);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+/* menu */
+.jk-menu{
+  background: var(--bg-primary);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: .5rem;
+  min-width: var(--sort-btn-w);
+}
+.jk-menu .dropdown-item{
+  color: var(--text);
+  border-radius: 6px;
+  padding: .55rem .75rem;
+  display:flex; justify-content:space-between; align-items:center;
+  transition: background-color 0.2s ease;
+}
+.jk-menu .dropdown-item:hover{
+  background:#29292d;
+  color: var(--text);
+}
+.jk-menu .dropdown-item:active,
+.jk-menu .dropdown-item:focus{
+  background:#29292d;
+  color: var(--text);
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+/* icône de l'option sélectionnée */
+.jk-check{ 
+  color: var(--muted); 
+  margin-left: 8px; /* Espace entre le nom et l'icône */
+}
+
+/* Styles pour la navbar dropdown */
+.jk-dropdown-toggle {
+  background: none !important;
+  border: none !important;
+  color: inherit !important;
+  text-decoration: none !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.jk-dropdown-toggle:hover {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
+}
+
+.jk-dropdown-toggle:focus,
+.jk-dropdown-toggle:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.navbar .jk-menu {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.navbar .jk-menu .dropdown-item {
+  color: #212529;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.2s ease;
+}
+
+.navbar .jk-menu .dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.navbar .jk-menu .dropdown-item i {
+  width: 1.2rem;
+  text-align: center;
+}
+
+.navbar .jk-menu .dropdown-divider {
+  margin: 0.5rem 0;
+  border-color: #dee2e6;
+}
+</style>
 {% endblock %}
 
-
 {% block body %}
-<h1 class="mb-4 text-white">Accueil</h1>
-<div  class="cards-grid">
+{# Titre dynamique basé sur la catégorie #}
+{% set currentCategoryId = app.request.query.get('category') %}
+{% set currentCategoryName = null %}
+{% if currentCategoryId %}
+    {% for category in categories %}
+        {% if category.id == currentCategoryId|number_format(0, '', '') %}
+            {% set currentCategoryName = category.name %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% if currentCategoryName %}
+    <h1 class="mb-4 text-white">{{ currentCategoryName }} ({{ jokes|length }})</h1>
+{% else %}
+    <h1 class="mb-4 text-white">Toutes les blagues ({{ jokes|length }})</h1>
+{% endif %}
+
+{# SORT BAR #}
+{% set q = app.request.query.all %}
+{% set currentSort = q.sort ?? 'newest' %}
+{% set sortLabel = {
+  'price_asc': 'Prix : Croissant',
+  'price_desc': 'Prix : Décroissant',
+  'newest': 'Nouveau'
+}[currentSort] ?? 'Nouveau' %}
+{% set route = app.request.attributes.get('_route') %}
+
+<div class="d-flex justify-content-end align-items-center mb-4">
+  <div class="d-flex align-items-center gap-2">
+    <span class="jk-sort-label">Trier par</span>
+
+    <div class="dropdown">
+      <button
+        class="btn jk-sort-toggle dropdown-toggle"
+        type="button"
+        id="sortDropdown"
+        data-bs-toggle="dropdown"
+        data-bs-display="static"
+        aria-expanded="false">
+        <span class="jk-sort-text">{{ sortLabel }}</span>
+      </button>
+
+      <ul class="dropdown-menu jk-menu" aria-labelledby="sortDropdown">
+        <li>
+          <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_asc' %}is-active{% endif %}"
+             href="{{ path(route, q|merge({'sort':'price_asc','page':1})) }}">
+            <span>Prix : Croissant</span>
+            {% if currentSort == 'price_asc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_desc' %}is-active{% endif %}"
+             href="{{ path(route, q|merge({'sort':'price_desc','page':1})) }}">
+            <span>Prix : Décroissant</span>
+            {% if currentSort == 'price_desc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'newest' %}is-active{% endif %}"
+             href="{{ path(route, q|merge({'sort':'newest','page':1})) }}">
+            <span>Nouveau</span>
+            {% if currentSort == 'newest' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="cards-grid">
   {% for joke in jokes %}
     <div class="card card-bundle">
       <div class="bundle-media">
@@ -36,35 +233,5 @@
       Aucune blague trouvée.
     </div>
   {% endfor %}
-</div>
-
-
-
-
-
-{# <h1 class="mb-4 text-white">Toutes les blagues</h1> #}
-
-{# <div class="d-flex flex-wrap gap-10">
-  {% for joke in jokes %}
-    {% set price = joke.price ?? 0.99 %}
-    <article class="bundle-card" style="max-width:340px;">
-      <div class="media mb-3">
-        {% if joke.photo %}
-          <img src="{{ asset('uploads/jokes/' ~ joke.photo) }}" alt="{{ joke.title ?? 'Blague' }}">
-        {% else %}
-          <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder">
-        {% endif %}
-      </div>
-      <div class="d-flex align-items-center justify-content-between px-3" style="margin-bottom:0.5rem;">
-        <span class="price fw-bold text-white bg-dark rounded-pill px-3 py-2" style="position:static;font-size:1.1rem;">{{ price|number_format(2, ',', ' ') }} €</span>
-        <a href="{{ path('shop_detail', {id: joke.id}) }}" class="btn btn-dark btn-sm rounded-pill px-3 ms-auto">Voir</a>
-      </div>
-      <h5 class="mt-2 mb-0 text-truncate px-3" style="max-width:85%;">{{ joke.title ?? 'Bundle de blagues' }}</h5>
-    </article>
-  {% else %}
-    <div class="text-muted py-5">
-      Aucune blague trouvée.
-    </div> #}
-  {# {% endfor %} #}
 </div>
 {% endblock %}

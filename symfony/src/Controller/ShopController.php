@@ -19,11 +19,13 @@ class ShopController extends AbstractController
         $categoryId = $request->query->getInt('category') ?: null;
         $minPrice = $request->query->get('minPrice');
         $maxPrice = $request->query->get('maxPrice');
+        $sort = $request->query->get('sort', 'newest');
 
         $jokes = $jokeRepository->findActiveJokes(
             $categoryId,
             $minPrice !== null && $minPrice !== '' ? (float) $minPrice : null,
-            $maxPrice !== null && $maxPrice !== '' ? (float) $maxPrice : null
+            $maxPrice !== null && $maxPrice !== '' ? (float) $maxPrice : null,
+            $sort
         );
 
         $categories = $categoryRepository->findBy(['is_active' => true]);
