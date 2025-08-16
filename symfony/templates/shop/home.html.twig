@@ -223,6 +223,16 @@
                             </div>
                         </div>
                         
+                        <!-- Nom sur la carte -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="card-holder-name" class="form-label">Nom sur la carte *</label>
+                                <input type="text" class="form-control" id="card-holder-name" 
+                                        required>
+                                <div class="invalid-feedback" id="card-holder-name-error"></div>
+                            </div>
+                        </div>
+                        
                         <div class="payment-test-info">
                             <small class="text-success">
                                 <i class="fas fa-info-circle me-1"></i>
@@ -598,12 +608,15 @@
 // Configuration Stripe
 const stripe = Stripe('{{ stripe_public_key }}');
 let elements, cardElement, paymentIntent;
+let stripeInitialized = false;
+let modalOpenCount = 0;
 let currentStep = 1;
 let currentJoke = {};
 
 // Fonction pour ouvrir le modal de paiement
 function openPaymentModal(jokeId, jokeTitle, jokePrice) {
-    console.log('Opening payment modal:', jokeId, jokeTitle, jokePrice);
+    modalOpenCount++;
+    console.log('Opening payment modal (count: ' + modalOpenCount + '):', jokeId, jokeTitle, jokePrice);
     
     currentJoke = {
         id: jokeId,
@@ -628,15 +641,15 @@ function openPaymentModal(jokeId, jokeTitle, jokePrice) {
     // Réinitialiser le modal
     resetModal();
     
-    // Ouvrir le modal en utilisant les attributs Bootstrap
+    // Ouvrir le modal avec du JavaScript vanilla (sans Bootstrap JS)
     try {
-        // Utiliser l'attribut data-bs-toggle si Bootstrap est déjà chargé
+        // Afficher le modal manuellement
         modalElement.style.display = 'block';
         modalElement.classList.add('show');
         modalElement.setAttribute('aria-modal', 'true');
         modalElement.removeAttribute('aria-hidden');
         
-        // Ajouter backdrop
+        // Ajouter backdrop manuellement
         const backdrop = document.createElement('div');
         backdrop.className = 'modal-backdrop fade show';
         backdrop.id = 'payment-modal-backdrop';
@@ -645,10 +658,47 @@ function openPaymentModal(jokeId, jokeTitle, jokePrice) {
         // Empêcher le scroll du body
         document.body.classList.add('modal-open');
         
+        // Fermer le modal si on clique sur le backdrop
+        backdrop.addEventListener('click', closePaymentModal);
+        
+        // Fermer le modal avec la touche Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePaymentModal();
+            }
+        });
+        
         // Initialiser Stripe Elements quand le modal s'ouvre
         setTimeout(() => {
+            console.log('Forced re-initialization of Stripe Elements...');
+            // Force cleanup and re-init every time
+            if (cardElement) {
+                try {
+                    cardElement.off('change');
+                    cardElement.off('ready');
+                    cardElement.off('focus');
+                    cardElement.off('blur');
+                    cardElement.unmount();
+                } catch (e) {
+                    console.warn('Error during cleanup:', e);
+                }
+                cardElement = null;
+            }
+            if (elements) {
+                elements = null;
+            }
+            
+            // Clear the container but keep classes
+            const cardElementContainer = document.getElementById('card-element');
+            if (cardElementContainer) {
+                cardElementContainer.innerHTML = '';
+                // Restaurer les classes importantes pour le style
+                cardElementContainer.className = 'StripeElement stripe-element';
+            }
+            
+            // Re-initialize
             initializeStripeElements();
-        }, 100);
+        }, 300);
         
     } catch (error) {
         console.error('Error opening modal:', error);
@@ -658,10 +708,13 @@ function openPaymentModal(jokeId, jokeTitle, jokePrice) {
 
 // Fonction pour fermer le modal
 function closePaymentModal() {
+    console.log('Closing payment modal...');
+    
     const modalElement = document.getElementById('paymentModal');
     const backdrop = document.getElementById('payment-modal-backdrop');
     
     if (modalElement) {
+        // Fermer avec JavaScript vanilla
         modalElement.style.display = 'none';
         modalElement.classList.remove('show');
         modalElement.setAttribute('aria-hidden', 'true');
@@ -675,71 +728,201 @@ function closePaymentModal() {
     // Restaurer le scroll du body
     document.body.classList.remove('modal-open');
     
+    // S'assurer que TOUS les boutons de la page sont réactivés
+    enableAllButtons();
+    
+    // Nettoyer Stripe Elements à la fermeture
+    if (cardElement) {
+        try {
+            console.log('Cleaning up Stripe Elements on modal close...');
+            cardElement.off('change');
+            cardElement.off('ready');
+            cardElement.off('focus');
+            cardElement.off('blur');
+            cardElement.unmount();
+            console.log('Stripe Elements cleaned up successfully');
+        } catch (e) {
+            console.warn('Error cleaning up Stripe Elements:', e);
+        }
+        cardElement = null;
+    }
+    
+    if (elements) {
+        elements = null;
+    }
+    
     // Reset du modal
     resetModal();
 }
 
+// Fonction globale pour réactiver tous les boutons
+function enableAllButtons() {
+    console.log('Enabling all buttons...');
+    
+    // Réactiver TOUS les boutons de l'application
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+        btn.style.opacity = '1';
+    });
+    
+    // Spécifiquement réactiver les boutons d'achat sur la page
+    const buyButtons = document.querySelectorAll('.bundle-cta');
+    buyButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+        btn.style.opacity = '1';
+    });
+    
+    console.log('All buttons enabled');
+}
+
+// S'assurer que tout est initialisé correctement au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - initializing button states');
+    enableAllButtons();
+    
+    // Ajouter des gestionnaires d'événements robustes aux boutons d'achat
+    const buyButtons = document.querySelectorAll('.bundle-cta');
+    buyButtons.forEach(btn => {
+        // S'assurer que le bouton est toujours cliquable
+        btn.addEventListener('click', function(e) {
+            // Si le bouton est désactivé, le réactiver et continuer
+            if (this.disabled) {
+                console.warn('Buy button was disabled, re-enabling...');
+                this.disabled = false;
+                this.style.pointerEvents = 'auto';
+                this.classList.remove('disabled');
+            }
+        });
+    });
+    
+    console.log('Button initialization complete');
+});
+
 // Initialiser Stripe Elements
 function initializeStripeElements() {
-    if (!elements) {
-        const appearance = {
-            theme: 'night',
-            variables: {
-                colorPrimary: '#5865f2',
-                colorBackground: '#1e1f22',
-                colorText: '#dbdee1',
-                colorDanger: '#ed4245',
-                fontFamily: 'system-ui, sans-serif',
-                spacingUnit: '4px',
-                borderRadius: '6px',
-            }
-        };
+    console.log('Initializing Stripe Elements... (attempt #' + (modalOpenCount + 1) + ')');
+    
+    // Nettoyer complètement avant de réinitialiser
+    if (cardElement) {
+        try {
+            console.log('Cleaning up existing card element...');
+            cardElement.off('change');
+            cardElement.off('ready');
+            cardElement.off('focus');
+            cardElement.off('blur');
+            cardElement.unmount();
+            console.log('Card element unmounted successfully');
+        } catch (e) {
+            console.warn('Error during cleanup:', e);
+        }
+        cardElement = null;
+    }
+    
+    if (elements) {
+        elements = null;
+    }
+    
+    // Nettoyer le DOM mais conserver les classes
+    const cardElementContainer = document.getElementById('card-element');
+    if (cardElementContainer) {
+        cardElementContainer.innerHTML = '';
+        // Restaurer les classes importantes
+        cardElementContainer.className = 'StripeElement stripe-element';
+        cardElementContainer.style.pointerEvents = 'auto';
+        cardElementContainer.style.opacity = '1';
+    }
+    
+    // Créer de nouveaux éléments
+    const appearance = {
+        theme: 'night',
+        variables: {
+            colorPrimary: '#5865f2',
+            colorBackground: '#1e1f22',
+            colorText: '#dbdee1',
+            colorDanger: '#ed4245',
+            fontFamily: 'system-ui, sans-serif',
+            spacingUnit: '4px',
+            borderRadius: '6px',
+        }
+    };
 
-        // Configurer les éléments avec locale français
-        elements = stripe.elements({ 
-            appearance,
-            locale: 'fr'
-        });
+    // Configurer les éléments avec locale français
+    elements = stripe.elements({ 
+        appearance,
+        locale: 'fr'
+    });
 
-        cardElement = elements.create('card', {
-            style: {
-                base: {
-                    fontSize: '16px',
-                    color: '#dbdee1',
-                    '::placeholder': {
-                        color: '#b5bac1',
-                    },
-                },
-                invalid: {
-                    color: '#ed4245',
+    cardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#dbdee1',
+                '::placeholder': {
+                    color: '#b5bac1',
                 },
             },
-        });
+            invalid: {
+                color: '#ed4245',
+            },
+        },
+    });
 
+    if (cardElementContainer) {
+        // Monter l'élément
         cardElement.mount('#card-element');
+        console.log('Card element mounted');
 
         // Gestion des erreurs en temps réel
         cardElement.on('change', ({error}) => {
             const displayError = document.getElementById('card-errors');
+            const cardElementDiv = document.getElementById('card-element');
+            
             if (error) {
                 displayError.textContent = error.message;
                 displayError.style.display = 'block';
-                document.getElementById('card-element').classList.add('StripeElement--invalid');
+                cardElementDiv.classList.add('StripeElement--invalid');
             } else {
                 displayError.textContent = '';
                 displayError.style.display = 'none';
-                document.getElementById('card-element').classList.remove('StripeElement--invalid');
+                cardElementDiv.classList.remove('StripeElement--invalid');
             }
         });
 
         cardElement.on('ready', () => {
             console.log('Stripe Elements ready');
+            stripeInitialized = true;
+            
+            // S'assurer que le champ est accessible
+            const cardElementDiv = document.getElementById('card-element');
+            if (cardElementDiv) {
+                cardElementDiv.style.pointerEvents = 'auto';
+                cardElementDiv.style.opacity = '1';
+                cardElementDiv.classList.remove('StripeElement--disabled');
+            }
         });
+        
+        cardElement.on('focus', () => {
+            console.log('Card element focused');
+        });
+        
+        cardElement.on('blur', () => {
+            console.log('Card element blurred');
+        });
+        
+    } else {
+        console.error('Card element container not found!');
     }
 }
 
 // Fonction pour gérer les étapes
 function showStep(step) {
+    console.log('showStep called with step:', step);
+    
     // Cacher toutes les étapes
     document.querySelectorAll('.payment-step').forEach(el => {
         el.style.display = 'none';
@@ -757,10 +940,14 @@ function showStep(step) {
     const stepElement = document.getElementById(stepMap[step]);
     if (stepElement) {
         stepElement.style.display = 'block';
+        console.log('Showing step element:', stepMap[step]);
+    } else {
+        console.error('Step element not found for step:', step, 'element ID:', stepMap[step]);
     }
     
     currentStep = step;
     updateFooter();
+    console.log('Current step updated to:', currentStep);
 }
 
 function nextStep() {
@@ -785,30 +972,39 @@ function previousStep() {
 }
 
 function updateFooter() {
+    console.log('updateFooter called for step:', currentStep);
     const footer = document.getElementById('modal-footer');
     const backBtn = document.getElementById('back-btn');
     const nextBtn = document.getElementById('next-btn');
     
     if (currentStep === 1) {
-        backBtn.style.display = 'none';
-        nextBtn.style.display = 'inline-block';
-        nextBtn.textContent = 'Continuer';
-        nextBtn.disabled = false;
-        footer.style.display = 'flex';
+        if (backBtn) backBtn.style.display = 'none';
+        if (nextBtn) {
+            nextBtn.style.display = 'inline-block';
+            nextBtn.textContent = 'Continuer';
+            nextBtn.disabled = false;
+        }
+        if (footer) footer.style.display = 'flex';
+        console.log('Footer updated for step 1');
     } else if (currentStep === 2) {
-        backBtn.style.display = 'inline-block';
-        nextBtn.style.display = 'inline-block';
-        nextBtn.innerHTML = '<i class="fas fa-credit-card me-1"></i>Payer €' + currentJoke.price;
-        nextBtn.disabled = false;
-        footer.style.display = 'flex';
+        if (backBtn) backBtn.style.display = 'inline-block';
+        if (nextBtn) {
+            nextBtn.style.display = 'inline-block';
+            nextBtn.innerHTML = '<i class="fas fa-credit-card me-1"></i>Payer €' + currentJoke.price;
+            nextBtn.disabled = false;
+        }
+        if (footer) footer.style.display = 'flex';
+        console.log('Footer updated for step 2');
     } else if (currentStep >= 3) {
-        footer.style.display = 'none';
+        if (footer) footer.style.display = 'none';
+        console.log('Footer hidden for step', currentStep);
     }
 }
 
 // Validation avec erreurs dynamiques
 function validateCardForm() {
     const email = document.getElementById('email').value.trim();
+    const cardHolderName = document.getElementById('card-holder-name').value.trim();
     let isValid = true;
     
     // Validation email en temps réel
@@ -819,8 +1015,25 @@ function validateCardForm() {
         clearFieldError('email');
     }
     
-    // Vérifier que Stripe Elements est rempli
-    // Note: Stripe Elements gérera ses propres erreurs en français
+    // Validation du nom sur la carte
+    if (!cardHolderName || cardHolderName.length < 2) {
+        showFieldError('card-holder-name', 'Nom sur la carte requis (minimum 2 caractères)');
+        isValid = false;
+    } else {
+        clearFieldError('card-holder-name');
+    }
+    
+    // Vérifier que Stripe Elements a du contenu
+    // Cette validation sera améliorée par Stripe Elements lui-même
+    const cardElement = document.getElementById('card-element');
+    if (cardElement && !cardElement.classList.contains('StripeElement--complete')) {
+        const cardErrors = document.getElementById('card-errors');
+        if (cardErrors) {
+            cardErrors.textContent = 'Veuillez remplir les informations de carte';
+            cardErrors.style.display = 'block';
+        }
+        isValid = false;
+    }
     
     return isValid;
 }
@@ -995,7 +1208,11 @@ async function processPayment() {
     showStep(3); // Écran de traitement
     
     const nextBtn = document.getElementById('next-btn');
-    nextBtn.disabled = true;
+    const backBtn = document.getElementById('back-btn');
+    
+    // Désactiver les boutons pendant le traitement
+    if (nextBtn) nextBtn.disabled = true;
+    if (backBtn) backBtn.disabled = true;
     
     try {
         // 1. Créer le PaymentIntent
@@ -1021,7 +1238,7 @@ async function processPayment() {
             payment_method: {
                 card: cardElement,
                 billing_details: {
-                    name: document.getElementById('email').value,
+                    name: document.getElementById('card-holder-name').value,
                     email: document.getElementById('email').value,
                     address: {
                         line1: document.getElementById('address').value,
@@ -1048,6 +1265,9 @@ async function processPayment() {
     } catch (error) {
         console.error('Payment error:', error);
         showError(error.message);
+    } finally {
+        // Réactiver tous les boutons dans tous les cas
+        enableAllButtons();
     }
 }
 
@@ -1064,6 +1284,7 @@ async function confirmPaymentServer(orderId, paymentIntent) {
                 city: document.getElementById('city').value,
                 region: document.getElementById('region').value,
                 postal_code: document.getElementById('postal-code').value,
+                card_holder_name: document.getElementById('card-holder-name').value,
                 stripe_payment_intent: paymentIntent.id,
                 payment_method_id: paymentIntent.payment_method
             })
@@ -1098,17 +1319,63 @@ function showSuccess(orderId) {
 }
 
 function showError(message) {
+    console.error('Payment error:', message);
     document.getElementById('error-message').textContent = message;
     showStep(5);
     
-    // Ajouter bouton retour
+    // Réactiver TOUS les boutons de l'application (pas seulement du modal)
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+    });
+    
+    // Spécifiquement réactiver les boutons d'achat sur la page
+    const buyButtons = document.querySelectorAll('.bundle-cta');
+    buyButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+        btn.style.opacity = '1';
+    });
+    
+    // Nettoyer les classes de chargement
+    const loadingElements = document.querySelectorAll('.loading, .spinner-border');
+    loadingElements.forEach(el => {
+        el.classList.remove('loading');
+        if (el.classList.contains('spinner-border')) {
+            el.style.display = 'none';
+        }
+    });
+    
+    // Ajouter bouton retour avec gestionnaires d'événements appropriés
     setTimeout(() => {
         const footer = document.getElementById('modal-footer');
-        footer.style.display = 'flex';
-        footer.innerHTML = `
-            <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Fermer</button>
-            <button type="button" class="btn btn-primary" onclick="showStep(1)">Réessayer</button>
-        `;
+        if (footer) {
+            footer.style.display = 'flex';
+            footer.innerHTML = `
+                <button type="button" class="btn btn-secondary" id="close-error-btn">Fermer</button>
+                <button type="button" class="btn btn-primary" id="retry-error-btn">Réessayer</button>
+            `;
+            
+            // Ajouter les gestionnaires d'événements aux nouveaux boutons
+            const closeBtn = document.getElementById('close-error-btn');
+            const retryBtn = document.getElementById('retry-error-btn');
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    closePaymentModal();
+                });
+            }
+            
+            if (retryBtn) {
+                retryBtn.addEventListener('click', function() {
+                    console.log('Retry button clicked');
+                    resetModalAndRetry();
+                });
+            }
+        }
     }, 100);
 }
 
@@ -1169,23 +1436,59 @@ function clearFieldError(fieldId) {
 }
 
 function resetModal() {
+    console.log('Resetting modal...');
+    
+    // Force le reset du step
     currentStep = 1;
-    showStep(1);
     
     // Réinitialiser les formulaires
-    document.getElementById('payment-form').reset();
-    document.getElementById('billing-form').reset();
+    const paymentForm = document.getElementById('payment-form');
+    const billingForm = document.getElementById('billing-form');
+    if (paymentForm) {
+        paymentForm.reset();
+        console.log('Payment form reset');
+    }
+    if (billingForm) {
+        billingForm.reset();
+        console.log('Billing form reset');
+    }
+    
+    // Réactiver TOUS les boutons de l'application
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+        btn.style.opacity = '1';
+    });
+    
+    // Spécifiquement réactiver les boutons d'achat sur la page
+    const buyButtons = document.querySelectorAll('.bundle-cta');
+    buyButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+        btn.style.opacity = '1';
+    });
     
     // Remettre l'email par défaut
     const defaultEmail = '{{ app.user ? app.user.email : '' }}';
     if (defaultEmail) {
-        document.getElementById('email').value = defaultEmail;
+        const emailField = document.getElementById('email');
+        if (emailField) {
+            emailField.value = defaultEmail;
+            console.log('Email field reset to:', defaultEmail);
+        }
     }
     
     // Remettre l'adresse par défaut
     const defaultAddress = '{{ app.user ? app.user.address : '' }}';
     if (defaultAddress) {
-        document.getElementById('address').value = defaultAddress;
+        const addressField = document.getElementById('address');
+        if (addressField) {
+            addressField.value = defaultAddress;
+            console.log('Address field reset to:', defaultAddress);
+        }
     }
     
     // Nettoyer les erreurs
@@ -1199,8 +1502,102 @@ function resetModal() {
     
     // Reset Stripe Elements
     if (cardElement) {
-        cardElement.clear();
+        try {
+            console.log('Resetting Stripe Elements...');
+            cardElement.clear();
+            console.log('Stripe card element cleared');
+            
+            // Réactiver le champ au cas où il serait désactivé
+            const cardElementDiv = document.getElementById('card-element');
+            if (cardElementDiv) {
+                cardElementDiv.style.pointerEvents = 'auto';
+                cardElementDiv.style.opacity = '1';
+                cardElementDiv.classList.remove('StripeElement--disabled');
+            }
+            
+        } catch (e) {
+            console.warn('Erreur lors du reset de Stripe Elements:', e);
+            // En cas d'erreur, réinitialiser complètement
+            try {
+                if (cardElement && cardElement.unmount) {
+                    cardElement.unmount();
+                }
+                cardElement = null;
+                elements = null;
+                
+                // Réinitialiser après un délai
+                setTimeout(() => {
+                    initializeStripeElements();
+                }, 100);
+            } catch (resetError) {
+                console.error('Erreur lors de la réinitialisation forcée:', resetError);
+            }
+        }
     }
+    
+    // Nettoyer les éléments de chargement
+    const loadingElements = document.querySelectorAll('#paymentModal .loading, #paymentModal .spinner-border, .loading, .spinner-border');
+    loadingElements.forEach(el => {
+        el.classList.remove('loading');
+        if (el.classList.contains('spinner-border')) {
+            el.style.display = 'none';
+        }
+    });
+    
+    // Restaurer le footer original du modal
+    const footer = document.getElementById('modal-footer');
+    if (footer) {
+        footer.innerHTML = `
+            <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Annuler</button>
+            <button type="button" class="btn btn-outline-secondary" id="back-btn" onclick="previousStep()" style="display: none;">
+                <i class="fas fa-arrow-left me-1"></i>Retour
+            </button>
+            <button type="button" class="btn btn-primary" id="next-btn" onclick="nextStep()">
+                Continuer
+            </button>
+        `;
+        console.log('Footer restored');
+    }
+    
+    // Force l'affichage de l'étape 1
+    showStep(1);
+    updateFooter();
+    
+    console.log('Modal reset complete - current step:', currentStep);
+}
+
+function resetModalAndRetry() {
+    console.log('Reset modal and retry triggered');
+    
+    // Réactiver TOUS les boutons avant de reset
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+    });
+    
+    // Spécifiquement réactiver les boutons d'achat
+    const buyButtons = document.querySelectorAll('.bundle-cta');
+    buyButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+        btn.style.opacity = '1';
+    });
+    
+    // Reset complet du modal
+    resetModal();
+    
+    // Force l'affichage de l'étape 1
+    setTimeout(() => {
+        currentStep = 1;
+        showStep(1);
+        updateFooter();
+        console.log('Forced step 1 display after reset');
+    }, 50);
+    
+    console.log('Modal reset and retry complete');
 }
 </script>
 

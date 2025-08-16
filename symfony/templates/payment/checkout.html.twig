@@ -287,6 +287,38 @@ function createPaymentIntent() {
 }
 
 function goBackToPayment() {
+    console.log('Going back to payment step');
+    
+    // Réactiver tous les boutons
+    const allButtons = document.querySelectorAll('#paymentModal button');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+    });
+    
+    // Nettoyer les erreurs visuelles
+    const errorElements = document.querySelectorAll('#paymentModal .is-invalid');
+    errorElements.forEach(el => {
+        el.classList.remove('is-invalid');
+    });
+    
+    // Nettoyer les messages d'erreur
+    const errorMessages = document.querySelectorAll('#paymentModal .invalid-feedback');
+    errorMessages.forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+    });
+    
+    // Nettoyer les éléments de chargement
+    const loadingElements = document.querySelectorAll('#paymentModal .loading, #paymentModal .spinner-border');
+    loadingElements.forEach(el => {
+        el.classList.remove('loading');
+        if (el.classList.contains('spinner-border')) {
+            el.style.display = 'none';
+        }
+    });
+    
     showStep('step-payment');
 }
 
@@ -352,7 +384,26 @@ function simulate3DS() {
 }
 
 function showError(message) {
+    console.error('Payment error:', message);
     document.getElementById('error-message').textContent = message;
+    
+    // Réactiver tous les boutons qui pourraient être désactivés
+    const allButtons = document.querySelectorAll('#paymentModal button');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+    });
+    
+    // Nettoyer les classes de chargement
+    const loadingElements = document.querySelectorAll('#paymentModal .loading, #paymentModal .spinner-border');
+    loadingElements.forEach(el => {
+        el.classList.remove('loading');
+        if (el.classList.contains('spinner-border')) {
+            el.style.display = 'none';
+        }
+    });
+    
     showStep('step-error');
 }
 

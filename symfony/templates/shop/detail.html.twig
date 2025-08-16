@@ -303,6 +303,12 @@ function processPayment() {
     showStep(3);
     updateModalFooter();
 
+    // Désactiver les boutons pendant le traitement
+    const nextBtn = document.getElementById('next-step-btn');
+    const backBtn = document.getElementById('back-step-btn');
+    if (nextBtn) nextBtn.disabled = true;
+    if (backBtn) backBtn.disabled = true;
+
     // Préparer les données de paiement avec plus de validation
     const email = document.getElementById('email').value.trim();
     const jokeId = jokeData.id;
@@ -351,6 +357,11 @@ function processPayment() {
     .catch(error => {
         console.error('Erreur:', error);
         showError('Erreur lors de la création du paiement: ' + error.message);
+    })
+    .finally(() => {
+        // Réactiver les boutons dans tous les cas
+        if (nextBtn) nextBtn.disabled = false;
+        if (backBtn) backBtn.disabled = false;
     });
 }
 
@@ -391,9 +402,25 @@ function confirmPayment(orderId) {
 }
 
 function showError(message) {
+    console.error('Payment error:', message);
     document.getElementById('error-message').textContent = message;
     showStep(5);
     updateModalFooter();
+    
+    // Réactiver tous les boutons qui pourraient être désactivés
+    const buttons = document.querySelectorAll('#paymentModal button:disabled');
+    buttons.forEach(btn => {
+        btn.disabled = false;
+    });
+    
+    // Nettoyer les classes de chargement
+    const loadingElements = document.querySelectorAll('.loading, .spinner-border');
+    loadingElements.forEach(el => {
+        el.classList.remove('loading');
+        if (el.classList.contains('spinner-border')) {
+            el.style.display = 'none';
+        }
+    });
 }
 
 function updateModalFooter() {
@@ -427,6 +454,7 @@ function updateModalFooter() {
 }
 
 function resetPaymentModal() {
+    console.log('Resetting payment modal...');
     currentStep = 1;
     showStep(1);
     updateModalFooter();
@@ -436,6 +464,27 @@ function resetPaymentModal() {
     const billingForm = document.getElementById('billing-form');
     if (paymentForm) paymentForm.reset();
     if (billingForm) billingForm.reset();
+    
+    // Réactiver tous les boutons
+    const allButtons = document.querySelectorAll('#paymentModal button');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = 'auto';
+        btn.classList.remove('disabled');
+    });
+    
+    // Nettoyer les classes d'erreur
+    const errorElements = document.querySelectorAll('#paymentModal .is-invalid');
+    errorElements.forEach(el => {
+        el.classList.remove('is-invalid');
+    });
+    
+    // Nettoyer les messages d'erreur
+    const errorMessages = document.querySelectorAll('#paymentModal .invalid-feedback');
+    errorMessages.forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+    });
     
     // Remettre l'email utilisateur si connecté
     const emailField = document.getElementById('email');
@@ -448,6 +497,17 @@ function resetPaymentModal() {
     if (addressField && '{{ app.user ? app.user.address : '' }}') {
         addressField.value = '{{ app.user ? app.user.address : '' }}';
     }
+    
+    // Nettoyer les éléments de chargement
+    const loadingElements = document.querySelectorAll('#paymentModal .loading, #paymentModal .spinner-border');
+    loadingElements.forEach(el => {
+        el.classList.remove('loading');
+        if (el.classList.contains('spinner-border')) {
+            el.style.display = 'none';
+        }
+    });
+    
+    console.log('Payment modal reset complete');
 }
 
 // Formatage des champs

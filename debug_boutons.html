@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Debug - Boutons de Paiement</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1e1f22;
+            color: #dbdee1;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .debug-section {
+            background: #2b2d31;
+            border: 1px solid #3f4147;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .button {
+            background: #5865f2;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button:disabled {
+            background: #4752c4;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .error {
+            color: #ed4245;
+            background: rgba(237, 66, 69, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin: 5px 0;
+        }
+        
+        .success {
+            color: #57f287;
+            background: rgba(87, 242, 135, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin: 5px 0;
+        }
+        
+        #logs {
+            background: #0f0f0f;
+            color: #00ff00;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 6px;
+            border: 1px solid #3f4147;
+        }
+        
+        .step-indicator {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin: 5px;
+            background: #4752c4;
+            color: white;
+        }
+        
+        .step-indicator.active {
+            background: #57f287;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Debug - Boutons de Paiement après Erreur</h1>
+    
+    <div class="debug-section">
+        <h3>État actuel</h3>
+        <p>Page de test pour diagnostiquer le problème des boutons après erreur de paiement.</p>
+        <div>
+            <strong>URL de l'app :</strong> 
+            <a href="http://localhost:8080" target="_blank" style="color: #00b0ff;">http://localhost:8080</a>
+        </div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Instructions de test</h3>
+        <ol style="line-height: 1.8;">
+            <li>Ouvrir l'application dans un nouvel onglet</li>
+            <li>Ouvrir la Console des Développeurs (F12)</li>
+            <li>Cliquer sur un bouton "Acheter"</li>
+            <li>Utiliser une vraie carte (4111111111111111) pour provoquer l'erreur</li>
+            <li>Observer les logs dans la console</li>
+            <li>Tester le bouton "Réessayer"</li>
+            <li>Vérifier que les boutons "Acheter" fonctionnent toujours</li>
+        </ol>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Simulation locale</h3>
+        <p>Simulateur du comportement des boutons :</p>
+        
+        <div style="margin: 15px 0;">
+            <span class="step-indicator" id="step1">1</span>
+            <span class="step-indicator" id="step2">2</span>
+            <span class="step-indicator" id="step3">3</span>
+            <span class="step-indicator" id="step4">4</span>
+            <span class="step-indicator" id="step5">5</span>
+        </div>
+        
+        <button class="button" onclick="simulateOpenModal()">Simuler: Ouvrir Modal</button>
+        <button class="button" onclick="simulatePaymentError()">Simuler: Erreur de Paiement</button>
+        <button class="button" onclick="simulateRetry()" id="retry-btn" disabled>Simuler: Réessayer</button>
+        <button class="button" onclick="simulateBuyButton()" id="buy-btn">Simuler: Bouton Acheter</button>
+        
+        <div id="status" style="margin-top: 15px;"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Console de debug</h3>
+        <div id="logs"></div>
+        <button class="button" onclick="clearLogs()" style="margin-top: 10px;">Vider les logs</button>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Points de vérification</h3>
+        <div id="checklist">
+            <div>❌ Modal ouvert</div>
+            <div>❌ Erreur de paiement simulée</div>
+            <div>❌ Bouton "Réessayer" activé</div>
+            <div>❌ Bouton "Réessayer" fonctionnel</div>
+            <div>❌ Boutons "Acheter" fonctionnels</div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let logs = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            logs.push({ message: logMessage, type });
+            
+            updateLogsDisplay();
+            console.log(logMessage);
+        }
+        
+        function updateLogsDisplay() {
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML = logs.map(log => 
+                `<div style="color: ${log.type === 'error' ? '#ff6b6b' : log.type === 'success' ? '#51cf66' : '#00ff00'}">${log.message}</div>`
+            ).join('');
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+        
+        function updateStepIndicator(step) {
+            document.querySelectorAll('.step-indicator').forEach((el, index) => {
+                el.classList.toggle('active', index + 1 === step);
+            });
+            currentStep = step;
+        }
+        
+        function updateChecklist(item, status) {
+            const checklist = document.getElementById('checklist');
+            const items = {
+                'modal': 0,
+                'error': 1,
+                'retry_enabled': 2,
+                'retry_functional': 3,
+                'buy_functional': 4
+            };
+            
+            if (items[item] !== undefined) {
+                const div = checklist.children[items[item]];
+                div.innerHTML = (status ? '✅' : '❌') + div.innerHTML.substring(1);
+            }
+        }
+        
+        function simulateOpenModal() {
+            log('🚀 Ouverture du modal de paiement');
+            updateStepIndicator(1);
+            updateChecklist('modal', true);
+            document.getElementById('status').innerHTML = '<div class="success">Modal ouvert - Étape 1</div>';
+        }
+        
+        function simulatePaymentError() {
+            log('❌ Erreur de paiement simulée');
+            updateStepIndicator(5);
+            updateChecklist('error', true);
+            
+            // Simuler la désactivation des boutons (comme dans le vrai problème)
+            const retryBtn = document.getElementById('retry-btn');
+            const buyBtn = document.getElementById('buy-btn');
+            
+            // Activer le bouton réessayer
+            retryBtn.disabled = false;
+            updateChecklist('retry_enabled', true);
+            log('🔧 Bouton "Réessayer" activé');
+            
+            document.getElementById('status').innerHTML = '<div class="error">Erreur de paiement - Bouton "Réessayer" disponible</div>';
+        }
+        
+        function simulateRetry() {
+            log('🔄 Bouton "Réessayer" cliqué');
+            updateChecklist('retry_functional', true);
+            
+            // Simuler le reset du modal
+            setTimeout(() => {
+                log('🔧 Reset du modal en cours...');
+                updateStepIndicator(1);
+                
+                // Réactiver tous les boutons
+                document.getElementById('buy-btn').disabled = false;
+                document.getElementById('retry-btn').disabled = true;
+                
+                updateChecklist('buy_functional', true);
+                log('✅ Modal réinitialisé - Retour à l\'étape 1');
+                document.getElementById('status').innerHTML = '<div class="success">Modal réinitialisé - Tous les boutons fonctionnels</div>';
+            }, 500);
+        }
+        
+        function simulateBuyButton() {
+            if (document.getElementById('buy-btn').disabled) {
+                log('⚠️ Bouton "Acheter" désactivé - Problème détecté !', 'error');
+                updateChecklist('buy_functional', false);
+            } else {
+                log('✅ Bouton "Acheter" fonctionnel', 'success');
+                updateChecklist('buy_functional', true);
+                simulateOpenModal();
+            }
+        }
+        
+        function clearLogs() {
+            logs = [];
+            updateLogsDisplay();
+        }
+        
+        // Initialisation
+        log('🔧 Debug interface initialisée');
+        log('💡 Utiliser les boutons ci-dessus pour simuler le flux de paiement');
+    </script>
+</body>
+</html>

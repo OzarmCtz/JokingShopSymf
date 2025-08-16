@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Joke;
 use App\Entity\Order;
 use App\Entity\User;
+use App\Service\JokeEmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,8 +22,9 @@ class PaymentController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private StripeService $stripeService,
         private MailerInterface $mailer,
-        private StripeService $stripeService
+        private JokeEmailService $jokeEmailService
     ) {}
 
     #[Route('/create-intent', name: 'payment_create_intent', methods: ['POST'])]
@@ -109,7 +111,11 @@ class PaymentController extends AbstractController
             $order->setRegion($data['region'] ?? null);
             $order->setPostalCode($data['postal_code'] ?? null);
             $order->setCardHolderName($data['card_holder_name'] ?? null);
-            $order->setCardLast4($data['card_last4'] ?? null);
+
+            // Extraire les 4 derniers chiffres de la carte depuis Stripe
+            if (isset($paymentIntent->charges->data[0]->payment_method_details->card->last4)) {
+                $order->setCardLast4($paymentIntent->charges->data[0]->payment_method_details->card->last4);
+            }
 
             // Marquer comme payé
             $order->setStatus('paid');
@@ -118,27 +124,12 @@ class PaymentController extends AbstractController
             $this->entityManager->flush();
 
             // Envoyer l'email avec la blague
-            $this->sendJokeEmail($order);
+            $this->jokeEmailService->sendJokeEmail($order);
 
             return new JsonResponse(['success' => true]);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Erreur lors de la vérification du paiement: ' . $e->getMessage()], 500);
         }
-    }
-
-    private function sendJokeEmail(Order $order): void
-    {
-        $email = (new TemplatedEmail())
-            ->from(new Address('noreply@demo.fr', 'Boutique de Blagues'))
-            ->to($order->getEmail())
-            ->subject('Votre blague achetée : ' . $order->getJoke()->getTitle())
-            ->htmlTemplate('emails/joke_purchase.html.twig')
-            ->context([
-                'order' => $order,
-                'joke' => $order->getJoke(),
-            ]);
-
-        $this->mailer->send($email);
     }
 
     #[Route('/validate-card', name: 'payment_validate_card', methods: ['POST'])]

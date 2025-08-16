@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Order;
 use App\Form\RegistrationFormType;
 use App\Security\AppAuthenticator;
 use App\Security\EmailVerifier;
@@ -38,6 +39,24 @@ class RegistrationController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
+
+            // Associer les commandes existantes avec cet email à l'utilisateur
+            $existingOrders = $entityManager->getRepository(Order::class)->findBy([
+                'email' => $user->getEmail(),
+                'user' => null // Seulement les commandes sans utilisateur associé
+            ]);
+
+            foreach ($existingOrders as $order) {
+                $order->setUser($user);
+            }
+
+            if (!empty($existingOrders)) {
+                $entityManager->flush();
+                $this->addFlash('success', sprintf(
+                    'Votre compte a été créé ! %d commande(s) précédente(s) ont été associées à votre compte.',
+                    count($existingOrders)
+                ));
+            }
 
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation(

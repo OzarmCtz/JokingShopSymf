@@ -96,6 +96,95 @@
 
           <hr class="my-4">
 
+          <!-- Section des commandes -->
+          <div class="mb-4">
+            <h5 class="mb-3">
+              <i class="fas fa-shopping-bag me-2"></i>Mes commandes
+              <span class="badge bg-primary ms-2">{{ orders|length }}</span>
+            </h5>
+            
+            {% if orders is empty %}
+              <div class="text-center py-4">
+                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Aucune commande trouvée</p>
+                <a href="{{ path('app_home') }}" class="btn btn-primary">
+                  <i class="fas fa-shopping-cart me-2"></i>Commencer vos achats
+                </a>
+              </div>
+            {% else %}
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Commande</th>
+                      <th>Date</th>
+                      <th>Montant</th>
+                      <th>Statut</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for order in orders %}
+                      <tr>
+                        <td>
+                          <div class="fw-semibold">#{{ order.id }}</div>
+                          <div class="small text-muted">{{ order.email }}</div>
+                          {% if order.cardHolderName %}
+                            <div class="small text-muted">
+                              <i class="fas fa-credit-card me-1"></i>{{ order.cardHolderName }}
+                              {% if order.cardLast4 %}
+                                ****{{ order.cardLast4 }}
+                              {% endif %}
+                            </div>
+                          {% endif %}
+                        </td>
+                        <td>
+                          <div class="fw-semibold">{{ order.createdAt|date('d/m/Y') }}</div>
+                          <div class="small text-muted">{{ order.createdAt|date('H:i') }}</div>
+                        </td>
+                        <td>
+                          <span class="fw-semibold">{{ order.amount / 100 }}€</span>
+                        </td>
+                        <td>
+                          {% if order.status == 'paid' %}
+                            <span class="badge bg-success">
+                              <i class="fas fa-check-circle me-1"></i>Payée
+                            </span>
+                          {% elseif order.status == 'pending' %}
+                            <span class="badge bg-warning text-dark">
+                              <i class="fas fa-clock me-1"></i>En attente
+                            </span>
+                          {% elseif order.status == 'failed' %}
+                            <span class="badge bg-danger">
+                              <i class="fas fa-times-circle me-1"></i>Échec
+                            </span>
+                          {% else %}
+                            <span class="badge bg-secondary">{{ order.status }}</span>
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if order.status == 'paid' %}
+                            <form method="post" action="{{ path('app_account_resend_joke', {orderId: order.id}) }}" style="display: inline;">
+                              <input type="hidden" name="_token" value="{{ csrf_token('resend-joke-' ~ order.id) }}">
+                              <button type="submit" class="btn btn-sm btn-outline-primary" 
+                                      onclick="return confirm('Renvoyer la blague à votre adresse email ?')">
+                                <i class="fas fa-envelope me-1"></i>Renvoyer
+                              </button>
+                            </form>
+                          {% else %}
+                            <span class="text-muted small">—</span>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+          </div>
+
+          <hr class="my-4">
+
           <div class="d-flex flex-wrap gap-2">
             <a href="{{ path('app_account_edit') }}" class="btn btn-primary">
               <i class="fas fa-edit me-2"></i>Modifier mon profil
