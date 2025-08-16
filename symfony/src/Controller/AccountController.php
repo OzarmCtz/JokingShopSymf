@@ -8,7 +8,6 @@ use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
@@ -19,7 +18,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class AccountController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier) {}
+    public function __construct(
+        private EmailVerifier $emailVerifier
+    ) {}
     #[Route('/account', name: 'app_account')]
     public function index(): Response
     {
@@ -61,21 +62,19 @@ final class AccountController extends AbstractController
         ]);
     }
 
-    #[Route('/account/resend-verification', name: 'app_account_resend_verification', methods: ['POST'])]
-    public function resendVerificationEmail(Request $request): JsonResponse
+    #[Route('/account/resend-verification', name: 'app_account_resend_verification', methods: ['GET'])]
+    public function resendVerificationEmail(): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
         if ($user->isVerified()) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'Votre email est déjà vérifié.'
-            ], 400);
+            $this->addFlash('info', 'Votre email est déjà vérifié.');
+            return $this->redirectToRoute('app_account');
         }
 
         try {
-            // Envoyer l'email de vérification
+            // Envoyer l'email de vérification (même code que lors de l'inscription)
             $this->emailVerifier->sendEmailConfirmation(
                 'app_verify_email',
                 $user,
@@ -86,18 +85,11 @@ final class AccountController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Un nouvel email de vérification a été envoyé à votre adresse email.'
-            ]);
+            $this->addFlash('success', 'Un nouvel email de vérification a été envoyé à votre adresse email.');
         } catch (\Exception $e) {
-            // Log l'erreur pour debug
-            error_log('Erreur envoi email: ' . $e->getMessage());
-
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'Une erreur est survenue lors de l\'envoi de l\'email. Veuillez réessayer. Erreur: ' . $e->getMessage()
-            ], 500);
+            $this->addFlash('error', 'Une erreur est survenue lors de l\'envoi de l\'email. Veuillez réessayer.');
         }
+
+        return $this->redirectToRoute('app_account');
     }
 }

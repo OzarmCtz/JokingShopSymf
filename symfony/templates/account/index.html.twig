@@ -134,9 +134,9 @@
         <div id="modal-alert" class="alert" style="display: none;"></div>
         
         <div class="d-grid">
-          <button type="button" class="btn btn-primary" id="resendVerificationBtn">
+          <a href="{{ path('app_account_resend_verification') }}" class="btn btn-primary">
             <i class="fas fa-paper-plane me-2"></i>Renvoyer l'email de vérification
-          </button>
+          </a>
         </div>
       </div>
       <div class="modal-footer" style="border-top: 1px solid var(--line);">
@@ -146,60 +146,4 @@
   </div>
 </div>
 {% endif %}
-{% endblock %}
-
-{% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const resendBtn = document.getElementById('resendVerificationBtn');
-    const modalAlert = document.getElementById('modal-alert');
-    
-    if (resendBtn) {
-        resendBtn.addEventListener('click', function() {
-            // Désactiver le bouton et afficher un spinner
-            resendBtn.disabled = true;
-            resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
-            
-            // Cacher l'alerte précédente
-            modalAlert.style.display = 'none';
-            
-            // Envoyer la requête AJAX
-            fetch('{{ path("app_account_resend_verification") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Afficher le message de retour
-                modalAlert.className = data.success ? 'alert alert-success' : 'alert alert-danger';
-                modalAlert.textContent = data.message;
-                modalAlert.style.display = 'block';
-                
-                if (data.success) {
-                    // Changer le bouton en succès
-                    resendBtn.innerHTML = '<i class="fas fa-check me-2"></i>Email envoyé !';
-                    resendBtn.className = 'btn btn-success';
-                } else {
-                    // Réactiver le bouton en cas d'erreur
-                    resendBtn.disabled = false;
-                    resendBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Renvoyer l\'email de vérification';
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                modalAlert.className = 'alert alert-danger';
-                modalAlert.textContent = 'Une erreur est survenue. Veuillez réessayer.';
-                modalAlert.style.display = 'block';
-                
-                // Réactiver le bouton
-                resendBtn.disabled = false;
-                resendBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Renvoyer l\'email de vérification';
-            });
-        });
-    }
-});
-</script>
 {% endblock %}
