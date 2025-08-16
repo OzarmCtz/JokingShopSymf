@@ -15,7 +15,617 @@
         {% if joke.price %}
             <p class="h4">{{ joke.price }} €</p>
         {% endif %}
-        <a href="{{ path('cart_add', {id: joke.id}) }}" class="btn btn-success">Ajouter au panier</a>
+        <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#paymentModal" data-joke-id="{{ joke.id }}" data-joke-title="{{ joke.title }}" data-joke-price="{{ joke.price }}">
+            <i class="fas fa-credit-card me-2"></i>Acheter pour {{ joke.price }}€
+        </button>
     </div>
 </div>
+
+<!-- Modal de Paiement -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">
+                    <i class="fas fa-credit-card me-2"></i>Paiement sécurisé
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Étape 1: Informations de paiement -->
+                <div id="step-payment" class="payment-step">
+                    <h6 class="mb-3">💳 Informations de carte</h6>
+                    <form id="payment-form">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" value="{{ app.user ? app.user.email : '' }}" required>
+                                    <div class="invalid-feedback" id="email-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="card-holder-name" class="form-label">Nom sur la carte</label>
+                                    <input type="text" class="form-control" id="card-holder-name" required>
+                                    <div class="invalid-feedback" id="card-holder-name-error"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="card-number" class="form-label">Numéro de carte</label>
+                            <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                            <div class="invalid-feedback" id="card-number-error"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="expiry" class="form-label">MM/AA</label>
+                                    <input type="text" class="form-control" id="expiry" placeholder="12/25" maxlength="5" required>
+                                    <div class="invalid-feedback" id="expiry-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="cvc" class="form-label">CVC</label>
+                                    <input type="text" class="form-control" id="cvc" placeholder="123" maxlength="4" required>
+                                    <div class="invalid-feedback" id="cvc-error"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Étape 2: Adresse de facturation -->
+                <div id="step-billing" class="payment-step" style="display: none;">
+                    <h6 class="mb-3">📍 Adresse de facturation</h6>
+                    <form id="billing-form">
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Pays</label>
+                            <select class="form-select" id="country" required>
+                                <option value="FR" selected>France</option>
+                                <option value="BE">Belgique</option>
+                                <option value="CH">Suisse</option>
+                                <option value="CA">Canada</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Adresse</label>
+                            <input type="text" class="form-control" id="address" list="address-suggestions" value="{{ app.user ? app.user.address : '' }}" required>
+                            <datalist id="address-suggestions"></datalist>
+                            <div class="invalid-feedback" id="address-error"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">Ville</label>
+                                    <input type="text" class="form-control" id="city" required>
+                                    <div class="invalid-feedback" id="city-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="region" class="form-label">Région</label>
+                                    <input type="text" class="form-control" id="region">
+                                    <div class="invalid-feedback" id="region-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="postal-code" class="form-label">Code postal</label>
+                                    <input type="text" class="form-control" id="postal-code" required>
+                                    <div class="invalid-feedback" id="postal-code-error"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Étape 3: 3D Secure -->
+                <div id="step-3ds" class="payment-step" style="display: none;">
+                    <div class="text-center">
+                        <h6 class="mb-3">🔒 Vérification 3D Secure</h6>
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p>Vérification de votre paiement en cours...</p>
+                    </div>
+                </div>
+
+                <!-- Étape 4: Succès -->
+                <div id="step-success" class="payment-step" style="display: none;">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="text-success">Paiement réussi !</h5>
+                        <p>Votre blague va être envoyée par email dans quelques instants.</p>
+                        <div class="alert alert-info">
+                            <strong>Commande #<span id="order-number"></span></strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Étape Erreur -->
+                <div id="step-error" class="payment-step" style="display: none;">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-times-circle text-danger" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="text-danger">Erreur de paiement</h5>
+                        <p id="error-message">Une erreur est survenue lors du paiement.</p>
+                        <button type="button" class="btn btn-outline-primary" onclick="resetPaymentModal()">
+                            Réessayer
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-outline-secondary" id="back-step-btn" onclick="previousStep()" style="display: none;">
+                    <i class="fas fa-arrow-left me-1"></i>Retour
+                </button>
+                <button type="button" class="btn btn-primary" id="next-step-btn" onclick="nextStep()">
+                    Continuer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentStep = 1;
+let jokeData = {};
+
+// Fonctions de validation dynamique
+function clearError(fieldId) {
+    const field = document.getElementById(fieldId);
+    const errorDiv = document.getElementById(fieldId + '-error');
+    if (field) {
+        field.classList.remove('is-invalid');
+    }
+    if (errorDiv) {
+        errorDiv.textContent = '';
+    }
+}
+
+function showFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const errorDiv = document.getElementById(fieldId + '-error');
+    if (field) {
+        field.classList.add('is-invalid');
+    }
+    if (errorDiv) {
+        errorDiv.textContent = message;
+    }
+}
+
+function clearAllErrors() {
+    const errorFields = ['email', 'card-holder-name', 'card-number', 'expiry', 'cvc', 'address', 'city', 'postal-code'];
+    errorFields.forEach(fieldId => clearError(fieldId));
+}
+
+function openPaymentModal(jokeId, jokeTitle, jokePrice) {
+    jokeData = { id: jokeId, title: jokeTitle, price: jokePrice };
+    currentStep = 1;
+    showStep(1);
+    updateModalFooter();
+    document.getElementById('paymentModalLabel').innerHTML = 
+        `<i class="fas fa-credit-card me-2"></i>Acheter "${jokeTitle}" - ${jokePrice}€`;
+}
+
+// Écouter les clics sur les boutons d'achat
+document.addEventListener('DOMContentLoaded', function() {
+    const buyButton = document.querySelector('[data-bs-target="#paymentModal"]');
+    if (buyButton) {
+        buyButton.addEventListener('click', function() {
+            const jokeId = this.getAttribute('data-joke-id');
+            const jokeTitle = this.getAttribute('data-joke-title');
+            const jokePrice = this.getAttribute('data-joke-price');
+            openPaymentModal(jokeId, jokeTitle, jokePrice);
+        });
+    }
+});
+
+function showStep(step) {
+    // Masquer toutes les étapes
+    document.querySelectorAll('.payment-step').forEach(el => el.style.display = 'none');
+    
+    // Afficher l'étape courante
+    document.getElementById(`step-${getStepName(step)}`).style.display = 'block';
+    currentStep = step;
+}
+
+function getStepName(step) {
+    const steps = ['', 'payment', 'billing', '3ds', 'success', 'error'];
+    return steps[step] || 'payment';
+}
+
+function nextStep() {
+    if (currentStep === 1) {
+        // Valider les informations de carte
+        if (validateCardForm()) {
+            showStep(2);
+            updateModalFooter();
+        }
+    } else if (currentStep === 2) {
+        // Valider l'adresse et traiter le paiement
+        if (validateBillingForm()) {
+            processPayment();
+        }
+    }
+}
+
+function previousStep() {
+    if (currentStep === 2) {
+        showStep(1);
+        updateModalFooter();
+    }
+}
+
+function validateCardForm() {
+    const email = document.getElementById('email').value;
+    const cardNumber = document.getElementById('card-number').value;
+    const expiry = document.getElementById('expiry').value;
+    const cvc = document.getElementById('cvc').value;
+    const cardHolderName = document.getElementById('card-holder-name').value;
+
+    if (!email || !cardNumber || !expiry || !cvc || !cardHolderName) {
+        alert('Veuillez remplir tous les champs obligatoires.');
+        return false;
+    }
+
+    // Validation simple du numéro de carte (algorithme de Luhn)
+    const cleanCardNumber = cardNumber.replace(/\s/g, '');
+    if (!isValidCardNumber(cleanCardNumber)) {
+        alert('Numéro de carte invalide.');
+        return false;
+    }
+
+    return true;
+}
+
+function validateBillingForm() {
+    const country = document.getElementById('country').value;
+    const address = document.getElementById('address').value;
+    const city = document.getElementById('city').value;
+    const postalCode = document.getElementById('postal-code').value;
+
+    if (!country || !address || !city || !postalCode) {
+        alert('Veuillez remplir tous les champs obligatoires de l\'adresse.');
+        return false;
+    }
+
+    return true;
+}
+
+function processPayment() {
+    showStep(3);
+    updateModalFooter();
+
+    // Préparer les données de paiement avec plus de validation
+    const email = document.getElementById('email').value.trim();
+    const jokeId = jokeData.id;
+    
+    if (!email || !jokeId) {
+        showError('Informations de paiement incomplètes');
+        return;
+    }
+
+    const paymentData = {
+        joke_id: parseInt(jokeId),
+        email: email
+    };
+
+    console.log('Envoi des données de paiement:', paymentData);
+
+    // Créer le PaymentIntent
+    fetch('{{ path('payment_create_intent') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData)
+    })
+    .then(response => {
+        console.log('Réponse serveur status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Réponse serveur data:', data);
+        if (data.error) {
+            showError(data.error);
+            return;
+        }
+
+        if (!data.order_id) {
+            showError('Erreur: Aucun ID de commande reçu');
+            return;
+        }
+
+        // Simuler 3D Secure (2 secondes)
+        setTimeout(() => {
+            confirmPayment(data.order_id);
+        }, 2000);
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showError('Erreur lors de la création du paiement: ' + error.message);
+    });
+}
+
+function confirmPayment(orderId) {
+    const billingData = {
+        country: document.getElementById('country').value,
+        address: document.getElementById('address').value,
+        city: document.getElementById('city').value,
+        region: document.getElementById('region').value,
+        postal_code: document.getElementById('postal-code').value,
+        card_holder_name: document.getElementById('card-holder-name').value,
+        card_last4: document.getElementById('card-number').value.slice(-4)
+    };
+
+    fetch(`{{ path('payment_confirm', {orderId: '__ORDER_ID__'}) }}`.replace('__ORDER_ID__', orderId), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(billingData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            showError(data.error);
+            return;
+        }
+
+        // Succès !
+        document.getElementById('order-number').textContent = orderId;
+        showStep(4);
+        updateModalFooter();
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showError('Erreur lors de la confirmation du paiement.');
+    });
+}
+
+function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    showStep(5);
+    updateModalFooter();
+}
+
+function updateModalFooter() {
+    const footer = document.getElementById('modal-footer');
+    const nextBtn = document.getElementById('next-step-btn');
+    const backBtn = document.getElementById('back-step-btn');
+    
+    if (currentStep === 4 || currentStep === 5) {
+        // Succès ou erreur - masquer le footer normal
+        footer.innerHTML = currentStep === 4 ? 
+            '<button type="button" class="btn btn-success" data-bs-dismiss="modal">Fermer</button>' :
+            '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>' +
+            '<button type="button" class="btn btn-outline-primary" onclick="resetPaymentModal()">Réessayer</button>';
+    } else if (currentStep === 3) {
+        // 3D Secure - pas de boutons
+        footer.style.display = 'none';
+    } else {
+        // Étapes normales
+        footer.style.display = 'block';
+        
+        // Réafficher les boutons s'ils ont été masqués
+        if (nextBtn) {
+            nextBtn.style.display = 'inline-block';
+            nextBtn.textContent = currentStep === 1 ? 'Continuer' : 'Payer maintenant';
+        }
+        
+        if (backBtn) {
+            backBtn.style.display = currentStep === 2 ? 'inline-block' : 'none';
+        }
+    }
+}
+
+function resetPaymentModal() {
+    currentStep = 1;
+    showStep(1);
+    updateModalFooter();
+    
+    // Reset les formulaires
+    const paymentForm = document.getElementById('payment-form');
+    const billingForm = document.getElementById('billing-form');
+    if (paymentForm) paymentForm.reset();
+    if (billingForm) billingForm.reset();
+    
+    // Remettre l'email utilisateur si connecté
+    const emailField = document.getElementById('email');
+    if (emailField && '{{ app.user ? app.user.email : '' }}') {
+        emailField.value = '{{ app.user ? app.user.email : '' }}';
+    }
+    
+    // Remettre l'adresse utilisateur si elle existe
+    const addressField = document.getElementById('address');
+    if (addressField && '{{ app.user ? app.user.address : '' }}') {
+        addressField.value = '{{ app.user ? app.user.address : '' }}';
+    }
+}
+
+// Formatage des champs
+document.getElementById('card-number').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    let matches = value.match(/\d{4,16}/g);
+    let match = matches && matches[0] || '';
+    let parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+        parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length) {
+        e.target.value = parts.join(' ');
+    } else {
+        e.target.value = value;
+    }
+});
+
+document.getElementById('expiry').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    e.target.value = value;
+});
+
+document.getElementById('cvc').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+});
+
+// Algorithme de Luhn pour validation de carte
+function isValidCardNumber(cardNumber) {
+    if (!/^\d+$/.test(cardNumber)) return false;
+    
+    let sum = 0;
+    let isEven = false;
+    
+    for (let i = cardNumber.length - 1; i >= 0; i--) {
+        let digit = parseInt(cardNumber.charAt(i));
+        
+        if (isEven) {
+            digit *= 2;
+            if (digit > 9) {
+                digit -= 9;
+            }
+        }
+        
+        sum += digit;
+        isEven = !isEven;
+    }
+    
+    return sum % 10 === 0;
+}
+
+// API Adresse de l'État français
+function initAddressAPI() {
+    const addressInput = document.getElementById('address');
+    const datalist = document.getElementById('address-suggestions');
+    
+    if (!addressInput || !datalist) return;
+    
+    addressInput.addEventListener('input', function() {
+        const query = this.value;
+        if (query.length < 3) {
+            datalist.innerHTML = '';
+            return;
+        }
+        
+        fetch('https://api-adresse.data.gouv.fr/search/?limit=5&q=' + encodeURIComponent(query))
+            .then(response => response.json())
+            .then(data => {
+                datalist.innerHTML = '';
+                (data.features || []).forEach(feature => {
+                    const option = document.createElement('option');
+                    option.value = feature.properties.label;
+                    option.dataset.city = feature.properties.city || '';
+                    option.dataset.postcode = feature.properties.postcode || '';
+                    option.dataset.context = feature.properties.context || '';
+                    datalist.appendChild(option);
+                });
+            })
+            .catch(err => console.error('Erreur API Adresse:', err));
+    });
+    
+    // Auto-complétion des champs quand une adresse est sélectionnée
+    addressInput.addEventListener('change', function() {
+        const selectedOption = Array.from(datalist.options).find(option => option.value === this.value);
+        if (selectedOption) {
+            const cityField = document.getElementById('city');
+            const postalCodeField = document.getElementById('postal-code');
+            const regionField = document.getElementById('region');
+            
+            if (cityField && selectedOption.dataset.city) {
+                cityField.value = selectedOption.dataset.city;
+            }
+            if (postalCodeField && selectedOption.dataset.postcode) {
+                postalCodeField.value = selectedOption.dataset.postcode;
+            }
+            if (regionField && selectedOption.dataset.context) {
+                // Extraire la région du contexte (format: "75, Paris, Île-de-France")
+                const contextParts = selectedOption.dataset.context.split(', ');
+                if (contextParts.length >= 3) {
+                    regionField.value = contextParts[2];
+                }
+            }
+        }
+    });
+}
+
+// Initialiser l'API adresse quand le modal s'ouvre
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentModal = document.getElementById('paymentModal');
+    if (paymentModal) {
+        paymentModal.addEventListener('shown.bs.modal', function() {
+            initAddressAPI();
+        });
+    }
+});
+</script>
+
+<style>
+.payment-step {
+    min-height: 300px;
+}
+
+.modal-lg {
+    max-width: 600px;
+}
+
+#step-3ds .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Style des inputs identique à account/edit */
+#paymentModal .form-control {
+    background: #29292d !important;
+    border: 1px solid #3F4147 !important;
+    color: #DBDEE1 !important;
+}
+
+#paymentModal .form-control:focus {
+    background: #29292d !important;
+    border-color: #757302 !important;
+    color: #DBDEE1 !important;
+    box-shadow: 0 0 0 0.2rem rgba(117, 115, 2, 0.25) !important;
+}
+
+#paymentModal .form-control::placeholder {
+    color: #B5BAC1 !important;
+}
+
+#paymentModal .form-select {
+    background: #29292d !important;
+    border: 1px solid #3F4147 !important;
+    color: #DBDEE1 !important;
+}
+
+#paymentModal .form-select:focus {
+    background: #29292d !important;
+    border-color: #757302 !important;
+    color: #DBDEE1 !important;
+    box-shadow: 0 0 0 0.2rem rgba(117, 115, 2, 0.25) !important;
+}
+
+#paymentModal .form-label {
+    color: #DBDEE1 !important;
+}
+
+/* Style pour les erreurs */
+#paymentModal .form-control.is-invalid {
+    border-color: #dc3545 !important;
+    background: #29292d !important;
+}
+
+#paymentModal .invalid-feedback {
+    color: #dc3545 !important;
+    display: block;
+}
+</style>
 {% endblock %}

@@ -1,0 +1,322 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boutique - Blagues{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">
+        <i class="fas fa-store"></i> Boutique de Blagues
+    </h1>
+    
+    <div class="row">
+        {% for joke in jokes %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 joke-card">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ joke.title }}</h5>
+                        <p class="card-text flex-grow-1">{{ joke.content|nl2br }}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="text-primary">{{ joke.price }}€</strong>
+                                <button class="btn btn-primary" 
+                                        onclick="openPaymentModal({{ joke.id }}, '{{ joke.title|e('js') }}', {{ joke.price }})">
+                                    <i class="fas fa-shopping-cart me-1"></i>Acheter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal de Paiement Simple -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">
+                    <i class="fas fa-credit-card me-2"></i>Paiement sécurisé
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="payment-form">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" value="{{ app.user ? app.user.email : '' }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Informations de carte</label>
+                        <div id="card-element" class="form-control p-3" style="height: 40px;">
+                            <!-- Stripe Elements crée les champs ici -->
+                        </div>
+                        <div id="card-errors" role="alert" class="text-danger mt-2"></div>
+                    </div>
+                    
+                    <button id="submit" class="btn btn-primary" type="submit">
+                        <span id="button-text">Payer maintenant</span>
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </form>
+                
+                <div id="payment-result" class="mt-3 d-none">
+                    <div id="success-message" class="alert alert-success d-none">
+                        <i class="fas fa-check-circle me-2"></i>Paiement réussi !
+                    </div>
+                    <div id="error-message" class="alert alert-danger d-none">
+                        <i class="fas fa-exclamation-circle me-2"></i><span id="error-text"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Configuration Stripe
+const stripe = Stripe('{{ stripe_public_key }}');
+let elements, cardElement;
+
+// Initialiser Stripe Elements quand le modal s'ouvre
+document.getElementById('paymentModal').addEventListener('shown.bs.modal', function () {
+    if (!elements) {
+        // Créer Elements
+        elements = stripe.elements({
+            appearance: {
+                theme: 'stripe',
+                variables: {
+                    colorPrimary: '#0570de',
+                    colorBackground: '#ffffff',
+                    colorText: '#30313d',
+                    colorDanger: '#df1b41',
+                    fontFamily: 'system-ui, sans-serif',
+                    spacingUnit: '4px',
+                    borderRadius: '6px',
+                }
+            }
+        });
+
+        // Créer l'élément carte
+        cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                        color: '#aab7c4',
+                    },
+                },
+            },
+        });
+
+        // Monter l'élément
+        cardElement.mount('#card-element');
+
+        // Gérer les erreurs en temps réel
+        cardElement.on('change', ({error}) => {
+            const displayError = document.getElementById('card-errors');
+            if (error) {
+                displayError.textContent = error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+    }
+});
+
+// Fonction pour ouvrir le modal de paiement
+function openPaymentModal(jokeId, jokeTitle, price) {
+    console.log('Ouverture modal paiement:', {jokeId, jokeTitle, price});
+    
+    // Stocker les données
+    window.currentJoke = {
+        id: jokeId,
+        title: jokeTitle,
+        price: price
+    };
+    
+    // Mettre à jour le titre du modal
+    document.getElementById('paymentModalLabel').innerHTML = 
+        `<i class="fas fa-credit-card me-2"></i>Paiement pour "${jokeTitle}" - ${price}€`;
+    
+    // Ouvrir le modal
+    const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    modal.show();
+}
+
+// Gérer la soumission du formulaire
+document.getElementById('payment-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    const submitButton = document.getElementById('submit');
+    const buttonText = document.getElementById('button-text');
+    const spinner = document.getElementById('spinner');
+    
+    // Désactiver le bouton et afficher le spinner
+    submitButton.disabled = true;
+    buttonText.textContent = 'Traitement...';
+    spinner.classList.remove('d-none');
+    
+    try {
+        // 1. Créer le PaymentIntent côté serveur
+        const response = await fetch('{{ path('payment_create_intent') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                joke_id: window.currentJoke.id,
+                email: document.getElementById('email').value
+            })
+        });
+        
+        const data = await response.json();
+        console.log('Réponse serveur:', data);
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        // 2. Confirmer le paiement avec Stripe
+        const {error: stripeError} = await stripe.confirmCardPayment(data.client_secret, {
+            payment_method: {
+                card: cardElement,
+                billing_details: {
+                    email: document.getElementById('email').value,
+                }
+            }
+        });
+        
+        if (stripeError) {
+            throw new Error(stripeError.message);
+        }
+        
+        // 3. Paiement réussi !
+        showSuccess();
+        
+    } catch (error) {
+        console.error('Erreur paiement:', error);
+        showError(error.message);
+    } finally {
+        // Réactiver le bouton
+        submitButton.disabled = false;
+        buttonText.textContent = 'Payer maintenant';
+        spinner.classList.add('d-none');
+    }
+});
+
+function showSuccess() {
+    document.getElementById('payment-result').classList.remove('d-none');
+    document.getElementById('success-message').classList.remove('d-none');
+    document.getElementById('error-message').classList.add('d-none');
+    
+    // Fermer le modal après 3 secondes
+    setTimeout(() => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+        modal.hide();
+        
+        // Recharger la page pour mettre à jour l'état
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }, 3000);
+}
+
+function showError(message) {
+    document.getElementById('payment-result').classList.remove('d-none');
+    document.getElementById('error-message').classList.remove('d-none');
+    document.getElementById('success-message').classList.add('d-none');
+    document.getElementById('error-text').textContent = message;
+}
+
+// Réinitialiser le modal à la fermeture
+document.getElementById('paymentModal').addEventListener('hidden.bs.modal', function () {
+    // Réinitialiser les messages
+    document.getElementById('payment-result').classList.add('d-none');
+    document.getElementById('success-message').classList.add('d-none');
+    document.getElementById('error-message').classList.add('d-none');
+    
+    // Réinitialiser le formulaire
+    document.getElementById('payment-form').reset();
+    
+    // Vider les erreurs
+    document.getElementById('card-errors').textContent = '';
+});
+</script>
+
+<style>
+.joke-card {
+    background: #2b2d31;
+    border: 1px solid #3F4147;
+    transition: transform 0.2s;
+}
+
+.joke-card:hover {
+    transform: translateY(-2px);
+    border-color: #757302;
+}
+
+.card-title {
+    color: #DBDEE1;
+}
+
+.card-text {
+    color: #B5BAC1;
+}
+
+/* Style pour le modal */
+#paymentModal .modal-content {
+    background: #2b2d31;
+    border: 1px solid #3F4147;
+}
+
+#paymentModal .modal-header {
+    border-bottom-color: #3F4147;
+}
+
+#paymentModal .modal-title {
+    color: #DBDEE1;
+}
+
+#paymentModal .btn-close {
+    filter: invert(1);
+}
+
+#paymentModal .form-label {
+    color: #DBDEE1;
+}
+
+#paymentModal .form-control {
+    background: #29292d;
+    border: 1px solid #3F4147;
+    color: #DBDEE1;
+}
+
+#paymentModal .form-control:focus {
+    background: #29292d;
+    border-color: #757302;
+    color: #DBDEE1;
+    box-shadow: 0 0 0 0.2rem rgba(117, 115, 2, 0.25);
+}
+
+#paymentModal .form-control::placeholder {
+    color: #B5BAC1;
+}
+
+/* Style pour Stripe Elements */
+#card-element {
+    background: #29292d;
+    border: 1px solid #3F4147;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#card-element:focus-within {
+    border-color: #757302;
+    box-shadow: 0 0 0 0.2rem rgba(117, 115, 2, 0.25);
+}
+</style>
+{% endblock %}

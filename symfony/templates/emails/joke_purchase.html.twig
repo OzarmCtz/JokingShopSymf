@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Votre blague achetée</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #2c3e50; text-align: center;">🎉 Merci pour votre achat !</h1>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h2 style="color: #495057; margin-top: 0;">{{ joke.title }}</h2>
+            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #007bff;">
+                {{ joke.bodyText|nl2br }}
+            </div>
+        </div>
+        
+        <div style="background: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #495057;">Détails de votre commande</h3>
+            <p><strong>Email:</strong> {{ order.email }}</p>
+            <p><strong>Prix:</strong> {{ order.amount }}€</p>
+            <p><strong>Date:</strong> {{ order.paidAt|date('d/m/Y H:i') }}</p>
+            <p><strong>Numéro de commande:</strong> #{{ order.id }}</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <p style="color: #6c757d;">Merci d'avoir choisi notre boutique de blagues !</p>
+        </div>
+    </div>
+</body>
+</html>

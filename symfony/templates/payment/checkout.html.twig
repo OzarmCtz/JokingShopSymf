@@ -1,0 +1,382 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement - {{ joke.title }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-credit-card me-2"></i>Finaliser votre achat</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Résumé de votre commande</h5>
+                            <div class="border rounded p-3 mb-3">
+                                <h6>{{ joke.title }}</h6>
+                                <p class="text-muted mb-2">{{ joke.bodyText|length > 100 ? joke.bodyText|slice(0, 100) ~ '...' : joke.bodyText }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <span>Prix</span>
+                                    <strong>{{ joke.price }}€</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-primary btn-lg w-100" onclick="openPaymentModal()">
+                                <i class="fas fa-lock me-2"></i>Acheter pour {{ joke.price }}€
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de paiement -->
+<div class="modal fade" id="paymentModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">
+                    <i class="fas fa-credit-card me-2"></i>Paiement sécurisé
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Étape 1: Informations de paiement -->
+                <div id="step-payment" class="payment-step">
+                    <h6 class="mb-3">Informations de paiement</h6>
+                    <form id="payment-form">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="{{ userEmail }}" required>
+                            <small class="form-text text-muted">La blague sera envoyée à cette adresse email</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="card-number" class="form-label">Numéro de carte</label>
+                            <input type="text" class="form-control" id="card-number" 
+                                   placeholder="1234 5678 9012 3456" maxlength="19" required>
+                            <div class="invalid-feedback" id="card-error"></div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="expiry" class="form-label">Date d'expiration</label>
+                                <input type="text" class="form-control" id="expiry" 
+                                       placeholder="MM/YY" maxlength="5" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cvc" class="form-label">CVC</label>
+                                <input type="text" class="form-control" id="cvc" 
+                                       placeholder="123" maxlength="4" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 mt-3">
+                            <label for="card-name" class="form-label">Nom sur la carte</label>
+                            <input type="text" class="form-control" id="card-name" required>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary w-100" onclick="validateCardAndProceed()">
+                            Continuer
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Étape 2: Adresse de facturation -->
+                <div id="step-billing" class="payment-step" style="display: none;">
+                    <h6 class="mb-3">Adresse de facturation</h6>
+                    <form id="billing-form">
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Pays</label>
+                            <select class="form-select" id="country" required>
+                                <option value="">Sélectionnez un pays</option>
+                                <option value="FR">France</option>
+                                <option value="BE">Belgique</option>
+                                <option value="CH">Suisse</option>
+                                <option value="CA">Canada</option>
+                                <option value="US">États-Unis</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Adresse</label>
+                            <textarea class="form-control" id="address" rows="2" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">Ville</label>
+                                <input type="text" class="form-control" id="city" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="region" class="form-label">Région/État</label>
+                                <input type="text" class="form-control" id="region">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 mt-3">
+                            <label for="postal-code" class="form-label">Code postal</label>
+                            <input type="text" class="form-control" id="postal-code" required>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary" onclick="goBackToPayment()">
+                                Retour
+                            </button>
+                            <button type="button" class="btn btn-success flex-fill" onclick="processPayment()">
+                                <i class="fas fa-lock me-2"></i>Finaliser le paiement - {{ joke.price }}€
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Étape 3: 3D Secure (simulation) -->
+                <div id="step-3ds" class="payment-step" style="display: none;">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Vérification...</span>
+                        </div>
+                        <h6>Vérification 3D Secure</h6>
+                        <p class="text-muted">Veuillez confirmer votre identité auprès de votre banque...</p>
+                        <button type="button" class="btn btn-primary" onclick="simulate3DS()">
+                            Simuler la validation 3DS
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Étape 4: Succès -->
+                <div id="step-success" class="payment-step" style="display: none;">
+                    <div class="text-center">
+                        <div class="success-animation mb-3">
+                            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                        </div>
+                        <h4 class="text-success">Paiement réussi !</h4>
+                        <p class="mb-3">Votre blague a été envoyée par email à :</p>
+                        <div class="alert alert-success">
+                            <i class="fas fa-envelope me-2"></i>
+                            <span id="success-email"></span>
+                        </div>
+                        <p class="text-muted">Vérifiez votre boîte de réception et vos spams.</p>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                            Parfait !
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Étape 5: Erreur -->
+                <div id="step-error" class="payment-step" style="display: none;">
+                    <div class="text-center">
+                        <i class="fas fa-exclamation-triangle text-danger mb-3" style="font-size: 3rem;"></i>
+                        <h5 class="text-danger">Erreur de paiement</h5>
+                        <div class="alert alert-danger">
+                            <span id="error-message"></span>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="goBackToPayment()">
+                            Réessayer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.success-animation {
+    animation: successPulse 0.8s ease-in-out;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.payment-step {
+    min-height: 300px;
+}
+</style>
+
+<script>
+let currentOrderId = null;
+const jokeData = {
+    id: {{ joke.id }},
+    price: {{ joke.price }},
+    title: "{{ joke.title|e('js') }}"
+};
+
+function openPaymentModal() {
+    const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    modal.show();
+    showStep('step-payment');
+}
+
+function showStep(stepId) {
+    document.querySelectorAll('.payment-step').forEach(step => {
+        step.style.display = 'none';
+    });
+    document.getElementById(stepId).style.display = 'block';
+}
+
+function validateCardAndProceed() {
+    const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+    const email = document.getElementById('email').value;
+    
+    if (!email || !cardNumber) {
+        alert('Veuillez remplir tous les champs obligatoires');
+        return;
+    }
+    
+    // Valider la carte avec l'algorithme de Luhn
+    fetch('{{ path("payment_validate_card") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            card_number: cardNumber
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.valid) {
+            // Créer le payment intent
+            createPaymentIntent();
+        } else {
+            document.getElementById('card-number').classList.add('is-invalid');
+            document.getElementById('card-error').textContent = 'Numéro de carte invalide';
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showError('Erreur de validation de la carte');
+    });
+}
+
+function createPaymentIntent() {
+    const email = document.getElementById('email').value;
+    
+    fetch('{{ path("payment_create_intent") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            joke_id: jokeData.id,
+            email: email
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.client_secret) {
+            currentOrderId = data.order_id;
+            showStep('step-billing');
+        } else {
+            showError(data.error || 'Erreur lors de la création du paiement');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showError('Erreur de connexion');
+    });
+}
+
+function goBackToPayment() {
+    showStep('step-payment');
+}
+
+function processPayment() {
+    // Validation du formulaire de facturation
+    const requiredFields = ['country', 'address', 'city', 'postal-code'];
+    let isValid = true;
+    
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    if (!isValid) {
+        alert('Veuillez remplir tous les champs obligatoires');
+        return;
+    }
+    
+    // Simuler 3D Secure
+    showStep('step-3ds');
+}
+
+function simulate3DS() {
+    // Simuler un délai de 3D Secure
+    setTimeout(() => {
+        // Finaliser le paiement
+        const billingData = {
+            country: document.getElementById('country').value,
+            address: document.getElementById('address').value,
+            city: document.getElementById('city').value,
+            region: document.getElementById('region').value,
+            postal_code: document.getElementById('postal-code').value,
+            card_holder_name: document.getElementById('card-name').value,
+            card_last4: document.getElementById('card-number').value.slice(-4)
+        };
+        
+        fetch(`{{ path("payment_confirm", {orderId: "__ORDER_ID__"}) }}`.replace('__ORDER_ID__', currentOrderId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(billingData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('success-email').textContent = document.getElementById('email').value;
+                showStep('step-success');
+            } else {
+                showError('Erreur lors de la finalisation du paiement');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            showError('Erreur de connexion');
+        });
+    }, 2000);
+}
+
+function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    showStep('step-error');
+}
+
+// Formatage automatique des champs
+document.getElementById('card-number').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '');
+    let formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+    if (formattedValue.length > 19) {
+        formattedValue = formattedValue.substr(0, 19);
+    }
+    e.target.value = formattedValue;
+    e.target.classList.remove('is-invalid');
+});
+
+document.getElementById('expiry').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substr(0, 2) + '/' + value.substr(2, 2);
+    }
+    e.target.value = value;
+});
+
+document.getElementById('cvc').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+});
+</script>
+{% endblock %}

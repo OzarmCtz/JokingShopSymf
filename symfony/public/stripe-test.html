@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Stripe Elements</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        #card-element {
+            background: white;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        #card-errors {
+            color: #dc3545;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Stripe Elements</h1>
+    
+    <form id="payment-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" class="form-control" value="test@example.com" required>
+        
+        <label for="card-element">Carte de crédit:</label>
+        <div id="card-element">
+            <!-- Stripe Elements will create form elements here -->
+        </div>
+        <div id="card-errors" role="alert"></div>
+        
+        <button type="submit" class="btn">Tester la validation</button>
+    </form>
+    
+    <div id="debug-info" style="margin-top: 20px; padding: 10px; background: #e9ecef; border-radius: 4px;">
+        <h3>Debug Info:</h3>
+        <div id="debug-content">Chargement...</div>
+    </div>
+
+    <script>
+        console.log('🚀 Starting Stripe test...');
+        
+        // Utiliser la même clé que votre application
+        const STRIPE_PUBLIC_KEY = '{{ stripe_public_key }}';
+        
+        console.log('🔑 Stripe public key:', STRIPE_PUBLIC_KEY);
+        
+        // Si pas de clé depuis Twig, utiliser directement
+        const stripe = Stripe(STRIPE_PUBLIC_KEY || 'pk_test_51Rs33BRwhCZT8ZvYh5IHaStmnFzAdXbMGhvomhSixZggJWhDdxdOffki7HQOskBtm09DZgJ8ZmzB8KV8u6tD3m8V00dlvozOgR');
+        
+        const elements = stripe.elements();
+        
+        // Style simple
+        const style = {
+            base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                    color: '#aab7c4',
+                },
+            },
+            invalid: {
+                color: '#9e2146',
+            },
+        };
+
+        const cardElement = elements.create('card', {style: style});
+        cardElement.mount('#card-element');
+
+        cardElement.on('change', function(event) {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+                console.log('❌ Card error:', event.error.message);
+            } else {
+                displayError.textContent = '';
+                if (event.complete) {
+                    console.log('✅ Card is complete');
+                    document.getElementById('debug-content').innerHTML += '<div class="success">✅ Carte valide!</div>';
+                }
+            }
+        });
+
+        cardElement.on('ready', function() {
+            console.log('🎉 Stripe Elements ready!');
+            document.getElementById('debug-content').innerHTML = '<div class="success">✅ Stripe Elements chargé et prêt!</div>';
+        });
+
+        // Test form submit
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            console.log('📝 Form submitted');
+            
+            document.getElementById('debug-content').innerHTML += '<div>📝 Formulaire soumis - Stripe Elements fonctionne!</div>';
+        });
+        
+        // Debug info
+        setTimeout(() => {
+            const debugInfo = {
+                'Stripe loaded': typeof stripe !== 'undefined',
+                'Elements created': typeof elements !== 'undefined',
+                'Card element created': typeof cardElement !== 'undefined',
+                'Card element mounted': document.querySelector('#card-element iframe') !== null
+            };
+            
+            let debugHtml = '';
+            for (const [key, value] of Object.entries(debugInfo)) {
+                const icon = value ? '✅' : '❌';
+                debugHtml += `<div>${icon} ${key}: ${value}</div>`;
+            }
+            
+            document.getElementById('debug-content').innerHTML += debugHtml;
+        }, 1000);
+    </script>
+</body>
+</html>

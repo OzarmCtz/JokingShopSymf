@@ -8,7 +8,6 @@ use App\Repository\JokeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ShopController extends AbstractController
@@ -36,6 +35,7 @@ class ShopController extends AbstractController
             'currentCategory' => $categoryId,
             'minPrice' => $minPrice,
             'maxPrice' => $maxPrice,
+            'stripe_public_key' => $this->getParameter('stripe_public_key'),
         ]);
     }
 
@@ -48,42 +48,6 @@ class ShopController extends AbstractController
 
         return $this->render('shop/detail.html.twig', [
             'joke' => $joke,
-        ]);
-    }
-
-    #[Route('/cart/add/{id}', name: 'cart_add')]
-    public function addToCart(Joke $joke, SessionInterface $session): Response
-    {
-        $cart = $session->get('cart', []);
-        $id = $joke->getId();
-
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-        } else {
-            $cart[$id] = [
-                'title' => $joke->getTitle(),
-                'price' => (float) $joke->getPrice(),
-                'quantity' => 1,
-            ];
-        }
-
-        $session->set('cart', $cart);
-
-        return $this->redirectToRoute('shop_cart');
-    }
-
-    #[Route('/cart', name: 'shop_cart')]
-    public function cart(SessionInterface $session): Response
-    {
-        $cart = $session->get('cart', []);
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
-
-        return $this->render('shop/cart.html.twig', [
-            'cart' => $cart,
-            'total' => $total,
         ]);
     }
 }
