@@ -3,85 +3,7 @@
 {% block title %}Accueil{% endblock %}
 
 {% block stylesheets %}
-<style>
-:root{
-  --bg-primary:#130c03; --bg-media:#201c0e; --line:#3F4147;
-  --text:#DBDEE1; --muted:#B5BAC1; --bg-card:#322f21
-  --sort-btn-w: 180px;
-}
-
-/* libellé à gauche de la dropdown */
-.jk-sortbar{ justify-content:flex-start; }
-
-/* bouton : texte aligné à gauche, caret forcé à droite, pas d'effet click/focus */
-.jk-sort-toggle{
-  width: var(--sort-btn-w);
-  background: var(--bg-primary);
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: .45rem 2rem .45rem .75rem;
-  font-weight: 600;
-  text-align: left;
-  position: relative;
-  -webkit-tap-highlight-color: transparent;
-}
-.jk-sort-toggle::after{
-  filter: invert(1) opacity(.8);
-  position: absolute;
-  right: .6rem; top: 50%; transform: translateY(-50%);
-  margin-left: 0 !important;
-}
-.jk-sort-toggle:hover,
-.jk-sort-toggle:active{
-  background: var(--bg-primary);
-  color: var(--text);
-  border-color: var(--line);
-  box-shadow: none !important;
-  outline: none !important;
-}
-.jk-sort-toggle:focus,
-.jk-sort-toggle:focus-visible{
-  outline: none !important;
-  box-shadow: none !important;
-  background: var(--bg-primary);
-  color: var(--text);
-  border-color: var(--line);
-}
-
-/* menu */
-.jk-menu{
-  background: var(--bg-primary);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: .5rem;
-  min-width: var(--sort-btn-w);
-}
-.jk-menu .dropdown-item{
-  color: var(--text);
-  border-radius: 6px;
-  padding: .55rem .75rem;
-  display:flex; justify-content:space-between; align-items:center;
-  transition: background-color 0.2s ease;
-}
-.jk-menu .dropdown-item:hover{
-  background:#29292d;
-  color: var(--text);
-}
-.jk-menu .dropdown-item:active,
-.jk-menu .dropdown-item:focus{
-  background:#29292d;
-  color: var(--text);
-  outline:none !important;
-  box-shadow:none !important;
-}
-
-/* icône de l'option sélectionnée */
-.jk-check{ 
-  color: var(--muted); 
-  margin-left: 8px; /* Espace entre le nom et l'icône */
-}
-</style>
+ 
 {% endblock %}
 
 {% block body %}
@@ -186,20 +108,17 @@
 <!-- Modal de Paiement avec Stripe Elements -->
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content payment-modal">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">
-                    <i class="fas fa-credit-card me-2"></i>Finaliser l'achat
-                </h5>
-                <button type="button" class="btn-close" onclick="closePaymentModal()" aria-label="Close"></button>
+        <div class="modal-content">
+            <!-- Bannière en cover au top -->
+            <div class="payment-banner">
+                <img src="{{ asset('images/payment-banner.png') }}" alt="Bannière" class="banner-cover">
+                <button type="button" class="btn-close banner-close" onclick="closePaymentModal()" aria-label="Close"></button>
             </div>
+            
             <div class="modal-body">
                 <!-- Étape 1: Informations de paiement avec Stripe Elements -->
                 <div id="step-card" class="payment-step">
-                    <div class="step-header mb-4">
-                        <h6 class="step-title">💳 Informations de paiement</h6>
-                        <p class="step-subtitle text-muted">Paiement sécurisé par Stripe</p>
-                    </div>
+                  
                     
                     <form id="payment-form">
                         <div class="row">
@@ -347,13 +266,28 @@
             </div>
             
             <div class="modal-footer" id="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Annuler</button>
-                <button type="button" class="btn btn-outline-secondary" id="back-btn" onclick="previousStep()" style="display: none;">
-                    <i class="fas fa-arrow-left me-1"></i>Retour
-                </button>
-                <button type="button" class="btn btn-primary" id="next-btn" onclick="nextStep()">
-                    Continuer
-                </button>
+                <!-- Informations du produit -->
+                <div class="product-info d-flex align-items-center">
+                    <div class="product-details">
+                        <div class="product-title" id="footer-product-title">
+                            <i class="fas fa-laugh me-1"></i><span>Titre de la blague</span>
+                        </div>
+                        <div class="product-price" id="footer-product-price">
+                            <i class="fas fa-tag me-1"></i><span class="fw-bold text-success">0.99€</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Boutons d'action -->
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Annuler</button>
+                    <button type="button" class="btn btn-outline-secondary" id="back-btn" onclick="previousStep()" style="display: none;">
+                        <i class="fas fa-arrow-left me-1"></i>Retour
+                    </button>
+                    <button type="button" class="btn btn-primary" id="next-btn" onclick="nextStep()">
+                        Continuer
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -398,443 +332,7 @@
     </div>
 </div>
 
-<style>
-/* Modal Style Discord */
-.payment-modal {
-    background: var(--bg-primary) !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 12px !important;
-}
 
-.payment-modal .modal-header {
-    background: var(--bg-primary) !important;
-    border-bottom: 1px solid var(--line) !important;
-    border-radius: 12px 12px 0 0 !important;
-}
-
-.payment-modal .modal-title {
-    color: var(--text) !important;
-    font-weight: 600 !important;
-}
-
-.payment-modal .btn-close {
-    filter: invert(1) !important;
-}
-
-.payment-modal .modal-body {
-    background: var(--bg-primary) !important;
-    color: var(--text) !important;
-}
-
-.payment-modal .modal-footer {
-    background: var(--bg-primary) !important;
-    border-top: 1px solid var(--line) !important;
-    border-radius: 0 0 12px 12px !important;
-}
-
-/* Assurer que le modal est visible */
-#paymentModal {
-    z-index: 1055 !important;
-}
-
-#paymentModal.show {
-    display: block !important;
-}
-
-.modal-backdrop {
-    z-index: 1050 !important;
-}
-
-/* Étapes du paiement */
-.payment-step {
-    min-height: 300px;
-}
-
-.step-header {
-    text-align: center;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 1rem;
-}
-
-.step-title {
-    color: var(--text);
-    font-weight: 600;
-    margin: 0;
-}
-
-.step-subtitle {
-    color: var(--muted);
-    margin: 0;
-    font-size: 0.9rem;
-}
-
-/* Formulaires */
-.payment-modal .form-label {
-    color: var(--text);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.payment-modal .form-control,
-.payment-modal .form-select {
-    background: var(--bg-media);
-    border: 1px solid var(--line);
-    color: var(--text);
-    border-radius: 6px;
-    padding: 0.75rem;
-}
-
-.payment-modal .form-control:focus,
-.payment-modal .form-select:focus {
-    background: var(--bg-media);
-    border-color: #5865f2;
-    color: var(--text);
-    box-shadow: 0 0 0 0.2rem rgba(88, 101, 242, 0.25);
-}
-
-.payment-modal .form-control::placeholder {
-    color: var(--muted);
-}
-
-.payment-modal .form-control.is-invalid {
-    border-color: #ed4245;
-}
-
-.payment-modal .invalid-feedback {
-    color: #ed4245;
-    display: block;
-}
-
-/* Stripe Elements */
-.stripe-element {
-    background: var(--bg-media) !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 6px !important;
-    padding: 0.75rem !important;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
-    min-height: 50px !important;
-    position: relative !important;
-    z-index: 1 !important;
-}
-
-.stripe-element:focus-within {
-    border-color: #5865f2 !important;
-    box-shadow: 0 0 0 0.2rem rgba(88, 101, 242, 0.25) !important;
-}
-
-.stripe-element.StripeElement--invalid {
-    border-color: #ed4245 !important;
-}
-
-.stripe-element.StripeElement--complete {
-    border-color: #57f287 !important;
-}
-
-/* Fix pour les inputs Stripe */
-.StripeElement {
-    background: transparent !important;
-    color: var(--text) !important;
-}
-
-.StripeElement--focus {
-    outline: none !important;
-}
-
-.StripeElement iframe {
-    height: 50px !important;
-}
-
-/* Info de test */
-.payment-test-info {
-    background: rgba(87, 242, 135, 0.1);
-    border: 1px solid rgba(87, 242, 135, 0.2);
-    border-radius: 6px;
-    padding: 0.75rem;
-    margin-top: 1rem;
-}
-
-/* Animations */
-.success-animation {
-    animation: successPulse 0.8s ease-out;
-}
-
-.error-animation {
-    animation: errorShake 0.6s ease-out;
-}
-
-@keyframes successPulse {
-    0% { transform: scale(0); opacity: 0; }
-    50% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes errorShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
-}
-
-/* Détails du succès */
-.success-details .alert {
-    background: rgba(87, 242, 135, 0.1);
-    border: 1px solid rgba(87, 242, 135, 0.2);
-    color: var(--text);
-}
-
-.joke-preview {
-    background: var(--bg-media);
-    border-color: var(--line) !important;
-}
-
-/* Boutons */
-.payment-modal .btn-primary {
-    background: #5865f2;
-    border-color: #5865f2;
-}
-
-.payment-modal .btn-primary:hover {
-    background: #4752c4;
-    border-color: #4752c4;
-}
-
-.payment-modal .btn-primary:disabled {
-    background: #4752c4;
-    border-color: #4752c4;
-    opacity: 0.6;
-}
-
-.payment-modal .btn-secondary {
-    background: var(--bg-media);
-    border-color: var(--line);
-    color: var(--text);
-}
-
-.payment-modal .btn-outline-secondary {
-    border-color: var(--line);
-    color: var(--text);
-}
-
-.payment-modal .btn-outline-secondary:hover {
-    background: var(--bg-media);
-    border-color: var(--line);
-    color: var(--text);
-}
-
-/* Bouton style Discord */
-.bundle-cta {
-    border: none !important;
-    background: #5865f2 !important;
-    color: white !important;
-    border-radius: 6px !important;
-    padding: 0.5rem 1rem !important;
-    font-weight: 500 !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
-    text-decoration: none !important;
-}
-
-.bundle-cta:hover {
-    background: #4752c4 !important;
-    color: white !important;
-    text-decoration: none !important;
-}
-
-/* STYLES POUR LA MODAL DE DÉTAILS */
-.joke-detail-modal {
-    background: var(--bg-primary) !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-}
-
-.joke-detail-modal .modal-header {
-    position: absolute !important;
-    top: 16px !important;
-    right: 16px !important;
-    z-index: 10 !important;
-    background: none !important;
-    border: none !important;
-    padding: 0 !important;
-}
-
-.joke-detail-close {
-    background: rgba(0, 0, 0, 0.6) !important;
-    border-radius: 50% !important;
-    width: 32px !important;
-    height: 32px !important;
-    padding: 0 !important;
-    opacity: 1 !important;
-    filter: invert(1) !important;
-    transition: all 0.2s ease !important;
-}
-
-.joke-detail-close:hover {
-    background: rgba(0, 0, 0, 0.8) !important;
-    transform: scale(1.1) !important;
-}
-
-.joke-detail-container {
-    display: flex !important;
-    min-height: 400px !important;
-    max-height: 80vh !important;
-}
-
-/* Partie gauche - Informations */
-.joke-detail-info {
-    flex: 1 !important;
-    padding: 32px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    background: var(--bg-primary) !important;
-}
-
-.joke-detail-header {
-    margin-bottom: auto !important;
-}
-
-.joke-category {
-    display: inline-block !important;
-    background: rgba(88, 101, 242, 0.1) !important;
-    color: #5865f2 !important;
-    padding: 4px 12px !important;
-    border-radius: 16px !important;
-    font-size: 0.75rem !important;
-    font-weight: 600 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    margin-bottom: 16px !important;
-}
-
-.joke-title {
-    color: var(--text) !important;
-    font-size: 1.75rem !important;
-    font-weight: 700 !important;
-    margin: 0 0 16px 0 !important;
-    line-height: 1.3 !important;
-}
-
-.joke-description {
-    color: var(--muted) !important;
-    font-size: 1rem !important;
-    line-height: 1.6 !important;
-    margin: 0 !important;
-}
-
-.joke-detail-footer {
-    margin-top: 32px !important;
-    padding-top: 24px !important;
-    border-top: 1px solid var(--line) !important;
-}
-
-.joke-price-section {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 20px !important;
-}
-
-.joke-price-label {
-    color: var(--muted) !important;
-    font-size: 0.9rem !important;
-    font-weight: 500 !important;
-}
-
-.joke-price {
-    color: var(--text) !important;
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
-}
-
-.joke-buy-btn {
-    width: 100% !important;
-    background: #5865f2 !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 8px !important;
-    padding: 12px 24px !important;
-    font-size: 1rem !important;
-    font-weight: 600 !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.joke-buy-btn:hover {
-    background: #4752c4 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3) !important;
-}
-
-.joke-buy-btn:active {
-    transform: translateY(0) !important;
-}
-
-/* Partie droite - Image */
-.joke-detail-image {
-    flex: 1 !important;
-    background: var(--bg-media) !important;
-    position: relative !important;
-    overflow: hidden !important;
-}
-
-.joke-detail-image img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    object-position: center !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .joke-detail-container {
-        flex-direction: column !important;
-        max-height: 90vh !important;
-    }
-    
-    .joke-detail-info {
-        padding: 24px !important;
-    }
-    
-    .joke-detail-image {
-        min-height: 250px !important;
-        max-height: 300px !important;
-    }
-    
-    .joke-title {
-        font-size: 1.5rem !important;
-    }
-}
-
-/* Animation d'entrée */
-.joke-detail-modal .modal-content {
-    animation: jokeDetailSlideIn 0.3s ease-out !important;
-}
-
-@keyframes jokeDetailSlideIn {
-    from {
-        opacity: 0 !important;
-        transform: scale(0.9) translateY(20px) !important;
-    }
-    to {
-        opacity: 1 !important;
-        transform: scale(1) translateY(0) !important;
-    }
-}
-
-/* Curseur pointer pour les cards cliquables */
-.card-bundle {
-    cursor: pointer !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.card-bundle:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,.5) !important;
-}
-</style>
 
 <!-- Charger Stripe.js -->
 <script src="https://js.stripe.com/v3/"></script>
@@ -884,6 +382,22 @@ function openPaymentModal(jokeId, jokeTitle, jokePrice) {
     const modalLabel = document.getElementById('paymentModalLabel');
     if (modalLabel) {
         modalLabel.innerHTML = `<i class="fas fa-credit-card me-2"></i>Acheter "${jokeTitle}" - €${jokePrice}`;
+    }
+    
+    // Mettre à jour les informations du produit dans le footer
+    const footerTitle = document.getElementById('footer-product-title');
+    const footerPrice = document.getElementById('footer-product-price');
+    
+    console.log('Updating footer info:', footerTitle, footerPrice);
+    
+    if (footerTitle) {
+        footerTitle.innerHTML = `<i class="fas fa-laugh me-1"></i><span>${jokeTitle}</span>`;
+        console.log('Updated footer title:', jokeTitle);
+    }
+    
+    if (footerPrice) {
+        footerPrice.innerHTML = `<i class="fas fa-tag me-1"></i><span class="fw-bold text-success">${jokePrice}€</span>`;
+        console.log('Updated footer price:', jokePrice);
     }
     
     // Réinitialiser le modal

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="120" viewBox="0 0 500 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dégradé de fond inspiré de Discord -->
+  <defs>
+    <linearGradient id="discordGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7289da;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#99aab5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2c2f33;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Étoiles brillantes -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Fond principal -->
+  <rect width="500" height="120" fill="url(#discordGradient)" rx="8"/>
+  
+  <!-- Motifs décoratifs -->
+  <circle cx="450" cy="20" r="3" fill="#ffffff" opacity="0.3"/>
+  <circle cx="470" cy="35" r="2" fill="#ffffff" opacity="0.5"/>
+  <circle cx="480" cy="50" r="1.5" fill="#ffffff" opacity="0.7"/>
+  
+  <!-- Étoiles brillantes -->
+  <g filter="url(#glow)">
+    <polygon points="60,25 62,30 67,30 63,33 65,38 60,35 55,38 57,33 53,30 58,30" fill="#ffffff" opacity="0.8"/>
+    <polygon points="420,70 422,75 427,75 423,78 425,83 420,80 415,83 417,78 413,75 418,75" fill="#ffffff" opacity="0.6"/>
+    <polygon points="35,80 37,85 42,85 38,88 40,93 35,90 30,93 32,88 28,85 33,85" fill="#ffffff" opacity="0.7"/>
+  </g>
+  
+  <!-- Personnage fantôme/mascotte (inspiré du style Discord) -->
+  <g transform="translate(350, 30)">
+    <!-- Corps du fantôme -->
+    <ellipse cx="30" cy="50" rx="25" ry="35" fill="#ffffff" opacity="0.9"/>
+    <rect x="5" y="50" width="50" height="35" fill="#ffffff" opacity="0.9"/>
+    
+    <!-- Queue du fantôme (ondulations) -->
+    <path d="M 5 85 Q 15 90 25 85 Q 35 80 45 85 Q 55 90 55 85" stroke="none" fill="#ffffff" opacity="0.9"/>
+    
+    <!-- Yeux -->
+    <circle cx="22" cy="40" r="3" fill="#2c2f33"/>
+    <circle cx="38" cy="40" r="3" fill="#2c2f33"/>
+    
+    <!-- Sourire -->
+    <path d="M 20 52 Q 30 60 40 52" stroke="#2c2f33" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Bordures décoratives -->
+  <rect x="2" y="2" width="496" height="116" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3" rx="6"/>
+  <rect x="1" y="1" width="498" height="118" fill="none" stroke="#7289da" stroke-width="1" opacity="0.5" rx="7"/>
+</svg>
