@@ -59,10 +59,13 @@ final class AccountController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $currentPassword = $form->get('currentPassword')->getData();
-            if ($currentPassword && !$userPasswordHasher->isPasswordValid($user, $currentPassword)) {
+            $newPassword = $form->get('newPassword')->getData();
+
+            // Si un nouveau mot de passe est fourni, vérifier le mot de passe actuel
+            if ($newPassword && $currentPassword && !$userPasswordHasher->isPasswordValid($user, $currentPassword)) {
                 $form->get('currentPassword')->addError(new FormError('Le mot de passe actuel est incorrect.'));
             } else {
-                $newPassword = $form->get('plainPassword')->getData();
+                // Mettre à jour le mot de passe si fourni
                 if ($newPassword) {
                     $user->setPassword($userPasswordHasher->hashPassword($user, $newPassword));
                 }

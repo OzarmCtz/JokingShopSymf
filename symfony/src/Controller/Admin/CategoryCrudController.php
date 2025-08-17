@@ -12,6 +12,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -31,6 +33,23 @@ class CategoryCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Catégories')
             ->setSearchFields(['name', 'slug'])
             ->setDefaultSort(['created_at' => 'DESC']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
+                return $action->displayIf(function ($entity) {
+                    // Vérifier s'il y a des blagues liées à cette catégorie
+                    return $entity->getJokes()->isEmpty();
+                });
+            })
+            ->update(Crud::PAGE_DETAIL, Action::DELETE, function (Action $action) {
+                return $action->displayIf(function ($entity) {
+                    return $entity->getJokes()->isEmpty();
+                });
+            });
     }
 
     public function configureFields(string $pageName): iterable

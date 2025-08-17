@@ -94,97 +94,6 @@
             </div>
           </div>
 
-          <hr class="my-4">
-
-          <!-- Section des commandes -->
-          <div class="mb-4">
-            <h5 class="mb-3">
-              <i class="fas fa-shopping-bag me-2"></i>Mes commandes
-              <span class="badge bg-primary ms-2">{{ orders|length }}</span>
-            </h5>
-            
-            {% if orders is empty %}
-              <div class="text-center py-4">
-                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                <p class="text-muted">Aucune commande trouvée</p>
-                <a href="{{ path('app_home') }}" class="btn btn-primary">
-                  <i class="fas fa-shopping-cart me-2"></i>Commencer vos achats
-                </a>
-              </div>
-            {% else %}
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead class="table-light">
-                    <tr>
-                      <th>Commande</th>
-                      <th>Date</th>
-                      <th>Montant</th>
-                      <th>Statut</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for order in orders %}
-                      <tr>
-                        <td>
-                          <div class="fw-semibold">#{{ order.id }}</div>
-                          <div class="small text-muted">{{ order.email }}</div>
-                          {% if order.cardHolderName %}
-                            <div class="small text-muted">
-                              <i class="fas fa-credit-card me-1"></i>{{ order.cardHolderName }}
-                              {% if order.cardLast4 %}
-                                ****{{ order.cardLast4 }}
-                              {% endif %}
-                            </div>
-                          {% endif %}
-                        </td>
-                        <td>
-                          <div class="fw-semibold">{{ order.createdAt|date('d/m/Y') }}</div>
-                          <div class="small text-muted">{{ order.createdAt|date('H:i') }}</div>
-                        </td>
-                        <td>
-                          <span class="fw-semibold">{{ order.amount / 100 }}€</span>
-                        </td>
-                        <td>
-                          {% if order.status == 'paid' %}
-                            <span class="badge bg-success">
-                              <i class="fas fa-check-circle me-1"></i>Payée
-                            </span>
-                          {% elseif order.status == 'pending' %}
-                            <span class="badge bg-warning text-dark">
-                              <i class="fas fa-clock me-1"></i>En attente
-                            </span>
-                          {% elseif order.status == 'failed' %}
-                            <span class="badge bg-danger">
-                              <i class="fas fa-times-circle me-1"></i>Échec
-                            </span>
-                          {% else %}
-                            <span class="badge bg-secondary">{{ order.status }}</span>
-                          {% endif %}
-                        </td>
-                        <td>
-                          {% if order.status == 'paid' %}
-                            <form method="post" action="{{ path('app_account_resend_joke', {orderId: order.id}) }}" style="display: inline;">
-                              <input type="hidden" name="_token" value="{{ csrf_token('resend-joke-' ~ order.id) }}">
-                              <button type="submit" class="btn btn-sm btn-outline-primary" 
-                                      onclick="return confirm('Renvoyer la blague à votre adresse email ?')">
-                                <i class="fas fa-envelope me-1"></i>Renvoyer
-                              </button>
-                            </form>
-                          {% else %}
-                            <span class="text-muted small">—</span>
-                          {% endif %}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            {% endif %}
-          </div>
-
-          <hr class="my-4">
-
           <div class="d-flex flex-wrap gap-2">
             <a href="{{ path('app_account_edit') }}" class="btn btn-primary">
               <i class="fas fa-edit me-2"></i>Modifier mon profil
@@ -193,6 +102,110 @@
               <i class="fas fa-sign-out-alt me-2"></i>Se déconnecter
             </a>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section des commandes séparée -->
+  {% set paidOrders = orders|filter(o => o.status == 'paid') %}
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4" style="background-color: var(--bs-body-bg, #f56714ff);">
+        <!-- Header -->
+        <div class="card-header border-0 p-4" style="background-color: var(--bs-body-bg, #f8faf8ff);">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+                <i class="fas fa-shopping-bag"></i>
+              </div>
+              <div>
+                <h2 class="h4 mb-1">Mes commandes</h2>
+                <div class="text-muted small">
+                  {{ paidOrders|length }} commande(s) effectuée(s)
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <span class="badge bg-primary">{{ paidOrders|length }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body p-4">
+          {% if paidOrders is empty %}
+            <div class="text-center py-4">
+              <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+              <p class="text-muted">Aucune commande effectuée</p>
+              <a href="{{ path('shop_home') }}" class="btn btn-primary">
+                <i class="fas fa-shopping-cart me-2"></i>Commencer vos achats
+              </a>
+            </div>
+          {% else %}
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Commande</th>
+                    <th>Article</th>
+                    <th>Date</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in paidOrders %}
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">#{{ order.id }}</div>
+                        <div class="small text-muted">{{ order.email }}</div>
+                        {% if order.cardHolderName %}
+                          <div class="small text-muted">
+                            <i class="fas fa-credit-card me-1"></i>{{ order.cardHolderName }}
+                            {% if order.cardLast4 %}
+                              ****{{ order.cardLast4 }}
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <div class="fw-semibold">{{ order.joke.title }}</div>
+                        <div class="small text-muted">
+                          <i class="fas fa-laugh me-1"></i>Blague
+                        </div>
+                      </td>
+                      <td>
+                        <div class="fw-semibold">{{ order.createdAt|date('d/m/Y') }}</div>
+                        <div class="small text-muted">{{ order.createdAt|date('H:i') }}</div>
+                      </td>
+                      <td>
+                        <span class="fw-semibold">{{ order.amount / 100 }}€</span>
+                      </td>
+                      <td>
+                        <span class="badge bg-success">
+                          <i class="fas fa-check-circle me-1"></i>Payée
+                        </span>
+                      </td>
+                      <td>
+                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#resendJokeModal"
+                                data-order-id="{{ order.id }}"
+                                data-joke-title="{{ order.joke.title }}"
+                                data-email="{{ order.email }}"
+                                data-csrf-token="{{ csrf_token('resend-joke-' ~ order.id) }}">
+                          <i class="fas fa-envelope me-1"></i>Renvoyer
+                        </button>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -235,4 +248,67 @@
   </div>
 </div>
 {% endif %}
+
+<!-- Modal pour renvoyer une blague -->
+<div class="modal fade" id="resendJokeModal" tabindex="-1" aria-labelledby="resendJokeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resendJokeModalLabel">
+          <i class="fas fa-envelope me-2"></i>Renvoyer la blague
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-3">
+          <i class="fas fa-laugh fa-3x text-primary mb-3"></i>
+          <h6>Confirmation de renvoi</h6>
+          <p class="text-muted mb-3">
+            Vous êtes sur le point de renvoyer la blague :
+          </p>
+          <div class="alert alert-info">
+            <strong id="jokeTitle"></strong>
+          </div>
+          <p class="text-muted">
+            À l'adresse email : <strong id="emailAddress"></strong>
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <form id="resendJokeForm" method="post" style="display: inline;">
+          <input type="hidden" name="_token" id="csrfToken">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane me-2"></i>Confirmer l'envoi
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const resendJokeModal = document.getElementById('resendJokeModal');
+  
+  if (resendJokeModal) {
+    resendJokeModal.addEventListener('show.bs.modal', function(event) {
+      const button = event.relatedTarget;
+      const orderId = button.getAttribute('data-order-id');
+      const jokeTitle = button.getAttribute('data-joke-title');
+      const email = button.getAttribute('data-email');
+      const csrfToken = button.getAttribute('data-csrf-token');
+      
+      // Mettre à jour le contenu du modal
+      document.getElementById('jokeTitle').textContent = jokeTitle;
+      document.getElementById('emailAddress').textContent = email;
+      document.getElementById('csrfToken').value = csrfToken;
+      
+      // Mettre à jour l'action du formulaire
+      const form = document.getElementById('resendJokeForm');
+      form.action = '{{ path('app_account_resend_joke', {orderId: '__ORDER_ID__'}) }}'.replace('__ORDER_ID__', orderId);
+    });
+  }
+});
+</script>
 {% endblock %}

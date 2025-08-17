@@ -5,8 +5,8 @@
 {% block stylesheets %}
 <style>
 :root{
-  --bg-primary:#2B2D31; --bg-media:#1E1F22; --line:#3F4147;
-  --text:#DBDEE1; --muted:#B5BAC1;
+  --bg-primary:#130c03; --bg-media:#201c0e; --line:#3F4147;
+  --text:#DBDEE1; --muted:#B5BAC1; --bg-card:#322f21
   --sort-btn-w: 180px;
 }
 
@@ -156,10 +156,10 @@
 
 <div class="cards-grid">
   {% for joke in jokes %}
-    <div class="card card-bundle">
+    <div class="card card-bundle" onclick="openJokeDetailModal({{ joke.id }}, '{{ joke.title|e('js') }}', '{{ joke.bodyText|e('js')|raw }}', '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', {{ joke.price }}, '{{ joke.category ? joke.category.name : 'Non catégorisé' }}')">
       <div class="bundle-media">
-        {% if joke.photo %}
-          <img src="{{ asset('uploads/jokes/' ~ joke.photo) }}" alt="{{ joke.title }}">
+        {% if joke.previewImage %}
+          <img src="{{ asset('uploads/jokes/' ~ joke.previewImage) }}" alt="{{ joke.title }}">
         {% else %}
           <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder">
         {% endif %}
@@ -169,7 +169,7 @@
         <div class="bundle-action-slot">
           <span class="bundle-price">€{{ joke.price|number_format(2, ',', ' ') }}</span>
           <button class="bundle-cta" 
-                  onclick="openPaymentModal({{ joke.id }}, '{{ joke.title|e('js') }}', {{ joke.price }})"
+                  onclick="event.stopPropagation(); openPaymentModal({{ joke.id }}, '{{ joke.title|e('js') }}', {{ joke.price }})"
                   aria-label="Acheter pour {{ joke.price|number_format(2, ',', ' ') }} euros">
              Acheter pour €{{ joke.price|number_format(2, ',', ' ') }}
           </button>
@@ -354,6 +354,45 @@
                 <button type="button" class="btn btn-primary" id="next-btn" onclick="nextStep()">
                     Continuer
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Détails de la Blague -->
+<div class="modal fade" id="jokeDetailModal" tabindex="-1" aria-labelledby="jokeDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content joke-detail-modal">
+            <div class="modal-header border-0 p-0">
+                <button type="button" class="btn-close joke-detail-close" onclick="closeJokeDetailModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="joke-detail-container">
+                    <!-- Partie gauche: Informations -->
+                    <div class="joke-detail-info">
+                        <div class="joke-detail-header">
+                            <span class="joke-category" id="detail-category">Catégorie</span>
+                            <h3 class="joke-title" id="detail-title">Titre de la blague</h3>
+                            <p class="joke-description" id="detail-description">Description de la blague...</p>
+                        </div>
+                        
+                        <div class="joke-detail-footer">
+                            <div class="joke-price-section">
+                                <span class="joke-price-label">Prix</span>
+                                <span class="joke-price" id="detail-price">€9.99</span>
+                            </div>
+                            <button class="joke-buy-btn" id="detail-buy-btn" onclick="">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                Acheter maintenant
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Partie droite: Image -->
+                    <div class="joke-detail-image">
+                        <img id="detail-image" src="" alt="" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -599,6 +638,202 @@
     color: white !important;
     text-decoration: none !important;
 }
+
+/* STYLES POUR LA MODAL DE DÉTAILS */
+.joke-detail-modal {
+    background: var(--bg-primary) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+.joke-detail-modal .modal-header {
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px !important;
+    z-index: 10 !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.joke-detail-close {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    filter: invert(1) !important;
+    transition: all 0.2s ease !important;
+}
+
+.joke-detail-close:hover {
+    background: rgba(0, 0, 0, 0.8) !important;
+    transform: scale(1.1) !important;
+}
+
+.joke-detail-container {
+    display: flex !important;
+    min-height: 400px !important;
+    max-height: 80vh !important;
+}
+
+/* Partie gauche - Informations */
+.joke-detail-info {
+    flex: 1 !important;
+    padding: 32px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    background: var(--bg-primary) !important;
+}
+
+.joke-detail-header {
+    margin-bottom: auto !important;
+}
+
+.joke-category {
+    display: inline-block !important;
+    background: rgba(88, 101, 242, 0.1) !important;
+    color: #5865f2 !important;
+    padding: 4px 12px !important;
+    border-radius: 16px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 16px !important;
+}
+
+.joke-title {
+    color: var(--text) !important;
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    margin: 0 0 16px 0 !important;
+    line-height: 1.3 !important;
+}
+
+.joke-description {
+    color: var(--muted) !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    margin: 0 !important;
+}
+
+.joke-detail-footer {
+    margin-top: 32px !important;
+    padding-top: 24px !important;
+    border-top: 1px solid var(--line) !important;
+}
+
+.joke-price-section {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+}
+
+.joke-price-label {
+    color: var(--muted) !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+}
+
+.joke-price {
+    color: var(--text) !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+.joke-buy-btn {
+    width: 100% !important;
+    background: #5865f2 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.joke-buy-btn:hover {
+    background: #4752c4 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3) !important;
+}
+
+.joke-buy-btn:active {
+    transform: translateY(0) !important;
+}
+
+/* Partie droite - Image */
+.joke-detail-image {
+    flex: 1 !important;
+    background: var(--bg-media) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.joke-detail-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .joke-detail-container {
+        flex-direction: column !important;
+        max-height: 90vh !important;
+    }
+    
+    .joke-detail-info {
+        padding: 24px !important;
+    }
+    
+    .joke-detail-image {
+        min-height: 250px !important;
+        max-height: 300px !important;
+    }
+    
+    .joke-title {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Animation d'entrée */
+.joke-detail-modal .modal-content {
+    animation: jokeDetailSlideIn 0.3s ease-out !important;
+}
+
+@keyframes jokeDetailSlideIn {
+    from {
+        opacity: 0 !important;
+        transform: scale(0.9) translateY(20px) !important;
+    }
+    to {
+        opacity: 1 !important;
+        transform: scale(1) translateY(0) !important;
+    }
+}
+
+/* Curseur pointer pour les cards cliquables */
+.card-bundle {
+    cursor: pointer !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.card-bundle:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,.5) !important;
+}
 </style>
 
 <!-- Charger Stripe.js -->
@@ -612,6 +847,19 @@ let stripeInitialized = false;
 let modalOpenCount = 0;
 let currentStep = 1;
 let currentJoke = {};
+
+// Fonction d'initialisation pour nettoyer les styles des boutons au chargement
+function initializeButtonStyles() {
+    // Réinitialiser l'opacité des boutons bundle-cta pour que l'effet hover fonctionne
+    const buyButtons = document.querySelectorAll('.bundle-cta');
+    buyButtons.forEach(btn => {
+        btn.style.opacity = ''; // Supprime le style inline pour laisser le CSS prendre le contrôle
+    });
+    console.log('Button styles initialized - hover effects restored');
+}
+
+// Initialiser au chargement de la page
+document.addEventListener('DOMContentLoaded', initializeButtonStyles);
 
 // Fonction pour ouvrir le modal de paiement
 function openPaymentModal(jokeId, jokeTitle, jokePrice) {
@@ -759,8 +1007,8 @@ function closePaymentModal() {
 function enableAllButtons() {
     console.log('Enabling all buttons...');
     
-    // Réactiver TOUS les boutons de l'application
-    const allButtons = document.querySelectorAll('button');
+    // Réactiver TOUS les boutons de l'application (sauf bundle-cta pour préserver l'effet hover)
+    const allButtons = document.querySelectorAll('button:not(.bundle-cta)');
     allButtons.forEach(btn => {
         btn.disabled = false;
         btn.style.pointerEvents = 'auto';
@@ -768,13 +1016,13 @@ function enableAllButtons() {
         btn.style.opacity = '1';
     });
     
-    // Spécifiquement réactiver les boutons d'achat sur la page
+    // Spécifiquement réactiver les boutons d'achat SANS toucher à l'opacité (CSS hover)
     const buyButtons = document.querySelectorAll('.bundle-cta');
     buyButtons.forEach(btn => {
         btn.disabled = false;
         btn.style.pointerEvents = 'auto';
         btn.classList.remove('disabled');
-        btn.style.opacity = '1';
+        // Ne pas toucher à l'opacité pour préserver l'effet hover CSS
     });
     
     console.log('All buttons enabled');
@@ -1331,13 +1579,13 @@ function showError(message) {
         btn.classList.remove('disabled');
     });
     
-    // Spécifiquement réactiver les boutons d'achat sur la page
+    // Spécifiquement réactiver les boutons d'achat SANS toucher à l'opacité
     const buyButtons = document.querySelectorAll('.bundle-cta');
     buyButtons.forEach(btn => {
         btn.disabled = false;
         btn.style.pointerEvents = 'auto';
         btn.classList.remove('disabled');
-        btn.style.opacity = '1';
+        // Ne pas toucher à l'opacité pour préserver l'effet hover CSS
     });
     
     // Nettoyer les classes de chargement
@@ -1453,8 +1701,8 @@ function resetModal() {
         console.log('Billing form reset');
     }
     
-    // Réactiver TOUS les boutons de l'application
-    const allButtons = document.querySelectorAll('button');
+    // Réactiver TOUS les boutons de l'application (sauf bundle-cta pour préserver l'effet hover)
+    const allButtons = document.querySelectorAll('button:not(.bundle-cta)');
     allButtons.forEach(btn => {
         btn.disabled = false;
         btn.style.pointerEvents = 'auto';
@@ -1462,13 +1710,13 @@ function resetModal() {
         btn.style.opacity = '1';
     });
     
-    // Spécifiquement réactiver les boutons d'achat sur la page
+    // Spécifiquement réactiver les boutons d'achat SANS toucher à l'opacité
     const buyButtons = document.querySelectorAll('.bundle-cta');
     buyButtons.forEach(btn => {
         btn.disabled = false;
         btn.style.pointerEvents = 'auto';
         btn.classList.remove('disabled');
-        btn.style.opacity = '1';
+        // Ne pas toucher à l'opacité pour préserver l'effet hover CSS
     });
     
     // Remettre l'email par défaut
@@ -1577,13 +1825,13 @@ function resetModalAndRetry() {
         btn.classList.remove('disabled');
     });
     
-    // Spécifiquement réactiver les boutons d'achat
+    // Spécifiquement réactiver les boutons d'achat SANS toucher à l'opacité
     const buyButtons = document.querySelectorAll('.bundle-cta');
     buyButtons.forEach(btn => {
         btn.disabled = false;
         btn.style.pointerEvents = 'auto';
         btn.classList.remove('disabled');
-        btn.style.opacity = '1';
+        // Ne pas toucher à l'opacité pour préserver l'effet hover CSS
     });
     
     // Reset complet du modal
@@ -1598,6 +1846,107 @@ function resetModalAndRetry() {
     }, 50);
     
     console.log('Modal reset and retry complete');
+}
+
+// FONCTIONS POUR LA MODAL DE DÉTAILS DE BLAGUE
+let currentJokeDetails = {};
+
+function openJokeDetailModal(jokeId, jokeTitle, jokeDescription, jokeImage, jokePrice, jokeCategory) {
+    console.log('Opening joke detail modal:', { jokeId, jokeTitle, jokeDescription, jokeImage, jokePrice, jokeCategory });
+    
+    // Stocker les détails actuels
+    currentJokeDetails = {
+        id: jokeId,
+        title: jokeTitle,
+        description: jokeDescription,
+        image: jokeImage,
+        price: jokePrice,
+        category: jokeCategory
+    };
+    
+    // Vérifier que l'élément modal existe
+    const modalElement = document.getElementById('jokeDetailModal');
+    if (!modalElement) {
+        console.error('Joke detail modal element not found!');
+        return;
+    }
+    
+    // Remplir les informations dans la modal
+    document.getElementById('detail-category').textContent = jokeCategory;
+    document.getElementById('detail-title').textContent = jokeTitle;
+    document.getElementById('detail-description').textContent = jokeDescription;
+    document.getElementById('detail-price').textContent = `€${jokePrice}`;
+    document.getElementById('detail-image').src = jokeImage;
+    document.getElementById('detail-image').alt = jokeTitle;
+    
+    // Configurer le bouton d'achat
+    const buyBtn = document.getElementById('detail-buy-btn');
+    if (buyBtn) {
+        buyBtn.onclick = function() {
+            closeJokeDetailModal();
+            // Petit délai pour permettre la fermeture de la modal de détails
+            setTimeout(() => {
+                openPaymentModal(jokeId, jokeTitle, jokePrice);
+            }, 300);
+        };
+    }
+    
+    // Afficher la modal manuellement
+    try {
+        modalElement.style.display = 'block';
+        modalElement.classList.add('show');
+        modalElement.setAttribute('aria-modal', 'true');
+        modalElement.removeAttribute('aria-hidden');
+        
+        // Ajouter backdrop manuellement
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade show';
+        backdrop.id = 'joke-detail-backdrop';
+        document.body.appendChild(backdrop);
+        
+        // Empêcher le scroll du body
+        document.body.classList.add('modal-open');
+        
+        // Fermer le modal si on clique sur le backdrop
+        backdrop.addEventListener('click', closeJokeDetailModal);
+        
+        // Fermer le modal avec la touche Escape
+        const escapeHandler = function(e) {
+            if (e.key === 'Escape') {
+                closeJokeDetailModal();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+        
+        console.log('Joke detail modal opened successfully');
+        
+    } catch (error) {
+        console.error('Error opening joke detail modal:', error);
+    }
+}
+
+function closeJokeDetailModal() {
+    console.log('Closing joke detail modal...');
+    
+    const modalElement = document.getElementById('jokeDetailModal');
+    const backdrop = document.getElementById('joke-detail-backdrop');
+    
+    if (modalElement) {
+        modalElement.style.display = 'none';
+        modalElement.classList.remove('show');
+        modalElement.setAttribute('aria-hidden', 'true');
+        modalElement.removeAttribute('aria-modal');
+    }
+    
+    if (backdrop) {
+        backdrop.remove();
+    }
+    
+    // Restaurer le scroll du body
+    document.body.classList.remove('modal-open');
+    
+    console.log('Joke detail modal closed');
 }
 </script>
 

@@ -1,0 +1,25 @@
+# Configuration pour augmenter les limites d'upload
+php_value upload_max_filesize 100M
+php_value post_max_size 100M
+php_value max_file_uploads 20
+php_value memory_limit 256M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# Règles de réécriture pour Symfony
+RewriteEngine On
+
+# Handle Authorization Header
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Redirect to URI without front controller to prevent duplicate content
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteRule ^index\.php(?:/(.*)|$) %{ENV:BASE}/$1 [R=301,L]
+
+# If the requested filename exists, continue
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule .? - [L]
+
+# Rewrite all other queries to the front controller
+RewriteRule .? %{ENV:BASE}/index.php [L]

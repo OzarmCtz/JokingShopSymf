@@ -81,7 +81,13 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between">
-                    <small class="text-white">{{ ((stats.jokes_active / stats.jokes_total) * 100)|round }}% du total</small>
+                    <small class="text-white">
+                        {% if stats.jokes_total > 0 %}
+                            {{ ((stats.jokes_active / stats.jokes_total) * 100)|round }}% du total
+                        {% else %}
+                            0% du total
+                        {% endif %}
+                    </small>
                     <div class="text-white">
                         <i class="fas fa-chart-pie"></i>
                     </div>

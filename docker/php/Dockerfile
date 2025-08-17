@@ -24,6 +24,9 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash && \
     mv /root/.symfony*/bin/symfony /usr/local/bin/symfony && \
     chmod +x /usr/local/bin/symfony
 
+# Copier la configuration PHP personnalisée pour les uploads
+COPY php-uploads.ini /usr/local/etc/php/conf.d/php-uploads.ini
+
 # Créer l'utilisateur non-root
 RUN addgroup --gid ${PGID} appgroup \
     && adduser --disabled-password --gecos "" --uid ${PUID} --gid ${PGID} appuser

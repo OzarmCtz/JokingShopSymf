@@ -55,8 +55,8 @@ class DashboardController extends AbstractDashboardController
         return $this->render('admin/dashboard.html.twig', [
             'stats' => [
                 'categories_count' => $categoriesCount,
-                'jokes_total' => $jokesTotalCount,
-                'jokes_active' => $jokesActiveCount,
+                'jokes_total' => max(0, $jokesTotalCount), // S'assurer que c'est au moins 0
+                'jokes_active' => max(0, $jokesActiveCount), // S'assurer que c'est au moins 0
                 'users_count' => $usersCount,
                 'recent_jokes' => $recentJokes,
                 'recent_users' => $recentUsers,

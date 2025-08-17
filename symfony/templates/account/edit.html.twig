@@ -123,48 +123,50 @@
           {% for flash_error in app.flashes('error') %}
             <div class="alert alert-danger mb-3" role="alert">{{ flash_error }}</div>
           {% endfor %}
+          {% for flash_success in app.flashes('success') %}
+            <div class="alert alert-success mb-3" role="alert">{{ flash_success }}</div>
+          {% endfor %}
 
           {# Alerte globale si le formulaire a des erreurs #}
-          {% if profileForm.vars.submitted and not profileForm.vars.valid %}
+          {% if form.vars.submitted and not form.vars.valid %}
             <div class="alert alert-danger mb-4" role="alert">
               Oups… des erreurs se sont glissées dans le formulaire. Merci de corriger les champs en rouge.
             </div>
           {% endif %}
 
-          {{ form_start(profileForm) }}
+          {{ form_start(form) }}
 
             {# Email #}
-            {% set emailHasErrors = profileForm.email.vars.errors|length > 0 %}
+            {% set emailHasErrors = form.email.vars.errors|length > 0 %}
             <div class="mb-3">
-              {{ form_label(profileForm.email, 'Adresse e-mail', {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_label(form.email, 'Adresse e-mail', {'label_attr': {'class': 'form-label'}}) }}
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                {{ form_widget(profileForm.email, {
+                {{ form_widget(form.email, {
                   attr: {
                     class: 'form-control' ~ (emailHasErrors ? ' is-invalid' : ''),
-                    placeholder: 'votre@email.com'
+                    placeholder: 'Votre adresse e-mail'
                   }
                 }) }}
               </div>
               {% if emailHasErrors %}
                 <div class="invalid-feedback d-block">
-                  {{ form_errors(profileForm.email) }}
+                  {{ form_errors(form.email) }}
                 </div>
-              {% else %}
-                <div class="form-text">Nous n’affichons jamais votre email publiquement.</div>
               {% endif %}
             </div>
 
             {# Adresse #}
-            {% set addressHasErrors = profileForm.address.vars.errors|length > 0 %}
+            {% set addressHasErrors = form.address.vars.errors|length > 0 %}
             <div class="mb-3">
-              {{ form_label(profileForm.address, 'Adresse de facturation', {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_label(form.address, 'Adresse de facturation', {'label_attr': {'class': 'form-label'}}) }}
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                {{ form_widget(profileForm.address, {
+                {{ form_widget(form.address, {
                   attr: {
                     class: 'form-control' ~ (addressHasErrors ? ' is-invalid' : ''),
                     placeholder: 'Votre adresse de facturation complète',
+                    id: 'address-input',
                     list: 'address-suggestions',
                     autocomplete: 'off'
                   }
@@ -173,34 +175,56 @@
               <datalist id="address-suggestions"></datalist>
               {% if addressHasErrors %}
                 <div class="invalid-feedback d-block">
-                  {{ form_errors(profileForm.address) }}
+                  {{ form_errors(form.address) }}
                 </div>
               {% else %}
-                <div class="form-text">Optionnel — utilisez l’autocomplétion pour gagner du temps.</div>
+                <div class="form-text">Optionnel — utilisez l'autocomplétion pour gagner du temps.</div>
+              {% endif %}
+            </div>
+
+            {# Mot de passe actuel #}
+            {% set currentPasswordHasErrors = form.currentPassword.vars.errors|length > 0 %}
+            <div class="mb-3">
+              {{ form_label(form.currentPassword, 'Mot de passe actuel', {'label_attr': {'class': 'form-label'}}) }}
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                {{ form_widget(form.currentPassword, {
+                  attr: {
+                    class: 'form-control' ~ (currentPasswordHasErrors ? ' is-invalid' : ''),
+                    placeholder: 'Votre mot de passe actuel'
+                  }
+                }) }}
+              </div>
+              {% if currentPasswordHasErrors %}
+                <div class="invalid-feedback d-block">
+                  {{ form_errors(form.currentPassword) }}
+                </div>
+              {% else %}
+                <div class="form-text">Requis pour modifier vos informations de sécurité.</div>
               {% endif %}
             </div>
 
             {# Nouveau mot de passe #}
             {% set passwordHasErrors =
-              profileForm.newPassword.vars.errors|length > 0
-              or profileForm.newPassword.first.vars.errors|length > 0
-              or profileForm.newPassword.second.vars.errors|length > 0
+              form.newPassword.vars.errors|length > 0
+              or form.newPassword.first.vars.errors|length > 0
+              or form.newPassword.second.vars.errors|length > 0
             %}
             <div class="mb-3">
-              {{ form_label(profileForm.newPassword.first, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_label(form.newPassword.first, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                {{ form_widget(profileForm.newPassword.first, {
+                {{ form_widget(form.newPassword.first, {
                   attr: {
                     class: 'form-control' ~ (passwordHasErrors ? ' is-invalid' : ''),
-                    placeholder: 'Laissez vide pour conserver l’actuel'
+                    placeholder: 'Laissez vide pour conserver l\'actuel'
                   }
                 }) }}
               </div>
               {% if passwordHasErrors %}
                 <div class="invalid-feedback d-block">
-                  {{ form_errors(profileForm.newPassword.first) }}
-                  {{ form_errors(profileForm.newPassword) }}
+                  {{ form_errors(form.newPassword.first) }}
+                  {{ form_errors(form.newPassword) }}
                 </div>
               {% else %}
                 <div class="form-text">Au moins 8 caractères. Laissez vide pour ne pas changer.</div>
@@ -209,19 +233,19 @@
 
             {# Confirmation du nouveau mot de passe #}
             <div class="mb-4">
-              {{ form_label(profileForm.newPassword.second, 'Confirmez le nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_label(form.newPassword.second, 'Confirmez le nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-check"></i></span>
-                {{ form_widget(profileForm.newPassword.second, {
+                {{ form_widget(form.newPassword.second, {
                   attr: {
                     class: 'form-control' ~ (passwordHasErrors ? ' is-invalid' : ''),
                     placeholder: 'Confirmez le nouveau mot de passe'
                   }
                 }) }}
               </div>
-              {% if profileForm.newPassword.second.vars.errors|length > 0 %}
+              {% if form.newPassword.second.vars.errors|length > 0 %}
                 <div class="invalid-feedback d-block">
-                  {{ form_errors(profileForm.newPassword.second) }}
+                  {{ form_errors(form.newPassword.second) }}
                 </div>
               {% endif %}
             </div>
@@ -235,7 +259,7 @@
               </a>
             </div>
 
-          {{ form_end(profileForm) }}
+          {{ form_end(form) }}
         </div>
       </div>
     </div>
@@ -245,31 +269,53 @@
 
 {% block javascripts %}
   {{ parent() }}
-  {# on conserve EXACTEMENT ton script d’autocomplétion #}
   <script>
-    (function() {
-      const input = document.getElementById('{{ profileForm.address.vars.id }}');
+    document.addEventListener('DOMContentLoaded', function() {
+      const input = document.getElementById('address-input');
       const datalist = document.getElementById('address-suggestions');
+      
       if (!input || !datalist) return;
 
-      input.addEventListener('input', function () {
+      input.addEventListener('input', function() {
         const query = this.value;
+        
         if (query.length < 3) {
           datalist.innerHTML = '';
           return;
         }
-        fetch('https://api-adresse.data.gouv.fr/search/?limit=5&q=' + encodeURIComponent(query))
-          .then(response => response.json())
-          .then(data => {
-            datalist.innerHTML = '';
-            (data.features || []).forEach(feature => {
-              const option = document.createElement('option');
-              option.value = feature.properties.label;
-              datalist.appendChild(option);
-            });
-          })
-          .catch(err => console.error('Erreur API Adresse:', err));
+
+        const xhr = new XMLHttpRequest();
+        const url = 'https://api-adresse.data.gouv.fr/search/';
+        const params = 'limit=5&q=' + encodeURIComponent(query);
+        
+        xhr.open('GET', url + '?' + params, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+              const data = JSON.parse(xhr.responseText);
+              datalist.innerHTML = '';
+              
+              if (data.features && data.features.length > 0) {
+                data.features.forEach(function(feature) {
+                  const option = document.createElement('option');
+                  option.value = feature.properties.label;
+                  datalist.appendChild(option);
+                });
+              }
+            } catch (e) {
+              console.error('Erreur parsing JSON:', e);
+            }
+          }
+        };
+        
+        xhr.onerror = function() {
+          console.error('Erreur réseau API Adresse');
+        };
+        
+        xhr.send();
       });
-    })();
+    });
   </script>
 {% endblock %}

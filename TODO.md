@@ -1,1 +1,2 @@
 -> fix email sending for verified user
+-> foreign key sur les delete de blague avec order , category avec order ect .. dans easy admin

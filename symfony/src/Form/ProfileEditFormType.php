@@ -45,6 +45,18 @@ class ProfileEditFormType extends AbstractType
                     'autocomplete' => 'off'
                 ],
             ])
+            ->add('currentPassword', PasswordType::class, [
+                'label' => 'Mot de passe actuel',
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Votre mot de passe actuel'
+                ],
+                'constraints' => [
+                    // La validation sera faite dans le contrôleur
+                ],
+            ])
             ->add('newPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,

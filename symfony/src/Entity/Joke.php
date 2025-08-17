@@ -37,7 +37,10 @@ class Joke
     private ?string $price = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $photo = null;
+    private ?string $preview_image = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $view_image = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -159,14 +162,25 @@ class Joke
         return $this;
     }
 
-    public function getPhoto(): ?string
+    public function getPreviewImage(): ?string
     {
-        return $this->photo;
+        return $this->preview_image;
     }
 
-    public function setPhoto(?string $photo): static
+    public function setPreviewImage(?string $preview_image): static
     {
-        $this->photo = $photo;
+        $this->preview_image = $preview_image;
+        return $this;
+    }
+
+    public function getViewImage(): ?string
+    {
+        return $this->view_image;
+    }
+
+    public function setViewImage(?string $view_image): static
+    {
+        $this->view_image = $view_image;
         return $this;
     }
 }

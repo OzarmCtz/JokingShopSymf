@@ -15,11 +15,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[IsGranted('ROLE_ADMIN')]
 class JokeCrudController extends AbstractCrudController
@@ -37,6 +40,31 @@ class JokeCrudController extends AbstractCrudController
             ->setSearchFields(['title', 'body_text'])
             ->setDefaultSort(['created_at' => 'DESC'])
             ->setPaginatorPageSize(20);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
+                return $action->displayIf(function ($entity) {
+                    // Vérifier s'il y a des commandes liées à cette blague
+                    $entityManager = $this->container->get('doctrine')->getManager();
+                    $orderRepository = $entityManager->getRepository(\App\Entity\Order::class);
+                    $ordersCount = $orderRepository->count(['joke' => $entity]);
+
+                    // Permettre la suppression seulement s'il n'y a pas de commandes
+                    return $ordersCount === 0;
+                });
+            })
+            ->update(Crud::PAGE_DETAIL, Action::DELETE, function (Action $action) {
+                return $action->displayIf(function ($entity) {
+                    $entityManager = $this->container->get('doctrine')->getManager();
+                    $orderRepository = $entityManager->getRepository(\App\Entity\Order::class);
+                    $ordersCount = $orderRepository->count(['joke' => $entity]);
+                    return $ordersCount === 0;
+                });
+            });
     }
 
     public function configureFields(string $pageName): iterable
@@ -66,13 +94,21 @@ class JokeCrudController extends AbstractCrudController
             ->setLabel('Prix (€)')
             ->setHelp('Prix de la blague en euros (optionnel)');
 
-        yield ImageField::new('photo')
-            ->setLabel('Photo')
+        yield ImageField::new('preview_image')
+            ->setLabel('Image d\'aperçu (Card)')
             ->setBasePath('uploads/jokes')
             ->setUploadDir('public/uploads/jokes')
-            ->setUploadedFileNamePattern('[slug]-[uuid].[extension]')
+            ->setUploadedFileNamePattern('preview-[slug]-[uuid].[extension]')
             ->setRequired(false)
-            ->setHelp('Fichier image de la blague (optionnel)');
+            ->setHelp('Image affichée sur les cartes de la boutique (format recommandé: 240x280px)');
+
+        yield ImageField::new('view_image')
+            ->setLabel('Image de vue (Modal)')
+            ->setBasePath('uploads/jokes')
+            ->setUploadDir('public/uploads/jokes')
+            ->setUploadedFileNamePattern('view-[slug]-[uuid].[extension]')
+            ->setRequired(false)
+            ->setHelp('Image affichée dans la modal de détails (format recommandé: 400x400px ou plus)');
 
         yield ChoiceField::new('language')
             ->setLabel('Langue')
