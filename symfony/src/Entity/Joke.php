@@ -48,6 +48,9 @@ class Joke
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
     public function __construct()
     {
         $now = new \DateTimeImmutable();
@@ -181,6 +184,18 @@ class Joke
     public function setViewImage(?string $view_image): static
     {
         $this->view_image = $view_image;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
         return $this;
     }
 }

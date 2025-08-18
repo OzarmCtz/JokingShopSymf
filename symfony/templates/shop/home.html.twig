@@ -10,19 +10,17 @@
 {# Titre dynamique basé sur la catégorie #}
 {% set currentCategoryId = app.request.query.get('category') %}
 {% set currentCategoryName = null %}
+{% set currentCategoryDescription = null %}
 {% if currentCategoryId %}
   {% for category in categories %}
     {% if category.id == currentCategoryId|number_format(0, '', '') %}
       {% set currentCategoryName = category.name|capitalize %}
+      {% set currentCategoryDescription = category.description %}
     {% endif %}
   {% endfor %}
 {% endif %}
 
-{% if currentCategoryName %}
-  <h1 class="mb-4 text-white">Blagues {{ currentCategoryName }} ({{ jokes|length }})</h1>
-{% else %}
-  <h1 class="mb-4 text-white">Toutes les blagues ({{ jokes|length }})</h1>
-{% endif %}
+ 
 
 {# SORT BAR #}
 {% set q = app.request.query.all %}
@@ -34,46 +32,79 @@
 }[currentSort] ?? 'Nouveau' %}
 {% set route = app.request.attributes.get('_route') %}
 
-<div class="d-flex justify-content-end align-items-center mb-4">
-  <div class="d-flex align-items-center gap-2">
-    <span class="jk-sort-label">Trier par</span>
 
-    <div class="dropdown">
-      <button
-        class="btn jk-sort-toggle dropdown-toggle"
-        type="button"
-        id="sortDropdown"
-        data-bs-toggle="dropdown"
-        data-bs-display="static"
-        aria-expanded="false">
-        <span class="jk-sort-text">{{ sortLabel }}</span>
-      </button>
-
-      <ul class="dropdown-menu jk-menu" aria-labelledby="sortDropdown">
-        <li>
-          <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_asc' %}is-active{% endif %}"
-             href="{{ path(route, q|merge({'sort':'price_asc','page':1})) }}">
-            <span>Prix : Croissant</span>
-            {% if currentSort == 'price_asc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_desc' %}is-active{% endif %}"
-             href="{{ path(route, q|merge({'sort':'price_desc','page':1})) }}">
-            <span>Prix : Décroissant</span>
-            {% if currentSort == 'price_desc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'newest' %}is-active{% endif %}"
-             href="{{ path(route, q|merge({'sort':'newest','page':1})) }}">
-            <span>Nouveau</span>
-            {% if currentSort == 'newest' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
-          </a>
-        </li>
-      </ul>
-    </div>
+<!-- Hero -->
+<div class="p-5 text-center bg-image rounded-3" style="
+    background-image: url('{{ asset('images/hero-banner.png') }}');
+    height: 360px;
+    margin-bottom: 30px;
+  ">
+    <div class="d-flex justify-content-center align-items-center h-100">
+      <div class="text-white">
+        <h1 class="page-hero-title text-white text-center" style="font-size: 1.5rem; font-weight: 700;">
+            {% if currentCategoryName %}
+                {{ currentCategoryDescription }}
+            {% else %}
+                Bienvenue sur la boutique de blagues !
+            {% endif %}
+        </h1>
+      </div>
   </div>
+</div>
+<!-- Hero -->
+ 
+
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-2 flex-grow-1">
+        {% if currentCategoryName %}
+            <h3 class="mb-0 text-white" style="font-size: 1.5rem; font-weight: 600;">
+                Blagues {{ currentCategoryName }} ({{ jokes|length }})
+            </h3>
+        {% else %}
+            <h3 class="mb-0 text-white" style="font-size: 1.5rem; font-weight: 600;">
+                Toutes les blagues ({{ jokes|length }})
+            </h3>
+        {% endif %}
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="jk-sort-label" style="font-size: 1rem; font-weight: 600;">Trier par</span>
+        <div class="dropdown">
+            <button
+                class="btn jk-sort-toggle dropdown-toggle"
+                type="button"
+                id="sortDropdown"
+                data-bs-toggle="dropdown"
+                data-bs-display="static"
+                aria-expanded="false">
+                <span class="jk-sort-text">{{ sortLabel }}</span>
+            </button>
+            <ul class="dropdown-menu jk-menu" aria-labelledby="sortDropdown">
+                <li>
+                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_asc' %}is-active{% endif %}"
+                         href="{{ path(route, q|merge({'sort':'price_asc','page':1})) }}">
+                        <span>Prix : Croissant</span>
+                        {% if currentSort == 'price_asc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_desc' %}is-active{% endif %}"
+                         href="{{ path(route, q|merge({'sort':'price_desc','page':1})) }}">
+                        <span>Prix : Décroissant</span>
+                        {% if currentSort == 'price_desc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'newest' %}is-active{% endif %}"
+                         href="{{ path(route, q|merge({'sort':'newest','page':1})) }}">
+                        <span>Nouveau</span>
+                        {% if currentSort == 'newest' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 <div class="cards-grid">
@@ -88,6 +119,7 @@
       </div>
       <div class="bundle-body">
         <h5 class="bundle-title">{{ joke.title }}</h5>
+         <span class="joke-category" id="detail-category">{{ joke.category ? joke.category.name : 'Non catégorisé' }}</span>
         <div class="bundle-action-slot">
           <span class="bundle-price">€{{ joke.price|number_format(2, ',', ' ') }}</span>
           <button class="bundle-cta" 
@@ -305,9 +337,13 @@
                     <!-- Partie gauche: Informations -->
                     <div class="joke-detail-info">
                         <div class="joke-detail-header">
+                            <div class="joke-detail-extra-image" style="text-align: center; margin: 20px 0;">
+                                <img id="detail-extra-image" src="{{asset('images/joke.png')}}" alt="Image supplémentaire" style="max-width: 80%; height: auto; display: inline-block;" />
+                            </div>
                             <span class="joke-category" id="detail-category">Catégorie</span>
                             <h3 class="joke-title" id="detail-title">Titre de la blague</h3>
                             <p class="joke-description" id="detail-description">Description de la blague...</p>
+                            <!-- Partie image centrée sous la description -->
                         </div>
                         
                         <div class="joke-detail-footer">

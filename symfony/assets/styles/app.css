@@ -3,7 +3,7 @@
    ============================================ */
 :root {
   /* Couleurs principales */
-  --bg-app: #1b1709;          /* BG principal de l'app */
+  --bg-app: #29240f;          /* BG principal de l'app */
   --bg-navbar: #130c03;       /* BG de la navbar */
   --bg-card: #322f21;         /* BG des cards, modals, dropdowns, formulaires */
   --bg-input: #2c281b;        /* BG des inputs */

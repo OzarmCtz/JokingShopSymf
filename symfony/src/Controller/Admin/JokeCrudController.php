@@ -82,6 +82,13 @@ class JokeCrudController extends AbstractCrudController
             ->setNumOfRows(6)
             ->setRequired(true);
 
+        yield TextareaField::new('description')
+            ->setLabel('Description')
+            ->setNumOfRows(3)
+            ->setRequired(false)
+            ->setHelp('Description courte de la blague (optionnel)')
+            ->hideOnIndex();
+
         yield AssociationField::new('category')
             ->setLabel('Catégorie')
             ->setRequired(true)

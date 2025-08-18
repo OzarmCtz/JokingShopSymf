@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -61,6 +62,12 @@ class CategoryCrudController extends AbstractCrudController
         yield TextField::new('name')
             ->setLabel('Nom')
             ->setRequired(true);
+
+        yield TextareaField::new('description')
+            ->setLabel('Description')
+            ->setNumOfRows(3)
+            ->setRequired(false)
+            ->hideOnIndex();
 
         yield SlugField::new('slug')
             ->setTargetFieldName('name')
