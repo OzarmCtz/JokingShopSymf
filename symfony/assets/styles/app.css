@@ -1046,3 +1046,27 @@ h1, h2, h3, h4, h5, h6 {
 .border-custom {
   border-color: var(--border-color) !important;
 }
+.hero-banner{
+  height: 200px;
+  /* 1) le gradient assombrit l'image, 2) l'image de bannière */
+  background-image:
+    linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
+    url('/images/banner-hero.png'); /* adapte le chemin si besoin */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Titre lisible sans “panneau” */
+.hero-title{
+    padding: .5rem 1rem;        /* ↑↓ 8px — ←→ 16px */
+  display: inline-block;      /* pour ne pas s’étirer sur 100% */
+  font-size: clamp(1rem, 1.5vw + .2rem, 1.4rem);
+  line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0,0,0,.7);
+}
