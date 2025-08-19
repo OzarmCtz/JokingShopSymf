@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
@@ -53,14 +54,25 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
 
-            // Mot de passe
-            ->add('plainPassword', PasswordType::class, [
-                'label' => 'Mot de passe',
+            // Mot de passe avec confirmation
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
                 'mapped' => false, // encodé dans le contrôleur
-                'attr' => [
-                    'autocomplete' => 'new-password',
-                    'placeholder' => 'Mot de passe',
+                'first_options' => [
+                    'label' => 'Mot de passe',
+                    'attr' => [
+                        'autocomplete' => 'new-password',
+                        'placeholder' => 'Votre mot de passe sécurisé',
+                    ],
                 ],
+                'second_options' => [
+                    'label' => 'Confirmer le mot de passe',
+                    'attr' => [
+                        'autocomplete' => 'new-password',
+                        'placeholder' => 'Confirmez votre mot de passe',
+                    ],
+                ],
+                'invalid_message' => 'Les mots de passe ne correspondent pas.',
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir un mot de passe.',
@@ -75,9 +87,9 @@ class RegistrationFormType extends AbstractType
                         'pattern' => '/^(?=.*[A-Za-z])(?=.*\d).+$/',
                         'message' => 'Votre mot de passe doit contenir au moins une lettre et un chiffre.',
                     ]),
-                    // Vérifie que le mot de passe n’est pas compromis (Have I Been Pwned)
+                    // Vérifie que le mot de passe n'est pas compromis (Have I Been Pwned)
                     new NotCompromisedPassword([
-                        'message' => 'Ce mot de passe a été exposé lors d’une fuite de données. Veuillez en choisir un autre.',
+                        'message' => 'Ce mot de passe a été exposé lors d\'une fuite de données. Veuillez en choisir un autre.',
                     ]),
                 ],
             ])

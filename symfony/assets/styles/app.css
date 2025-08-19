@@ -7,8 +7,8 @@
   --bg-navbar: #130c03;       /* BG de la navbar */
   --bg-card: #322f21;         /* BG des cards, modals, dropdowns, formulaires */
   --bg-input: #2c281b;        /* BG des inputs */
-  --color-button: #fefc01;    /* Couleur des boutons */
-  
+  --color-button: #ffc107;    /* Couleur des boutons */
+  --color-button-hover: #e0a800; /* Couleur des boutons au survol */
   /* Couleurs de texte */
   --text-primary: #DBDEE1;    /* Texte principal */
   --text-muted: #B5BAC1;      /* Texte secondaire */
@@ -331,15 +331,15 @@ i.joke-smiley {
 }
 
 .btn-primary:hover {
-  background: #e5e301 !important;
-  border-color: #e5e301 !important;
+  background: var(--color-button-hover) !important;
+  border-color: var(--color-button-hover) !important;
   color: var(--text-dark) !important;
 }
 
 .btn-primary:focus,
 .btn-primary:active {
-  background: #d4d101 !important;
-  border-color: #d4d101 !important;
+  background: var(--color-button-hover) !important;
+  border-color: var(--color-button-hover) !important;
   color: var(--text-dark) !important;
   box-shadow: 0 0 0 0.2rem rgba(254, 252, 1, 0.25) !important;
 }
@@ -445,6 +445,130 @@ i.joke-smiley {
 
 .valid-feedback {
   color: var(--success) !important;
+}
+
+/* Conteneur de formulaire de connexion */
+.login-container {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  padding: 2.5rem !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  max-width: 450px !important;
+  margin: 0 auto !important;
+}
+
+/* Conteneur de formulaire d'inscription - même style */
+.register-container {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  padding: 2.5rem !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  max-width: 450px !important;
+  margin: 0 auto !important;
+}
+
+.login-title {
+  color: var(--text-primary) !important;
+  text-align: center !important;
+  margin-bottom: 2rem !important;
+  font-weight: 700 !important;
+  font-size: 1.75rem !important;
+}
+
+.register-title {
+  color: var(--text-primary) !important;
+  text-align: center !important;
+  margin-bottom: 2rem !important;
+  font-weight: 700 !important;
+  font-size: 1.75rem !important;
+}
+
+.login-subtitle {
+  color: var(--text-muted) !important;
+  text-align: center !important;
+  margin-bottom: 2rem !important;
+  font-size: 0.95rem !important;
+}
+
+.register-subtitle {
+  color: var(--text-muted) !important;
+  text-align: center !important;
+  margin-bottom: 2rem !important;
+  font-size: 0.95rem !important;
+}
+
+/* Checkbox personnalisé */
+.custom-checkbox {
+  position: relative !important;
+  display: inline-block !important;
+  width: 100% !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  opacity: 0 !important;
+  position: absolute !important;
+  z-index: -1 !important;
+}
+
+.custom-checkbox-label {
+  display: flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  color: var(--text-primary) !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  user-select: none !important;
+}
+
+.custom-checkbox-box {
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 4px !important;
+  background: var(--bg-input) !important;
+  margin-right: 0.75rem !important;
+  position: relative !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+}
+
+.custom-checkbox input:checked + .custom-checkbox-label .custom-checkbox-box {
+  background: var(--color-button) !important;
+  border-color: var(--color-button) !important;
+}
+
+.custom-checkbox-box::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 6px !important;
+  top: 2px !important;
+  width: 6px !important;
+  height: 12px !important;
+  border: solid var(--text-dark) !important;
+  border-width: 0 2px 2px 0 !important;
+  transform: rotate(45deg) scale(0) !important;
+  transition: transform 0.2s ease !important;
+}
+
+.custom-checkbox input:checked + .custom-checkbox-label .custom-checkbox-box::after {
+  transform: rotate(45deg) scale(1) !important;
+}
+
+/* Styles pour les liens */
+.login-link {
+  color: var(--color-button) !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.login-link:hover {
+  color: var(--color-button) !important;
+  text-decoration: underline !important;
+  filter: brightness(1.1) !important;
 }
 
 /* ============================================
@@ -638,9 +762,8 @@ i.joke-smiley {
 }
 
 .joke-buy-btn:hover {
-  background: #e5e301 !important;
+  background: var(--color-button-hover) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(254, 252, 1, 0.3) !important;
 }
 
 .joke-buy-btn:active {
@@ -854,9 +977,9 @@ i.joke-smiley {
 }
 
 .alert-info {
-  background-color: var(--bg-input) !important;
+  background-color: var(--warning) !important;
   border-color: var(--border-color) !important;
-  color: var(--text-primary) !important;
+  color: var(--text-dark) !important;
 }
 
 /* ============================================

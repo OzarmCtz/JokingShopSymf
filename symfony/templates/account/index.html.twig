@@ -47,6 +47,11 @@
           {% for flash_success in app.flashes('success') %}
             <div class="alert alert-success mb-3" role="alert">{{ flash_success }}</div>
           {% endfor %}
+          {% for flash_info in app.flashes('verify_email_info') %}
+            <div class="alert alert-info mb-3" role="alert">
+              <i class="fas fa-envelope me-2"></i>{{ flash_info }}
+            </div>
+          {% endfor %}
 
           <div class="row row-cols-1 row-cols-md-2 g-4">
             <div>

@@ -3,78 +3,135 @@
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="register-container">
+        {% for flash_error in app.flashes('verify_email_error') %}
+          <div class="alert alert-danger mb-4" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ flash_error }}
+          </div>
+        {% endfor %}
 
-    {# Alerte globale si le formulaire a des erreurs #}
-    {% if registrationForm.vars.submitted and not registrationForm.vars.valid %}
-        <div class="alert alert-danger" role="alert">
+        {# Alerte globale si le formulaire a des erreurs #}
+        {% if registrationForm.vars.submitted and not registrationForm.vars.valid %}
+          <div class="alert alert-danger mb-4" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
             Oups… des erreurs se sont glissées dans le formulaire. Merci de corriger les champs en rouge.
-        </div>
-    {% endif %}
+          </div>
+        {% endif %}
 
-    {{ form_start(registrationForm, { attr: { class: 'mx-auto', style: 'max-width: 400px;' } }) }}
-        <h1 class="mb-4">Inscription</h1>
+        {{ form_start(registrationForm) }}
+          <h1 class="register-title">
+            <i class="fas fa-user-plus me-2" style="color: var(--color-button);"></i>
+            Inscription
+          </h1>
+          <p class="register-subtitle">Créez votre compte pour accéder à notre collection de blagues</p>
 
-        {# Email #}
-        {% set emailHasErrors = registrationForm.email.vars.errors|length > 0 %}
-        <div class="mb-3">
-            {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+          {# Email #}
+          {% set emailHasErrors = registrationForm.email.vars.errors|length > 0 %}
+          <div class="mb-3">
+            <label for="{{ registrationForm.email.vars.id }}" class="form-label">
+              <i class="fas fa-envelope me-2"></i>Adresse email
+            </label>
             {{ form_widget(registrationForm.email, {
-                attr: {
-                    class: 'form-control' ~ (emailHasErrors ? ' is-invalid' : ''),
-                    placeholder: 'email@example.com',
-                    autocomplete: 'email'
-                }
+              attr: {
+                class: 'form-control' ~ (emailHasErrors ? ' is-invalid' : ''),
+                placeholder: 'votre@email.com',
+                autocomplete: 'email'
+              }
             }) }}
-            {# Messages d’erreur du champ #}
+            {# Messages d'erreur du champ #}
             {% if emailHasErrors %}
-                <div class="invalid-feedback d-block">
-                    {{ form_errors(registrationForm.email) }}
-                </div>
+              <div class="invalid-feedback d-block">
+                {{ form_errors(registrationForm.email) }}
+              </div>
             {% else %}
-                <div class="form-text">Nous ne partagerons jamais votre e-mail.</div>
+              <div class="form-text">
+                <i class="fas fa-shield-alt me-1"></i>Nous ne partagerons jamais votre email
+              </div>
             {% endif %}
-        </div>
+          </div>
 
-        {# Mot de passe #}
-        {% set pwdHasErrors = registrationForm.plainPassword.vars.errors|length > 0 %}
-        <div class="mb-3">
-            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(registrationForm.plainPassword, {
-                attr: {
-                    class: 'form-control' ~ (pwdHasErrors ? ' is-invalid' : ''),
-                    placeholder: 'Mot de passe',
-                    autocomplete: 'new-password'
-                }
+          {# Mot de passe #}
+          {% set pwdHasErrors = registrationForm.plainPassword.first.vars.errors|length > 0 or registrationForm.plainPassword.second.vars.errors|length > 0 or registrationForm.plainPassword.vars.errors|length > 0 %}
+          <div class="mb-3">
+            <label for="{{ registrationForm.plainPassword.first.vars.id }}" class="form-label">
+              <i class="fas fa-lock me-2"></i>Mot de passe
+            </label>
+            {{ form_widget(registrationForm.plainPassword.first, {
+              attr: {
+                class: 'form-control' ~ (pwdHasErrors ? ' is-invalid' : ''),
+                placeholder: 'Votre mot de passe sécurisé',
+                autocomplete: 'new-password'
+              }
             }) }}
-            {% if pwdHasErrors %}
-                <div class="invalid-feedback d-block">
-                    {{ form_errors(registrationForm.plainPassword) }}
-                </div>
+            {% if registrationForm.plainPassword.first.vars.errors|length > 0 %}
+              <div class="invalid-feedback d-block">
+                {{ form_errors(registrationForm.plainPassword.first) }}
+              </div>
             {% else %}
-                <div class="form-text">
-                    8 caractères minimum, avec au moins une lettre et un chiffre.
-                </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>8 caractères minimum, avec au moins une lettre et un chiffre
+              </div>
             {% endif %}
-        </div>
+          </div>
 
-        {# Conditions (checkbox) #}
-        {% set termsHasErrors = registrationForm.agreeTerms.vars.errors|length > 0 %}
-        <div class="mb-3 form-check">
+          {# Confirmation mot de passe #}
+          {% set confirmPwdHasErrors = registrationForm.plainPassword.second.vars.errors|length > 0 or registrationForm.plainPassword.vars.errors|length > 0 %}
+          <div class="mb-4">
+            <label for="{{ registrationForm.plainPassword.second.vars.id }}" class="form-label">
+              <i class="fas fa-lock me-2"></i>Confirmer le mot de passe
+            </label>
+            {{ form_widget(registrationForm.plainPassword.second, {
+              attr: {
+                class: 'form-control' ~ (confirmPwdHasErrors ? ' is-invalid' : ''),
+                placeholder: 'Confirmez votre mot de passe',
+                autocomplete: 'new-password'
+              }
+            }) }}
+            {% if registrationForm.plainPassword.second.vars.errors|length > 0 or registrationForm.plainPassword.vars.errors|length > 0 %}
+              <div class="invalid-feedback d-block">
+                {{ form_errors(registrationForm.plainPassword.second) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+              </div>
+            {% endif %}
+          </div>
+
+          {# Conditions (checkbox personnalisé) #}
+          {% set termsHasErrors = registrationForm.agreeTerms.vars.errors|length > 0 %}
+          <div class="custom-checkbox">
             {{ form_widget(registrationForm.agreeTerms, {
-                attr: { class: 'form-check-input' ~ (termsHasErrors ? ' is-invalid' : '') }
+              attr: { 
+                class: (termsHasErrors ? 'is-invalid' : ''),
+                style: 'opacity: 0; position: absolute; z-index: -1;'
+              }
             }) }}
-            {{ form_label(registrationForm.agreeTerms, 'J’accepte les conditions d’utilisation', {'label_attr': {'class': 'form-check-label'}}) }}
-
+            <label for="{{ registrationForm.agreeTerms.vars.id }}" class="custom-checkbox-label">
+              <span class="custom-checkbox-box {{ termsHasErrors ? 'border-danger' : '' }}"></span>
+              J'accepte les conditions d'utilisation et la politique de confidentialité
+            </label>
             {% if termsHasErrors %}
-                <div class="invalid-feedback d-block">
-                    {{ form_errors(registrationForm.agreeTerms) }}
-                </div>
+              <div class="invalid-feedback d-block mt-2">
+                {{ form_errors(registrationForm.agreeTerms) }}
+              </div>
             {% endif %}
-        </div>
+          </div>
 
-        <button type="submit" class="btn btn-success w-100">S'inscrire</button>
-    {{ form_end(registrationForm) }}
+          <button type="submit" class="btn btn-primary w-100 mb-4">
+            <i class="fas fa-user-plus me-2"></i>Créer mon compte
+          </button>
+
+          <div class="text-center">
+            <small class="text-muted">
+              Déjà un compte ? 
+              <a href="{{ path('app_login') }}" class="login-link">Connectez-vous ici</a>
+            </small>
+          </div>
+        {{ form_end(registrationForm) }}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

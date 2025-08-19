@@ -1421,7 +1421,8 @@ function openJokeDetailModal(jokeId, jokeTitle, jokeDescription, jokeImage, joke
     document.getElementById('detail-price').textContent = `€${jokePrice}`;
     document.getElementById('detail-image').src = jokeImage;
     document.getElementById('detail-image').alt = jokeTitle;
-    
+    document.getElementById('detail-buy-btn').textContent = 'Acheter pour €' + jokePrice;
+
     // Configurer le bouton d'achat
     const buyBtn = document.getElementById('detail-buy-btn');
     if (buyBtn) {

@@ -63,15 +63,18 @@ class RegistrationController extends AbstractController
                 'app_verify_email',
                 $user,
                 (new TemplatedEmail())
-                    ->from(new Address('support@demo.fr', 'Support'))
+                    ->from(new Address('noreply@myblog.com', 'Mon Blog'))
                     ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
+                    ->subject('Vérification de votre adresse email')
+                    ->htmlTemplate('emails/confirmation_email.html.twig')
             );
 
-            // do anything else you need here, like send an email
+            // Connecter l'utilisateur et rediriger vers account avec message
+            $security->login($user, AppAuthenticator::class, 'main');
 
-            return $security->login($user, AppAuthenticator::class, 'main');
+            $this->addFlash('verify_email_info', 'Votre compte a été créé avec succès ! Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre boîte de réception pour activer toutes les fonctionnalités.');
+
+            return $this->redirectToRoute('app_account');
         }
 
         return $this->render('registration/register.html.twig', [

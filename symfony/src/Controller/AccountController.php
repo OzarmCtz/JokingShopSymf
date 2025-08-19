@@ -126,6 +126,38 @@ final class AccountController extends AbstractController
         return $this->redirectToRoute('app_account');
     }
 
+    #[Route('/account/resend-verification', name: 'app_account_resend_verification', methods: ['GET'])]
+    public function resendVerificationEmail(): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Si l'utilisateur est déjà vérifié, rediriger
+        if ($user->isVerified()) {
+            $this->addFlash('info', 'Votre email est déjà vérifié.');
+            return $this->redirectToRoute('app_account');
+        }
+
+        try {
+            // Envoyer l'email de vérification
+            $this->emailVerifier->sendEmailConfirmation(
+                'app_verify_email',
+                $user,
+                (new TemplatedEmail())
+                    ->from(new Address('noreply@myblog.com', 'Mon Blog'))
+                    ->to($user->getEmail())
+                    ->subject('Vérification de votre adresse email')
+                    ->htmlTemplate('emails/confirmation_email.html.twig')
+            );
+
+            $this->addFlash('success', 'Un nouvel email de vérification a été envoyé à votre adresse : ' . $user->getEmail());
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de l\'envoi de l\'email de vérification : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_account');
+    }
+
     #[Route('/account/email/verify', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request): Response
     {
