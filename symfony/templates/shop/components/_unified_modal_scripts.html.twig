@@ -1,0 +1,535 @@
+<!-- JavaScript pour le Modal Unifié -->
+<script>
+// Système de modal unifié avec transitions
+let currentView = 'joke-detail';
+let viewHistory = [];
+let currentJoke = {};
+let currentJokeDetails = {};
+let startedFromPayment = false; // Tracker si on a commencé par le paiement
+
+// Configuration des vues et leur navigation
+const viewConfig = {
+    'joke-detail': {
+        title: 'Détails de la blague',
+        showBack: false,
+        nextAction: 'switchToView',
+        nextView: 'payment-card',
+        nextLabel: 'Acheter maintenant',
+        showProductInfo: false // Masquer la section produit pour éviter la redondance
+    },
+    'payment-card': {
+        title: 'Informations de paiement',
+        showBack: true,
+        nextAction: 'validateAndNext',
+        nextView: 'payment-billing',
+        nextLabel: 'Continuer',
+        showProductInfo: true
+    },
+    'payment-billing': {
+        title: 'Adresse de facturation',
+        showBack: true,
+        nextAction: 'processPayment',
+        nextView: null,
+        nextLabel: 'Payer €',
+        showProductInfo: true
+    },
+    'payment-processing': {
+        title: 'Traitement du paiement',
+        showBack: false,
+        nextAction: null,
+        nextView: null,
+        nextLabel: null,
+        showProductInfo: false
+    },
+    'payment-success': {
+        title: 'Paiement réussi',
+        showBack: false,
+        nextAction: null,
+        nextView: null,
+        nextLabel: null,
+        showProductInfo: false
+    },
+    'payment-error': {
+        title: 'Erreur de paiement',
+        showBack: false,
+        nextAction: 'switchToView',
+        nextView: 'payment-card',
+        nextLabel: 'Réessayer',
+        showProductInfo: true
+    }
+};
+
+// Fonction pour ouvrir le modal unifié avec une vue spécifique
+function openUnifiedModal(view = 'joke-detail', jokeData = null) {
+    console.log('Opening unified modal with view:', view);
+    
+    if (jokeData) {
+        currentJoke = jokeData;
+        currentJokeDetails = jokeData;
+        populateJokeDetails(jokeData);
+    }
+    
+    // Réinitialiser l'historique
+    viewHistory = [];
+    currentView = view;
+    startedFromPayment = view.startsWith('payment-'); // Marquer si on commence par le paiement
+    
+    const modalElement = document.getElementById('unifiedModal');
+    if (!modalElement) {
+        console.error('Unified modal element not found!');
+        return;
+    }
+    
+    // Afficher le modal
+    modalElement.style.display = 'block';
+    modalElement.classList.add('show');
+    modalElement.setAttribute('aria-modal', 'true');
+    modalElement.removeAttribute('aria-hidden');
+    
+    // Ajouter la classe de vue initiale
+    modalElement.classList.add(`view-${view}`);
+    
+    // Ajouter backdrop
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    backdrop.id = 'unified-modal-backdrop';
+    document.body.appendChild(backdrop);
+    document.body.classList.add('modal-open');
+    
+    // Event listeners
+    backdrop.addEventListener('click', closeUnifiedModal);
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    // Afficher la vue initiale directement
+    switchToView(view, false);
+    
+    // Initialiser Stripe si on commence par le paiement
+    if (view.startsWith('payment-')) {
+        setTimeout(() => {
+            initializeStripeElements();
+        }, 300);
+    }
+}
+
+// Fonction pour fermer le modal unifié
+function closeUnifiedModal() {
+    console.log('Closing unified modal...');
+    
+    const modalElement = document.getElementById('unifiedModal');
+    const backdrop = document.getElementById('unified-modal-backdrop');
+    
+    if (modalElement) {
+        modalElement.style.display = 'none';
+        modalElement.classList.remove('show');
+        modalElement.setAttribute('aria-hidden', 'true');
+        modalElement.removeAttribute('aria-modal');
+    }
+    
+    if (backdrop) {
+        backdrop.remove();
+    }
+    
+    document.body.classList.remove('modal-open');
+    document.removeEventListener('keydown', handleEscapeKey);
+    
+    // Nettoyer Stripe Elements
+    cleanupStripeElements();
+    
+    // Réactiver tous les boutons
+    enableAllButtons();
+    
+    // Reset des données
+    resetModalData();
+}
+
+// Fonction pour changer de vue avec transition
+function switchToView(newView, addToHistory = true) {
+    console.log('Switching to view:', newView, 'from:', currentView);
+    
+    if (addToHistory && currentView !== newView) {
+        viewHistory.push(currentView);
+    }
+    
+    const currentViewElement = document.getElementById(`view-${currentView}`);
+    const newViewElement = document.getElementById(`view-${newView}`);
+    
+    if (!newViewElement) {
+        console.error('View not found:', newView);
+        return;
+    }
+    
+    // Si c'est l'affichage initial, pas d'animation
+    if (currentView === newView || !currentViewElement) {
+        // Cacher toutes les vues
+        document.querySelectorAll('.modal-view').forEach(view => {
+            view.style.display = 'none';
+            view.classList.remove('active', 'slide-in-left', 'slide-in-right', 'slide-out-left', 'slide-out-right');
+        });
+        
+        // Afficher la nouvelle vue directement
+        newViewElement.style.display = 'block';
+        newViewElement.classList.add('active');
+        
+        currentView = newView;
+        updateModalInterface();
+        handleViewSpecificActions(newView);
+        return;
+    }
+    
+    // Déterminer la direction de la transition
+    const isForward = !viewHistory.includes(newView);
+    
+    // Animation de sortie de la vue actuelle
+    if (currentViewElement) {
+        currentViewElement.classList.remove('active');
+        currentViewElement.classList.add(isForward ? 'slide-out-left' : 'slide-out-right');
+        
+        setTimeout(() => {
+            currentViewElement.style.display = 'none';
+            currentViewElement.classList.remove('slide-out-left', 'slide-out-right');
+        }, 300);
+    }
+    
+    // Animation d'entrée de la nouvelle vue
+    newViewElement.style.display = 'block';
+    newViewElement.classList.add(isForward ? 'slide-in-right' : 'slide-in-left');
+    
+    setTimeout(() => {
+        newViewElement.classList.remove('slide-in-left', 'slide-in-right');
+        newViewElement.classList.add('active');
+    }, 50);
+    
+    // Mettre à jour la vue actuelle
+    currentView = newView;
+    
+    // Ajouter une classe au modal selon la vue active
+    const modalElement = document.getElementById('unifiedModal');
+    if (modalElement) {
+        // Supprimer toutes les classes de vue existantes
+        modalElement.className = modalElement.className.replace(/view-[a-z-]+/g, '');
+        // Ajouter la classe de la vue actuelle
+        modalElement.classList.add(`view-${newView}`);
+    }
+    
+    // Mettre à jour l'interface
+    updateModalInterface();
+    
+    // Actions spéciales selon la vue
+    handleViewSpecificActions(newView);
+}
+
+// Fonction pour aller à la vue précédente
+function goToPreviousView() {
+    if (viewHistory.length > 0) {
+        const previousView = viewHistory.pop();
+        switchToView(previousView, false);
+    }
+}
+
+// Fonction pour aller à la vue suivante
+function goToNextView() {
+    const config = viewConfig[currentView];
+    if (!config) return;
+    
+    if (config.nextAction === 'switchToView' && config.nextView) {
+        switchToView(config.nextView);
+    } else if (config.nextAction === 'validateAndNext') {
+        if (currentView === 'payment-card') {
+            if (validateCardForm()) {
+                prefillBillingAddress();
+                switchToView(config.nextView);
+            }
+        }
+    } else if (config.nextAction === 'processPayment') {
+        if (validateBillingForm()) {
+            processPayment();
+        }
+    }
+}
+
+// Fonction pour mettre à jour l'interface du modal
+function updateModalInterface() {
+    const config = viewConfig[currentView];
+    if (!config) return;
+    
+    // Mettre à jour le titre
+    const title = document.getElementById('unifiedModalLabel');
+    if (title) {
+        title.textContent = config.title;
+    }
+    
+    // Gérer le bouton retour
+    const backBtn = document.getElementById('back-btn-unified');
+    if (backBtn) {
+        // Ne pas afficher le bouton retour si on a commencé par le paiement et qu'on est à la première étape de paiement
+        let showBack = config.showBack;
+        if (startedFromPayment && currentView === 'payment-card') {
+            showBack = false;
+        }
+        backBtn.style.display = showBack ? 'inline-block' : 'none';
+    }
+    
+    // Gérer le bouton suivant
+    const nextBtn = document.getElementById('next-btn-unified');
+    if (nextBtn && config.nextLabel) {
+        nextBtn.style.display = 'inline-block';
+        
+        if (currentView === 'payment-billing' && currentJoke.price) {
+            nextBtn.innerHTML = `<i class="fas fa-credit-card me-1"></i>Payer €${currentJoke.price}`;
+        } else if (currentView === 'joke-detail' && currentJoke.price) {
+            // Pour la vue détails, afficher "Acheter pour €X"
+            nextBtn.innerHTML = `<i class="fas fa-shopping-cart me-1"></i>Acheter pour €${currentJoke.price}`;
+        } else {
+            nextBtn.textContent = config.nextLabel;
+        }
+        
+        nextBtn.disabled = false;
+    } else if (nextBtn) {
+        nextBtn.style.display = 'none';
+    }
+    
+    // Gérer les informations produit
+    const productInfo = document.getElementById('product-info-section');
+    const modalActions = document.getElementById('modal-actions-section');
+    const footer = document.getElementById('modal-footer-unified');
+    
+    console.log('updateModalInterface - currentView:', currentView, 'showProductInfo:', config.showProductInfo);
+    
+    if (config.showProductInfo) {
+        console.log('Showing product info for view:', currentView);
+        if (productInfo) productInfo.style.display = 'flex';
+        if (modalActions) modalActions.style.display = 'flex';
+        if (footer) footer.style.display = 'flex';
+        // Justification normale avec espace entre les sections
+        if (footer) footer.style.justifyContent = 'space-between';
+    } else {
+        console.log('Hiding product info for view:', currentView);
+        // Masquer les infos produit mais garder les boutons
+        if (productInfo) productInfo.style.display = 'none';
+        if (modalActions) modalActions.style.display = 'flex';
+        if (footer) {
+            footer.style.display = 'flex';
+            footer.style.justifyContent = 'space-between'; // Espace entre annuler et acheter
+        }
+    }
+}
+
+// Fonction pour gérer les actions spécifiques à chaque vue
+function handleViewSpecificActions(view) {
+    switch (view) {
+        case 'payment-card':
+            // Toujours réinitialiser Stripe Elements quand on arrive sur cette vue
+            setTimeout(() => {
+                initializeStripeElements();
+            }, 100);
+            break;
+        case 'payment-billing':
+            // Initialiser l'API adresse française
+            initAddressAPI();
+            break;
+        case 'payment-success':
+            // Auto-fermeture après 5 secondes
+            setTimeout(() => {
+                closeUnifiedModal();
+                window.location.reload();
+            }, 5000);
+            break;
+    }
+}
+
+// Fonction pour peupler les détails de la blague
+function populateJokeDetails(joke) {
+    // Mettre à jour les détails dans la vue
+    const categorySpan = document.getElementById('modal-detail-category');
+    if (categorySpan && joke.categoryColor) {
+        categorySpan.style.backgroundColor = joke.categoryColor;
+        
+        let categoryContent = '';
+        if (joke.categoryIcon && joke.categoryIcon.trim() !== '') {
+            categoryContent += `<i class="${joke.categoryIcon} me-1"></i>`;
+        }
+        categoryContent += joke.category || 'Non catégorisé';
+        
+        categorySpan.innerHTML = categoryContent;
+    }
+    
+    const titleEl = document.getElementById('detail-title');
+    if (titleEl) titleEl.textContent = joke.title;
+    
+    const descEl = document.getElementById('detail-description');
+    if (descEl) descEl.textContent = joke.description;
+    
+    const priceEl = document.getElementById('detail-price');
+    if (priceEl) priceEl.textContent = `€${joke.price}`;
+    
+    const imageEl = document.getElementById('detail-image');
+    if (imageEl) {
+        imageEl.src = joke.image;
+        imageEl.alt = joke.title;
+    }
+    
+    // Mettre à jour les informations produit dans le footer
+    const footerTitle = document.getElementById('footer-product-title');
+    const footerPrice = document.getElementById('footer-product-price');
+    
+    if (footerTitle) {
+        footerTitle.innerHTML = `<i class="fas fa-laugh me-1"></i><span>${joke.title}</span>`;
+    }
+    
+    if (footerPrice) {
+        footerPrice.innerHTML = `<i class="fas fa-tag me-1"></i><span class="fw-bold text-success">${joke.price}€</span>`;
+    }
+}
+
+// Fonction pour gérer la touche Escape
+function handleEscapeKey(e) {
+    if (e.key === 'Escape') {
+        closeUnifiedModal();
+    }
+}
+
+// Fonction pour réinitialiser les données du modal
+function resetModalData() {
+    currentView = 'joke-detail';
+    viewHistory = [];
+    currentJoke = {};
+    currentJokeDetails = {};
+    startedFromPayment = false; // Reset du flag
+    
+    // Réinitialiser les formulaires
+    const paymentForm = document.getElementById('payment-form');
+    const billingForm = document.getElementById('billing-form');
+    
+    if (paymentForm) {
+        paymentForm.reset();
+        // Remettre l'email par défaut
+        const defaultEmail = '{{ app.user ? app.user.email : '' }}';
+        const emailField = document.getElementById('email');
+        if (emailField && defaultEmail) {
+            emailField.value = defaultEmail;
+        }
+    }
+    
+    if (billingForm) {
+        billingForm.reset();
+        // Remettre l'adresse par défaut
+        const defaultAddress = '{{ app.user ? app.user.address : '' }}';
+        const addressField = document.getElementById('address');
+        if (addressField && defaultAddress) {
+            addressField.value = defaultAddress;
+        }
+    }
+    
+    // Nettoyer les erreurs
+    document.querySelectorAll('.is-invalid').forEach(el => {
+        el.classList.remove('is-invalid');
+    });
+    document.querySelectorAll('.invalid-feedback').forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+    });
+}
+
+// Nouvelles fonctions pour remplacer les anciennes
+function openJokeDetailModal(jokeId, jokeTitle, jokeDescription, jokeImage, jokePrice, jokeCategory, jokeCategoryColor, jokeCategoryIcon) {
+    const jokeData = {
+        id: jokeId,
+        title: jokeTitle,
+        description: jokeDescription,
+        image: jokeImage,
+        price: jokePrice,
+        category: jokeCategory,
+        categoryColor: jokeCategoryColor,
+        categoryIcon: jokeCategoryIcon
+    };
+    
+    openUnifiedModal('joke-detail', jokeData);
+}
+
+function openPaymentModal(jokeId, jokeTitle, jokePrice) {
+    const jokeData = {
+        id: jokeId,
+        title: jokeTitle,
+        price: jokePrice
+    };
+    
+    openUnifiedModal('payment-card', jokeData);
+}
+
+// Fonction pour afficher le succès
+function showSuccess(orderId) {
+    document.getElementById('success-email').textContent = document.getElementById('email').value;
+    document.getElementById('success-joke-title').textContent = currentJoke.title;
+    document.getElementById('success-order-id').textContent = orderId;
+    switchToView('payment-success');
+}
+
+// Fonction pour afficher l'erreur
+function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    switchToView('payment-error');
+    
+    // Réactiver tous les boutons
+    enableAllButtons();
+}
+
+// Mise à jour de la fonction processPayment pour utiliser les nouvelles vues
+async function processPayment() {
+    switchToView('payment-processing');
+    
+    try {
+        // 1. Créer le PaymentIntent
+        const response = await fetch('{{ path('payment_create_intent') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                joke_id: currentJoke.id,
+                email: document.getElementById('email').value
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        // 2. Confirmer le paiement avec Stripe
+        const { error, paymentIntent } = await stripe.confirmCardPayment(data.client_secret, {
+            payment_method: {
+                card: cardElement,
+                billing_details: {
+                    name: document.getElementById('card-holder-name').value,
+                    email: document.getElementById('email').value,
+                    address: {
+                        line1: document.getElementById('address').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('region').value,
+                        postal_code: document.getElementById('postal-code').value,
+                        country: document.getElementById('country').value,
+                    },
+                },
+            },
+        });
+        
+        if (error) {
+            throw new Error(error.message);
+        }
+        
+        if (paymentIntent.status === 'succeeded') {
+            // 3. Confirmer côté serveur
+            await confirmPaymentServer(data.order_id, paymentIntent);
+        } else {
+            throw new Error('Paiement non confirmé');
+        }
+        
+    } catch (error) {
+        console.error('Payment error:', error);
+        showError(error.message);
+    }
+}
+
+console.log('Unified modal system loaded');
+</script>

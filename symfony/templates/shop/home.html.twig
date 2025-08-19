@@ -21,6 +21,7 @@
 {% endif %}
 
 {# Bannière hero #}
+{# Vraiment moche :/ #}
 {% include 'shop/components/_hero_banner.html.twig' %}
 
 {# Barre de tri #}
@@ -29,11 +30,11 @@
 {# Grille de cartes des blagues #}
 {% include 'shop/components/_cards_grid.html.twig' %}
 
-{# Modals #}
-{% include 'shop/components/_payment_modal.html.twig' %}
-{% include 'shop/components/_joke_detail_modal.html.twig' %}
+{# Modal Unifié avec transitions #}
+{% include 'shop/components/_unified_modal.html.twig' %}
 
 {# Scripts JavaScript #}
 {% include 'shop/components/_scripts.html.twig' %}
+{% include 'shop/components/_unified_modal_scripts.html.twig' %}
 
 {% endblock %}

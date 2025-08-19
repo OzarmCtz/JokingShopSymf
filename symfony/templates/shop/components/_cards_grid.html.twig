@@ -1,6 +1,15 @@
 <div class="cards-grid">
   {% for joke in jokes %}
-    <div class="card card-bundle" onclick="openJokeDetailModal({{ joke.id }}, '{{ joke.title|e('js') }}', '{{ joke.description|e('js')|raw }}', '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', {{ joke.price }}, '{{ joke.category ? joke.category.name : 'Non catégorisé' }}', '{{ joke.category ? joke.category.color : '#ccc' }}', '{{ joke.category and joke.category.icon ? joke.category.icon : '' }}')">
+    <div class="card card-bundle" onclick="openUnifiedModal('joke-detail', {
+        id: {{ joke.id }}, 
+        title: '{{ joke.title|e('js') }}', 
+        description: '{{ joke.description|e('js')|raw }}', 
+        image: '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', 
+        price: {{ joke.price }}, 
+        category: '{{ joke.category ? joke.category.name : 'Non catégorisé' }}', 
+        categoryColor: '{{ joke.category ? joke.category.color : '#ccc' }}', 
+        categoryIcon: '{{ joke.category and joke.category.icon ? joke.category.icon : '' }}'
+    })">
       <div class="bundle-media">
         {% if joke.previewImage %}
           <img src="{{ asset('uploads/jokes/' ~ joke.previewImage) }}" alt="{{ joke.title }}">
@@ -19,7 +28,16 @@
         <div class="bundle-action-slot">
           <span class="bundle-price">€{{ joke.price|number_format(2, ',', ' ') }}</span>
           <button class="bundle-cta" 
-                  onclick="event.stopPropagation(); openPaymentModal({{ joke.id }}, '{{ joke.title|e('js') }}', {{ joke.price }})"
+                  onclick="event.stopPropagation(); openUnifiedModal('payment-card', {
+                    id: {{ joke.id }}, 
+                    title: '{{ joke.title|e('js') }}', 
+                    description: '{{ joke.description|e('js')|raw }}', 
+                    image: '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', 
+                    price: {{ joke.price }}, 
+                    category: '{{ joke.category ? joke.category.name : 'Non catégorisé' }}', 
+                    categoryColor: '{{ joke.category ? joke.category.color : '#ccc' }}', 
+                    categoryIcon: '{{ joke.category and joke.category.icon ? joke.category.icon : '' }}'
+                  })"
                   aria-label="Acheter pour {{ joke.price|number_format(2, ',', ' ') }} euros">
              Acheter pour €{{ joke.price|number_format(2, ',', ' ') }}
           </button>

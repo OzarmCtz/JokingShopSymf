@@ -726,7 +726,6 @@ i.joke-smiley {
 .joke-detail-footer {
   margin-top: 32px !important;
   padding-top: 24px !important;
-  border-top: 1px solid var(--border-color) !important;
 }
 
 .joke-price-section {
@@ -1206,7 +1205,7 @@ i.joke-smiley {
   /* 1) le gradient assombrit l'image, 2) l'image de bannière */
   background-image:
     linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
-    url('/images/banner-hero.png'); /* adapte le chemin si besoin */
+    url('/images/payment-banner.png'); /* adapte le chemin si besoin */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
