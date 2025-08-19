@@ -46,6 +46,16 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-muted) !important;
 }
 
+.joke-smiley {
+  color: var(--color-button) !important;
+}
+
+/* Renforcement spécifique pour les modals */
+.modal-body .joke-smiley,
+i.joke-smiley {
+  color: var(--color-button) !important;
+}
+
 /* ============================================
    NAVBAR
    ============================================ */
@@ -190,7 +200,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-header {
   background: var(--bg-card) !important;
-  border-bottom: 1px solid var(--border-color) !important;
   color: var(--text-primary) !important;
 }
 
@@ -363,6 +372,7 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--danger) !important;
   border-color: var(--danger) !important;
   color: #fff !important;
+ 
 }
 
 .btn-danger:hover {
@@ -844,9 +854,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .alert-info {
-  background-color: rgba(13, 202, 240, 0.1) !important;
-  border-color: var(--info) !important;
-  color: #b3f0ff !important;
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
 }
 
 /* ============================================
@@ -891,10 +901,6 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary) !important;
 }
 
-.list-group-item:hover {
-  background: var(--bg-input) !important;
-}
-
 /* ============================================
    COMPTE ET PROFIL
    ============================================ */
@@ -919,6 +925,29 @@ h1, h2, h3, h4, h5, h6 {
 /* ============================================
    COMMANDES ET HISTORIQUE
    ============================================ */
+
+
+.table-order,
+.table-order thead,
+.table-order tbody,
+.table-order th,
+.table-order td,
+.table-order tr {
+  background-color: var(--bg-card) !important;
+  color: var(--text) !important;
+  border: none !important;
+}
+
+.table-order th,
+.table-order td {
+  border: none !important;
+}
+
+.table-order thead tr {
+  border-bottom: 1px solid var(--line) !important; /* optionnel si tu veux séparer l’en-tête */
+}
+
+
 .order-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);

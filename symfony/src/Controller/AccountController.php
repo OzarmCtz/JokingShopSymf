@@ -118,7 +118,7 @@ final class AccountController extends AbstractController
         try {
             // Envoyer l'email avec la blague
             $this->jokeEmailService->sendJokeEmail($order);
-            $this->addFlash('success', 'La blague a été renvoyée à votre adresse email');
+            $this->addFlash('success', 'La blague a été renvoyée à votre adresse email : ' . $order->getEmail());
         } catch (\Exception $e) {
             $this->addFlash('error', 'Erreur lors de l\'envoi de l\'email: ' . $e->getMessage());
         }
