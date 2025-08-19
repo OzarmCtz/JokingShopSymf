@@ -1,0 +1,45 @@
+<!-- Modal de Détails de la Blague -->
+<div class="modal fade" id="jokeDetailModal" tabindex="-1" aria-labelledby="jokeDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content joke-detail-modal">
+            <div class="modal-header border-0 p-0">
+                <button type="button" class="btn-close joke-detail-close" onclick="closeJokeDetailModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="joke-detail-container">
+                    <!-- Partie gauche: Informations -->
+                    <div class="joke-detail-info">
+                        <div class="joke-detail-header">
+                            <div class="joke-detail-extra-image" style="text-align: center; margin: 20px 0;">
+                                <img id="detail-extra-image" src="{{asset('images/joke.png')}}" alt="Image supplémentaire" style="max-width: 80%; height: auto; display: inline-block;" />
+                            </div>
+                            <span class="joke-category" style="background-color: #ccc" id="modal-detail-category">
+                                Non catégorisé
+                            </span>
+                            <h3 class="joke-title" id="detail-title">Titre de la blague</h3>
+
+                            <p class="joke-description" id="detail-description">Description de la blague...</p>
+                            <!-- Partie image centrée sous la description -->
+                        </div>
+                        
+                        <div class="joke-detail-footer">
+                            <div class="joke-price-section">
+                                <span class="joke-price-label">Prix</span>
+                                <span class="joke-price" id="detail-price">€9.99</span>
+                            </div>
+                            <button class="joke-buy-btn" id="detail-buy-btn" onclick="">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                Acheter maintenant
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Partie droite: Image -->
+                    <div class="joke-detail-image">
+                        <img id="detail-image" src="" alt="" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

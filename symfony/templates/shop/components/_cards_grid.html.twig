@@ -1,0 +1,34 @@
+<div class="cards-grid">
+  {% for joke in jokes %}
+    <div class="card card-bundle" onclick="openJokeDetailModal({{ joke.id }}, '{{ joke.title|e('js') }}', '{{ joke.description|e('js')|raw }}', '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', {{ joke.price }}, '{{ joke.category ? joke.category.name : 'Non catégorisé' }}', '{{ joke.category ? joke.category.color : '#ccc' }}', '{{ joke.category and joke.category.icon ? joke.category.icon : '' }}')">
+      <div class="bundle-media">
+        {% if joke.previewImage %}
+          <img src="{{ asset('uploads/jokes/' ~ joke.previewImage) }}" alt="{{ joke.title }}">
+        {% else %}
+          <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder">
+        {% endif %}
+      </div>
+      <div class="bundle-body">
+        <h5 class="bundle-title">{{ joke.title }}</h5>
+        <span class="joke-category" style="background-color: {{ joke.category ? joke.category.color : '#ccc' }}" id="detail-category">
+            {% if joke.category and joke.category.icon %}
+            <i class="{{ joke.category.icon }} me-1"></i>
+            {% endif %}
+            {{ joke.category ? joke.category.name : 'Non catégorisé' }}
+        </span>
+        <div class="bundle-action-slot">
+          <span class="bundle-price">€{{ joke.price|number_format(2, ',', ' ') }}</span>
+          <button class="bundle-cta" 
+                  onclick="event.stopPropagation(); openPaymentModal({{ joke.id }}, '{{ joke.title|e('js') }}', {{ joke.price }})"
+                  aria-label="Acheter pour {{ joke.price|number_format(2, ',', ' ') }} euros">
+             Acheter pour €{{ joke.price|number_format(2, ',', ' ') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="text-muted py-5">
+      Aucune blague trouvée.
+    </div>
+  {% endfor %}
+</div>

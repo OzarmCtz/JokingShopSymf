@@ -1,0 +1,60 @@
+{# SORT BAR #}
+{% set q = app.request.query.all %}
+{% set currentSort = q.sort ?? 'newest' %}
+{% set sortLabel = {
+  'price_asc': 'Prix : Croissant',
+  'price_desc': 'Prix : Décroissant',
+  'newest': 'Nouveau'
+}[currentSort] ?? 'Nouveau' %}
+{% set route = app.request.attributes.get('_route') %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-2 flex-grow-1">
+        {% if currentCategoryName %}
+            <h3 class="mb-0 text-white" style="font-size: 1.5rem; font-weight: 600;">
+                Blagues {{ currentCategoryName }} ({{ jokes|length }})
+            </h3>
+        {% else %}
+            <h3 class="mb-0 text-white" style="font-size: 1.5rem; font-weight: 600;">
+                Toutes les blagues ({{ jokes|length }})
+            </h3>
+        {% endif %}
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="jk-sort-label" style="font-size: 1rem; font-weight: 600;">Trier par</span>
+        <div class="dropdown">
+            <button
+                class="btn jk-sort-toggle dropdown-toggle"
+                type="button"
+                id="sortDropdown"
+                data-bs-toggle="dropdown"
+                data-bs-display="static"
+                aria-expanded="false">
+                <span class="jk-sort-text">{{ sortLabel }}</span>
+            </button>
+            <ul class="dropdown-menu jk-menu" aria-labelledby="sortDropdown">
+                <li>
+                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_asc' %}is-active{% endif %}"
+                         href="{{ path(route, q|merge({'sort':'price_asc','page':1})) }}">
+                        <span>Prix : Croissant</span>
+                        {% if currentSort == 'price_asc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_desc' %}is-active{% endif %}"
+                         href="{{ path(route, q|merge({'sort':'price_desc','page':1})) }}">
+                        <span>Prix : Décroissant</span>
+                        {% if currentSort == 'price_desc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'newest' %}is-active{% endif %}"
+                         href="{{ path(route, q|merge({'sort':'newest','page':1})) }}">
+                        <span>Nouveau</span>
+                        {% if currentSort == 'newest' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+{# Titre dynamique basé sur la catégorie #}
+{% set currentCategoryId = app.request.query.get('category') %}
+{% set currentCategoryName = null %}
+{% set currentCategoryDescription = null %}
+{% if currentCategoryId %}
+  {% for category in categories %}
+    {% if category.id == currentCategoryId|number_format(0, '', '') %}
+      {% set currentCategoryName = category.name|capitalize %}
+      {% set currentCategoryDescription = category.description %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<div class="hero-banner rounded-3 text-center mb-3">
+  <h1 class="m-0 fw-bold text-white hero-title">
+    {% if currentCategoryName %}
+      {{ currentCategoryDescription }}
+    {% else %}
+      Bienvenue sur la boutique de blagues !
+    {% endif %}
+  </h1>
+</div>
