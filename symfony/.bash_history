@@ -36,3 +36,12 @@ sudo apt-get install php-intl
 sudo apt-get install php-intl
 clear
 exit
+php bin/console cache:clear
+php bin/console cache:clear
+symfony console make:entity
+symfony console make:migration
+symfony console doctrine:migrations:migrate
+symfony console make:entity
+ symfony console make:migration
+symfony console doctrine:migrations:migrate
+exit

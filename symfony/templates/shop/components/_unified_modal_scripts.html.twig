@@ -373,11 +373,11 @@ function populateJokeDetails(joke) {
     const footerPrice = document.getElementById('footer-product-price');
     
     if (footerTitle) {
-        footerTitle.innerHTML = `<i class="fas fa-laugh me-1"></i><span>${joke.title}</span>`;
+        footerTitle.innerHTML = `<span>${joke.title}</span>`;
     }
     
     if (footerPrice) {
-        footerPrice.innerHTML = `<i class="fas fa-tag me-1"></i><span class="fw-bold text-success">${joke.price}€</span>`;
+        footerPrice.innerHTML = `<span>${joke.price}€</span>`;
     }
 }
 
