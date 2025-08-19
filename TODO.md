@@ -1,3 +1,4 @@
 -> foreign key sur les delete de blague avec order , category avec order ect .. dans easy admin
 -> order last 4 digit
 -> supprimer mon compte
+-> adresse completion account edit

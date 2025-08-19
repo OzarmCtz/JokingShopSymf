@@ -1,0 +1,69 @@
+{% extends '@EasyAdmin/crud/field/text.html.twig' %}
+
+{% block text_widget %}
+    <div class="color-field-container">
+        <div class="input-group">
+            {{ parent() }}
+            <div class="input-group-text p-0" style="width: 40px;">
+                <input type="color" 
+                       class="form-control form-control-color border-0 h-100" 
+                       style="width: 100%; height: 100%;"
+                       onchange="updateColorField(this, '{{ field.formTypeOption('id') }}')"
+                       title="Choisir une couleur">
+            </div>
+        </div>
+        <div class="color-preview mt-2 d-none">
+            <div class="d-flex align-items-center gap-2">
+                <div class="color-sample" style="width: 30px; height: 30px; border: 1px solid #ccc; border-radius: 4px;"></div>
+                <small class="text-muted">Aperçu de la couleur</small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateColorField(colorInput, textFieldId) {
+            const textField = document.getElementById(textFieldId);
+            if (textField && colorInput.value) {
+                textField.value = colorInput.value;
+                updateColorPreview(textFieldId, colorInput.value);
+                // Déclencher l'événement change pour les validations
+                textField.dispatchEvent(new Event('change'));
+            }
+        }
+
+        function updateColorPreview(fieldId, color) {
+            const container = document.querySelector(`#${fieldId}`).closest('.color-field-container');
+            const preview = container.querySelector('.color-preview');
+            const sample = container.querySelector('.color-sample');
+            
+            if (color && isValidColor(color)) {
+                sample.style.backgroundColor = color;
+                preview.classList.remove('d-none');
+            } else {
+                preview.classList.add('d-none');
+            }
+        }
+
+        function isValidColor(color) {
+            // Test pour hex, rgb, rgba
+            const hexPattern = /^#[0-9a-fA-F]{6}$/;
+            const rgbPattern = /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/;
+            const rgbaPattern = /^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*[0-9.]+\s*\)$/;
+            
+            return hexPattern.test(color) || rgbPattern.test(color) || rgbaPattern.test(color);
+        }
+
+        // Initialiser la prévisualisation au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            const textField = document.getElementById('{{ field.formTypeOption('id') }}');
+            if (textField && textField.value) {
+                updateColorPreview('{{ field.formTypeOption('id') }}', textField.value);
+            }
+            
+            // Mettre à jour la prévisualisation lors de la saisie
+            textField.addEventListener('input', function() {
+                updateColorPreview('{{ field.formTypeOption('id') }}', this.value);
+            });
+        });
+    </script>
+{% endblock %}

@@ -102,7 +102,7 @@
 
 <div class="cards-grid">
   {% for joke in jokes %}
-    <div class="card card-bundle" onclick="openJokeDetailModal({{ joke.id }}, '{{ joke.title|e('js') }}', '{{ joke.description|e('js')|raw }}', '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', {{ joke.price }}, '{{ joke.category ? joke.category.name : 'Non catégorisé' }}')">
+    <div class="card card-bundle" onclick="openJokeDetailModal({{ joke.id }}, '{{ joke.title|e('js') }}', '{{ joke.description|e('js')|raw }}', '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', {{ joke.price }}, '{{ joke.category ? joke.category.name : 'Non catégorisé' }}', '{{ joke.category ? joke.category.color : '#ccc' }}', '{{ joke.category and joke.category.icon ? joke.category.icon : '' }}')">
       <div class="bundle-media">
         {% if joke.previewImage %}
           <img src="{{ asset('uploads/jokes/' ~ joke.previewImage) }}" alt="{{ joke.title }}">
@@ -112,7 +112,12 @@
       </div>
       <div class="bundle-body">
         <h5 class="bundle-title">{{ joke.title }}</h5>
-         <span class="joke-category" id="detail-category">{{ joke.category ? joke.category.name : 'Non catégorisé' }}</span>
+        <span class="joke-category" style="background-color: {{ joke.category ? joke.category.color : '#ccc' }}" id="detail-category">
+            {% if joke.category and joke.category.icon %}
+            <i class="{{ joke.category.icon }} me-1"></i>
+            {% endif %}
+            {{ joke.category ? joke.category.name : 'Non catégorisé' }}
+        </span>
         <div class="bundle-action-slot">
           <span class="bundle-price">€{{ joke.price|number_format(2, ',', ' ') }}</span>
           <button class="bundle-cta" 
@@ -333,8 +338,11 @@
                             <div class="joke-detail-extra-image" style="text-align: center; margin: 20px 0;">
                                 <img id="detail-extra-image" src="{{asset('images/joke.png')}}" alt="Image supplémentaire" style="max-width: 80%; height: auto; display: inline-block;" />
                             </div>
-                            <span class="joke-category" id="modal-detail-category">Catégorie</span>
+                            <span class="joke-category" style="background-color: #ccc" id="modal-detail-category">
+                                Non catégorisé
+                            </span>
                             <h3 class="joke-title" id="detail-title">Titre de la blague</h3>
+
                             <p class="joke-description" id="detail-description">Description de la blague...</p>
                             <!-- Partie image centrée sous la description -->
                         </div>
@@ -1339,7 +1347,9 @@ function resetModal() {
     const footer = document.getElementById('modal-footer');
     if (footer) {
         footer.innerHTML = `
-            <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Annuler</button>
+            <button type="button" class="btn btn-danger" onclick="closePaymentModal()">
+                <i class="fas fa-times me-1"></i>Annuler
+            </button>
             <button type="button" class="btn btn-outline-secondary" id="back-btn" onclick="previousStep()" style="display: none;">
                 <i class="fas fa-arrow-left me-1"></i>Retour
             </button>
@@ -1394,8 +1404,8 @@ function resetModalAndRetry() {
 // FONCTIONS POUR LA MODAL DE DÉTAILS DE BLAGUE
 let currentJokeDetails = {};
 
-function openJokeDetailModal(jokeId, jokeTitle, jokeDescription, jokeImage, jokePrice, jokeCategory) {
-    console.log('Opening joke detail modal for joke ID:', jokeId , jokeTitle , jokeDescription , jokeImage , jokePrice , jokeCategory);
+function openJokeDetailModal(jokeId, jokeTitle, jokeDescription, jokeImage, jokePrice, jokeCategory, jokeCategoryColor, jokeCategoryIcon) {
+    console.log('Opening joke detail modal for joke ID:', jokeId, jokeTitle, jokeDescription, jokeImage, jokePrice, jokeCategory, jokeCategoryColor, jokeCategoryIcon);
     
     // Stocker les détails actuels
     currentJokeDetails = {
@@ -1404,7 +1414,9 @@ function openJokeDetailModal(jokeId, jokeTitle, jokeDescription, jokeImage, joke
         description: jokeDescription,
         image: jokeImage,
         price: jokePrice,
-        category: jokeCategory
+        category: jokeCategory,
+        categoryColor: jokeCategoryColor,
+        categoryIcon: jokeCategoryIcon
     };
     
     // Vérifier que l'élément modal existe
@@ -1415,7 +1427,20 @@ function openJokeDetailModal(jokeId, jokeTitle, jokeDescription, jokeImage, joke
     }
     
     // Remplir les informations dans la modal
-    document.getElementById('modal-detail-category').textContent = jokeCategory;
+    const categorySpan = document.getElementById('modal-detail-category');
+    if (categorySpan) {
+        categorySpan.style.backgroundColor = jokeCategoryColor;
+        
+        // Construire le contenu avec l'icône si elle existe
+        let categoryContent = '';
+        if (jokeCategoryIcon && jokeCategoryIcon.trim() !== '') {
+            categoryContent += `<i class="${jokeCategoryIcon} me-1"></i>`;
+        }
+        categoryContent += jokeCategory;
+        
+        categorySpan.innerHTML = categoryContent;
+    }
+    
     document.getElementById('detail-title').textContent = jokeTitle;
     document.getElementById('detail-description').textContent = jokeDescription;
     document.getElementById('detail-price').textContent = `€${jokePrice}`;

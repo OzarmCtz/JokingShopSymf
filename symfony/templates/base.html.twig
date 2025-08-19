@@ -31,25 +31,27 @@
                             aria-expanded="false">
                             Parcourir les situations
                         </a>
-                        <ul class="dropdown-menu jk-menu" aria-labelledby="categoriesDropdown">
-                            <li>
-                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ path('shop_home') }}">
-                                    <span><i class="fas fa-th-large me-2"></i>Toutes les catégories</span>
-                                    {% if not app.request.query.get('category') %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            {% for category in global_categories ?? [] %}
-                            <li>
-                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ path('shop_home', {'category': category.id}) }}">
-                                    <span><i class="fas fa-tag me-2"></i>{{ category.name }}</span>
-                                    {% if app.request.query.get('category') == category.id %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
+                        <div class="dropdown-menu jk-menu p-3" aria-labelledby="categoriesDropdown" style="min-width: 600px;">
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ path('shop_home') }}">
+                                        <span><i class="fas fa-th-large me-2"></i>Toutes les catégories</span>
+                                        {% if not app.request.query.get('category') %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                                    </a>
+                                </div>
+                                <div class="col-12">
+                                    <hr class="dropdown-divider">
+                                </div>
+                                {% for category in global_categories ?? [] %}
+                                    <div class="col-4">
+                                        <a class="dropdown-item d-flex justify-content-between align-items-center py-2" style="background-color: {{category.color}} !important;" href="{{ path('shop_home', {'category': category.id}) }}">
+                                            <span><i class="{{ category.icon }} me-2"></i>{{ category.name }}</span>
+                                            {% if app.request.query.get('category') == category.id %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </li>
                 </ul>
                     <ul class="navbar-nav ms-auto">

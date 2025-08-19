@@ -74,6 +74,59 @@ class CategoryCrudController extends AbstractCrudController
             ->setLabel('Slug')
             ->hideOnIndex();
 
+        yield TextField::new('color')
+            ->setLabel('Couleur')
+            ->setRequired(false)
+            ->setHelp('Couleur en format hexadécimal (#RRGGBB), RGB (rgb(255,0,0)) ou RGBA (rgba(255,0,0,0.5))')
+            ->setTemplatePath('admin/field/color_text.html.twig')
+            ->setFormTypeOption('attr', [
+                'placeholder' => 'Ex: #ff0000, rgb(255,0,0) ou rgba(255,0,0,0.5)',
+                'pattern' => '^(#[0-9a-fA-F]{6}|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)|rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*[0-9.]+\s*\))$'
+            ])
+            ->formatValue(function ($value, $entity) {
+                if (!$value) {
+                    return 'Aucune couleur';
+                }
+
+                // Convertir les formats RGB/RGBA en style CSS valide
+                $cssColor = $value;
+                if (strpos($value, 'rgb') === 0) {
+                    $cssColor = $value;
+                } elseif (strpos($value, '#') === 0) {
+                    $cssColor = $value;
+                } else {
+                    // Si ce n'est ni RGB ni hex, on utilise la valeur telle quelle
+                    $cssColor = $value;
+                }
+
+                return sprintf(
+                    '<div style="display: inline-flex; align-items: center; gap: 8px;">
+                        <div style="width: 20px; height: 20px; background-color: %s; border: 1px solid #ccc; border-radius: 3px;"></div>
+                        <span>%s</span>
+                    </div>',
+                    htmlspecialchars($cssColor, ENT_QUOTES, 'UTF-8'),
+                    htmlspecialchars($value, ENT_QUOTES, 'UTF-8')
+                );
+            });
+
+        yield TextField::new('icon')
+            ->setLabel('Icône Font Awesome')
+            ->setRequired(false)
+            ->setHelp('Saisissez une classe Font Awesome (ex: fas fa-laugh). <a href="https://fontawesome.com/icons" target="_blank">📖 Voir la documentation Font Awesome</a>')
+            ->formatValue(function ($value, $entity) {
+                if (!$value) {
+                    return 'Aucune icône';
+                }
+                return sprintf(
+                    '<div style="display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="%s" style="font-size: 18px; width: 20px; text-align: center;"></i>
+                        <span>%s</span>
+                    </div>',
+                    htmlspecialchars($value),
+                    htmlspecialchars($value)
+                );
+            });
+
         yield BooleanField::new('is_active')
             ->setLabel('Actif')
             ->renderAsSwitch();
