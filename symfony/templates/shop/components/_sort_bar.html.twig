@@ -34,21 +34,21 @@
             </button>
             <ul class="dropdown-menu jk-menu" aria-labelledby="sortDropdown">
                 <li>
-                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_asc' %}is-active{% endif %}"
+                    <a style="border:none !important" class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_asc' %}is-active{% endif %}"
                          href="{{ path(route, q|merge({'sort':'price_asc','page':1})) }}">
                         <span>Prix : Croissant</span>
                         {% if currentSort == 'price_asc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_desc' %}is-active{% endif %}"
+                    <a style="border:none !important" class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'price_desc' %}is-active{% endif %}"
                          href="{{ path(route, q|merge({'sort':'price_desc','page':1})) }}">
                         <span>Prix : Décroissant</span>
                         {% if currentSort == 'price_desc' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'newest' %}is-active{% endif %}"
+                    <a style="border:none !important" class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'newest' %}is-active{% endif %}"
                          href="{{ path(route, q|merge({'sort':'newest','page':1})) }}">
                         <span>Nouveau</span>
                         {% if currentSort == 'newest' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
