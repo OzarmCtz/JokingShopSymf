@@ -1,6 +1,6 @@
 <!-- Modal Unifié avec Transitions -->
 <div class="modal fade" id="unifiedModal" tabindex="-1" aria-labelledby="unifiedModalLabel" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered unified-modal-dialog">
         <div class="modal-content unified-modal">
             <!-- Header avec bouton fermer -->
             <div class="modal-header border-0 p-3" id="modal-header-unified">
@@ -9,32 +9,29 @@
             </div>
             
             <!-- Container des vues avec transitions -->
-            <div class="modal-body p-0" id="modal-views-container">
+            <div class="modal-body p-0" id="modal-views-container"  >
                 
                 <!-- Vue 1: Détails de la blague -->
-                <div class="modal-view active" id="view-joke-detail" data-view="joke-detail" >
-                    <div class="joke-detail-container" >
-                        <!-- Partie gauche: Informations -->
-                        <div class="joke-detail-info">
-                            <div class="joke-detail-header">
-                                <div class="joke-detail-extra-image" style="text-align: center; margin: 20px 0;">
-                                    <img id="detail-extra-image" src="{{asset('images/joke_variant.png')}}" alt="Image supplémentaire" style="max-width: 100%; height: auto; display: inline-block;" />
-                                </div>
-                                <span class="joke-category" style="background-color: #ccc" id="modal-detail-category">
+                <div class="modal-view active p-0" id="view-joke-detail" data-view="joke-detail" >
+                    <div class="joke-detail-container"  >
+                        <!-- Contenu principal -->
+                        <div class="joke-detail-content"  >
+                            <!-- Image supplémentaire (masquée sur mobile) -->
+                            <div class="joke-detail-extra-image"  >
+                                <img id="detail-extra-image" src="{{asset('images/joke_variant.png')}}" alt="Image supplémentaire" />
+                            </div>
+                            
+                            <!-- Informations de la blague -->
+                            <div class="joke-detail-info"  style="background-color:red;">
+                                <span class="joke-category" style="background-color: #ccc; text-align: center;" id="modal-detail-category">
                                     Non catégorisé
                                 </span>
                                 <h3 class="joke-title" id="detail-title">Titre de la blague</h3>
                                 <p class="joke-description" id="detail-description">Description de la blague...</p>
                             </div>
-                            
-                            <div class="joke-detail-footer">
-                                <div class="joke-price-section">
-                                    <span class="joke-price" id="detail-price">€9.99</span>
-                                </div>
-                            </div>
                         </div>
                         
-                        <!-- Partie droite: Image -->
+                        <!-- Image principale (masquée sur mobile) -->
                         <div class="joke-detail-image">
                             <img id="detail-image" src="" alt="" />
                         </div>
@@ -246,8 +243,8 @@
 
 #modal-views-container {
     position: relative;
-    min-height: 300px; /* Hauteur minimum réduite */
-    transition: height 0.3s ease; /* Transition fluide pour les changements de hauteur */
+    min-height: 250px; /* Réduit de 300px à 250px */
+    transition: height 0.3s ease;
 }
 
 .modal-view {
@@ -255,7 +252,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    min-height: 400px;
+    min-height: 300px; /* Réduit de 400px à 300px */
     opacity: 1;
     transform: translateX(0);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -287,41 +284,52 @@
     position: relative;
 }
 
-.payment-view-container {
-    min-height: 400px;
+/* Conteneur modal responsive */
+.unified-modal-dialog {
+    max-width: 600px; /* Réduit de 800px à 600px */
+    width: 90%; /* Largeur relative pour s'adapter */
+    margin: 1rem auto; /* Centrage forcé */
 }
 
-.payment-content {
-    min-height: 350px;
-}
-
+/* Vue des détails optimisée */
 .joke-detail-container {
     display: flex;
-    min-height: 400px;
+    min-height: 250px; /* Réduit encore de 300px à 250px */
+    flex-wrap: wrap;
+    overflow: hidden; /* Évite tout débordement */
 }
 
-.joke-detail-info {
+.joke-detail-content {
     flex: 1;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    min-width: 250px; /* Réduit la largeur minimum */
 }
 
-.joke-detail-image {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-    min-height: 300px; /* Hauteur minimum pour éviter que l'image soit trop petite */
+ 
+
+.joke-detail-extra-image {
+    text-align: center;
+    margin-bottom: 0.75rem; /* Réduit la marge */
 }
 
-.joke-detail-image img {
-    width: 100%;
-    height: 300px; /* Hauteur fixe pour l'image */
-    object-fit: cover;
+.joke-detail-extra-image img {
+    max-width: 200px; /* Réduit de 200px à 150px */
+    height: auto;
     border-radius: 8px;
+}
+
+.joke-title {
+    font-size: 1.1rem; /* Réduit de 1.25rem */
+    margin-bottom: 0.5rem;
+}
+
+.joke-description {
+    font-size: 0.85rem; /* Réduit de 0.9rem */
+    color: #666;
+    margin-bottom: 0.75rem; /* Réduit */
+}
+
+.payment-view-container {
+    min-height: 300px; /* Réduit de 350px */
 }
 
 /* Animation d'entrée pour le modal */
@@ -364,11 +372,7 @@
     margin-top: auto;
 }
 
-.joke-price-section {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
+
 
 .joke-price {
     font-size: 1.5rem;
@@ -411,31 +415,69 @@
 
 /* Ajuster le contenu du paiement */
 .payment-view-container {
-    min-height: 400px;
+    min-height: 350px; /* Mise à jour */
     overflow: hidden;
-    border-radius: 8px; /* Assurer l'arrondi */
+    border-radius: 8px;
 }
 
 .payment-content {
-    min-height: 350px;
+    min-height: 300px; /* Réduit */
     position: relative;
-    z-index: 1; /* Au-dessus de la bannière */
+    z-index: 1;
 }
 
-/* Responsive */
+/* Responsive - Écrans de PC plus petits */
+@media (max-width: 1200px) {
+    .unified-modal-dialog {
+        max-width: 550px;
+        width: 85%;
+    }
+    
+    
+}
+
+/* Responsive pour écrans moyens */
+@media (max-width: 992px) {
+    .unified-modal-dialog {
+        max-width: 500px;
+        width: 90%;
+        margin: 0.75rem auto;
+    }
+}
+
+/* Responsive pour tablettes - garde le layout horizontal */
 @media (max-width: 768px) {
-    .joke-detail-container {
-        flex-direction: column;
-    }
-    
-    .joke-detail-info {
-        padding: 1rem;
-    }
-    
     .payment-content {
         padding: 1rem !important;
     }
     
+    .payment-banner-full {
+        height: 80px;
+    }
+}
+
+/* Responsive pour petits écrans - garde TOUJOURS le layout horizontal */
+@media (max-width: 480px) {
+    .unified-modal-dialog {
+        margin: 0.25rem auto;
+        width: 98%;
+    }
+
     
+    .joke-title {
+        font-size: 0.9rem;
+    }
+    
+    .joke-description {
+        font-size: 0.75rem;
+    }
+}
+
+/* Responsive pour très petits écrans - masquage SEULEMENT si nécessaire */
+@media (max-width: 360px) {
+    .joke-detail-image {
+        display: none !important; /* Cache seulement l'image du haut */
+    }
+   
 }
 </style>

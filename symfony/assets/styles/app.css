@@ -16,7 +16,6 @@
   
   /* Couleurs système */
   --border-color: #4a4738;    /* Couleur des bordures */
-  --border-color-simple: #ffffff48;    /* Couleur des bordures */
   --success: #198754;
   --danger: #dc3545;
   --warning: #ffc107;
@@ -714,7 +713,8 @@ i.joke-smiley {
 }
 
 .joke-description {
-  border: 1px solid var(--border-color-simple) !important;
+  background-color: var(--bg-input) !important;
+  border: 1px solid var(--border-color) !important;
   border-radius: 8px !important;
   padding: 12px 16px !important;
   color: var(--text-muted) !important;
@@ -1129,19 +1129,13 @@ i.joke-smiley {
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
-  .joke-detail-container {
-    flex-direction: column !important;
-    max-height: 90vh !important;
-  }
+   
   
   .joke-detail-info {
     padding: 24px !important;
   }
   
-  .joke-detail-image {
-    min-height: 250px !important;
-    max-height: 300px !important;
-  }
+  
   
   .joke-title {
     font-size: 1.5rem !important;
@@ -1205,7 +1199,7 @@ i.joke-smiley {
   /* 1) le gradient assombrit l'image, 2) l'image de bannière */
   background-image:
     linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
-    url('/images/payment-banner.png'); /* adapte le chemin si besoin */
+    url('/images/banner-hero.png'); /* adapte le chemin si besoin */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
