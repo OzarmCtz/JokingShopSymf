@@ -2,3 +2,4 @@
 -> order last 4 digit
 -> supprimer mon compte
 -> adresse completion account edit
+-> responsive modal detail

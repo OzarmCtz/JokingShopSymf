@@ -357,7 +357,11 @@ function populateJokeDetails(joke) {
     if (titleEl) titleEl.textContent = joke.title;
     
     const descEl = document.getElementById('detail-description');
-    if (descEl) descEl.textContent = joke.description;
+    if (descEl){
+    descEl.textContent = joke.description;
+        descEl.textContent = joke.description;
+        descEl.style.backgroundColor = joke.categoryColor;
+    } 
     
     const priceEl = document.getElementById('detail-price');
     if (priceEl) priceEl.textContent = `€${joke.price}`;
