@@ -1,0 +1,106 @@
+{% if jokes.pageCount > 1 %}
+{# Variables pour construire les URLs #}
+{% set currentParams = {
+    'page': jokes.currentPageNumber,
+    'category': app.request.query.get('category'),
+    'sort': app.request.query.get('sort'),
+    'minPrice': app.request.query.get('minPrice'),
+    'maxPrice': app.request.query.get('maxPrice')
+} %}
+
+<div class="pagination-wrapper">
+    <nav aria-label="Navigation pagination">
+        <ul class="pagination pagination-custom justify-content-center">
+            {# Bouton Précédent #}
+            {% if jokes.currentPageNumber > 1 %}
+                {% set prevParams = currentParams|merge({'page': jokes.currentPageNumber - 1}) %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('shop_home', prevParams|filter(v => v is not null and v != '')) }}" 
+                       aria-label="Page précédente">
+                        <i class="fas fa-chevron-left"></i>
+                        <span class="d-none d-sm-inline ms-1">Précédent</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i>
+                        <span class="d-none d-sm-inline ms-1">Précédent</span>
+                    </span>
+                </li>
+            {% endif %}
+
+            {# Pages numériques #}
+            {% set startPage = max(1, jokes.currentPageNumber - 2) %}
+            {% set endPage = min(jokes.pageCount, jokes.currentPageNumber + 2) %}
+            
+            {# Première page si on ne commence pas par 1 #}
+            {% if startPage > 1 %}
+                {% set firstParams = currentParams|merge({'page': 1}) %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('shop_home', firstParams|filter(v => v is not null and v != '')) }}">1</a>
+                </li>
+                {% if startPage > 2 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endif %}
+
+            {# Pages numérotées #}
+            {% for pageNumber in startPage..endPage %}
+                {% if pageNumber == jokes.currentPageNumber %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ pageNumber }}</span>
+                    </li>
+                {% else %}
+                    {% set pageParams = currentParams|merge({'page': pageNumber}) %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ path('shop_home', pageParams|filter(v => v is not null and v != '')) }}">{{ pageNumber }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {# Dernière page si on ne finit pas par la dernière #}
+            {% if endPage < jokes.pageCount %}
+                {% if endPage < jokes.pageCount - 1 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+                {% set lastParams = currentParams|merge({'page': jokes.pageCount}) %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('shop_home', lastParams|filter(v => v is not null and v != '')) }}">{{ jokes.pageCount }}</a>
+                </li>
+            {% endif %}
+
+            {# Bouton Suivant #}
+            {% if jokes.currentPageNumber < jokes.pageCount %}
+                {% set nextParams = currentParams|merge({'page': jokes.currentPageNumber + 1}) %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('shop_home', nextParams|filter(v => v is not null and v != '')) }}" 
+                       aria-label="Page suivante">
+                        <span class="d-none d-sm-inline me-1">Suivant</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <span class="d-none d-sm-inline me-1">Suivant</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+    {# Informations sur la pagination #}
+    <div class="pagination-info text-center mt-3">
+        <small>
+            Page <strong>{{ jokes.currentPageNumber }}</strong> / <strong>{{ jokes.pageCount }}</strong> 
+            • <strong>{{ jokes.totalItemCount }}</strong> blague{{ jokes.totalItemCount > 1 ? 's' : '' }}
+        </small>
+    </div>
+</div>
+{% endif %}

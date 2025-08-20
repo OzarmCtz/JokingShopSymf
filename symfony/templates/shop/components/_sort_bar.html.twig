@@ -4,7 +4,8 @@
 {% set sortLabel = {
   'price_asc': 'Prix : Croissant',
   'price_desc': 'Prix : Décroissant',
-  'newest': 'Nouveau'
+  'newest': 'Nouveau',
+  'random': 'Aléatoire'
 }[currentSort] ?? 'Nouveau' %}
 {% set route = app.request.attributes.get('_route') %}
 
@@ -12,11 +13,11 @@
     <div class="d-flex align-items-center gap-2 flex-grow-1">
         {% if currentCategoryName %}
             <h3 class="mb-0 text-white" style="font-size: 1.5rem; font-weight: 600;">
-                Blagues {{ currentCategoryName }} ({{ jokes|length }})
+                Blagues {{ currentCategoryName }} ({{ jokes.totalItemCount }})
             </h3>
         {% else %}
             <h3 class="mb-0 text-white" style="font-size: 1.5rem; font-weight: 600;">
-                Toutes les blagues ({{ jokes|length }})
+                Toutes les blagues ({{ jokes.totalItemCount }})
             </h3>
         {% endif %}
     </div>
@@ -52,6 +53,13 @@
                          href="{{ path(route, q|merge({'sort':'newest','page':1})) }}">
                         <span>Nouveau</span>
                         {% if currentSort == 'newest' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a style="border:none !important" class="dropdown-item d-flex justify-content-between align-items-center {% if currentSort == 'random' %}is-active{% endif %}"
+                         href="{{ path(route, q|merge({'sort':'random','page':1})) }}">
+                        <span>Aléatoire</span>
+                        {% if currentSort == 'random' %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
                     </a>
                 </li>
             </ul>

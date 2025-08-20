@@ -69,8 +69,56 @@ class JokeRepository extends ServiceEntityRepository
                 $qb->orderBy('j.created_at', 'DESC');
                 break;
         }
-
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Create query builder for active jokes with filtering (for pagination)
+     * 
+     * @param int|null $categoryId
+     * @param float|null $minPrice
+     * @param float|null $maxPrice
+     * @param string $sort
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function createActiveJokesQueryBuilder(?int $categoryId = null, ?float $minPrice = null, ?float $maxPrice = null, string $sort = 'newest'): \Doctrine\ORM\QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('j')
+            ->andWhere('j.is_active = :active')
+            ->setParameter('active', true);
+
+        // Join category if needed
+        if ($categoryId || in_array($sort, ['price_asc', 'price_desc', 'newest'])) {
+            $qb->leftJoin('j.category', 'c');
+        }
+
+        // Category filter
+        if ($categoryId) {
+            $qb->andWhere('c.id = :cat')->setParameter('cat', $categoryId);
+        }
+
+        // Price filters
+        if ($minPrice !== null) {
+            $qb->andWhere('j.price >= :min')->setParameter('min', $minPrice);
+        }
+        if ($maxPrice !== null) {
+            $qb->andWhere('j.price <= :max')->setParameter('max', $maxPrice);
+        }
+
+        // Sorting
+        switch ($sort) {
+            case 'price_asc':
+                $qb->orderBy('j.price', 'ASC');
+                break;
+            case 'price_desc':
+                $qb->orderBy('j.price', 'DESC');
+                break;
+            case 'newest':
+            default:
+                $qb->orderBy('j.created_at', 'DESC');
+                break;
+        }
+        return $qb;
     }
 
     //    /**

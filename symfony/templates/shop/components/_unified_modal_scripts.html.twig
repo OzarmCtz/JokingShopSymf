@@ -297,7 +297,10 @@ function updateModalInterface() {
     
     if (config.showProductInfo) {
         console.log('Showing product info for view:', currentView);
-        if (productInfo) productInfo.style.display = 'flex';
+        if (productInfo) {
+            productInfo.style.display = 'flex';
+            productInfo.style.backgroundColor = currentJokeDetails.categoryColor || 'rgba(254, 252, 1, 0.1)';
+        }
         if (modalActions) modalActions.style.display = 'flex';
         if (footer) footer.style.display = 'flex';
         // Justification normale avec espace entre les sections

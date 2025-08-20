@@ -82,6 +82,8 @@
             {% block body %}{% endblock %}
         </main>
 
+        {% include 'components/_footer.html.twig' %}
+
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
