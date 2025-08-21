@@ -1,30 +1,232 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Votre blague achetée</title>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1 style="color: #2c3e50; text-align: center;">🎉 Merci pour votre achat !</h1>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre blague achetée - Jo.King</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h2 style="color: #495057; margin-top: 0;">{{ joke.title }}</h2>
-            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #007bff;">
-                {{ joke.bodyText|nl2br }}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            color: #DBDEE1;
+            background: linear-gradient(135deg, #1e1b0c 0%, #29240f 100%);
+            padding: 20px 0;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #322f21;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        .email-header {
+            background: linear-gradient(135deg, #130c03 0%, #29240f 100%);
+            padding: 30px 40px;
+            text-align: center;
+            border-bottom: 1px solid #4a4738;
+        }
+        
+        .logo {
+            height: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .header-title {
+            color: #ffc107;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header-subtitle {
+            color: #B5BAC1;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        .email-body {
+            padding: 40px;
+        }
+        
+        .joke-section {
+            background: #2c281b;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            border: 1px solid #4a4738;
+        }
+        
+        .joke-title {
+            color: #ffc107;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .joke-content {
+            background: #322f21;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            color: #DBDEE1;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        
+        .order-details {
+            background: #29240f;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            border: 1px solid #4a4738;
+        }
+        
+        .details-title {
+            color: #ffc107;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #4a4738;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: #B5BAC1;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            color: #DBDEE1;
+            font-weight: 600;
+        }
+        
+        .price-highlight {
+            color: #ffc107;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .email-footer {
+            background: #130c03;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #4a4738;
+        }
+        
+        .footer-text {
+            color: #B5BAC1;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .footer-brand {
+            color: #ffc107;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 640px) {
+            .email-container {
+                margin: 0 10px;
+            }
+            
+            .email-header, .email-body, .email-footer {
+                padding: 20px;
+            }
+            
+            .header-title {
+                font-size: 20px;
+            }
+            
+            .joke-title {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <img src="{{ absolute_url(asset('images/joke.png')) }}" alt="Jo.King" class="logo">
+            <h1 class="header-title">🎉 Merci pour votre achat !</h1>
+            <p class="header-subtitle">Votre blague est prête à être savourée</p>
+        </div>
+        
+        <!-- Body -->
+        <div class="email-body">
+            <!-- Joke Section -->
+            <div class="joke-section">
+                <h2 class="joke-title">
+                    😄 {{ joke.title }}
+                </h2>
+                <div class="joke-content">
+                    {{ joke.bodyText|nl2br }}
+                </div>
+            </div>
+            
+            <!-- Order Details -->
+            <div class="order-details">
+                <h3 class="details-title">
+                    📋 Détails de votre commande
+                </h3>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">{{ order.email }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Prix</span>
+                    <span class="detail-value price-highlight">{{ (order.amount / 100)|number_format(2, ',', ' ') }}€</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Date d'achat</span>
+                    <span class="detail-value">{{ order.paidAt|date('d/m/Y à H:i') }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Numéro de commande</span>
+                    <span class="detail-value">#{{ order.id }}</span>
+                </div>
             </div>
         </div>
         
-        <div style="background: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #495057;">Détails de votre commande</h3>
-            <p><strong>Email:</strong> {{ order.email }}</p>
-            <p><strong>Prix:</strong> {{ order.amount }}€</p>
-            <p><strong>Date:</strong> {{ order.paidAt|date('d/m/Y H:i') }}</p>
-            <p><strong>Numéro de commande:</strong> #{{ order.id }}</p>
-        </div>
-        
-        <div style="text-align: center; margin: 30px 0;">
-            <p style="color: #6c757d;">Merci d'avoir choisi notre boutique de blagues !</p>
+        <!-- Footer -->
+        <div class="email-footer">
+            <p class="footer-text">
+                Merci d'avoir choisi notre boutique de blagues !<br>
+                Nous espérons que cette blague vous fera sourire.
+            </p>
+            <p class="footer-brand">Jo.King - La boutique du rire</p>
         </div>
     </div>
 </body>
