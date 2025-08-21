@@ -120,6 +120,109 @@
         </div>
     </div>
 
+    <!-- Nouvelles cartes pour les analytics de paiements -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Commandes totales</div>
+                            <div class="h1">{{ stats.orders_total }}</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-shopping-cart fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="text-white stretched-link" href="{{ ea_url().setController('App\\Controller\\Admin\\OrderCrudController') }}">
+                        Gérer les commandes
+                    </a>
+                    <div class="text-white">
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Commandes payées</div>
+                            <div class="h1">{{ stats.orders_paid }}</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <small class="text-white">
+                        {% if stats.orders_total > 0 %}
+                            {{ ((stats.orders_paid / stats.orders_total) * 100)|round }}% de réussite
+                        {% else %}
+                            0% de réussite
+                        {% endif %}
+                    </small>
+                    <div class="text-white">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Revenus totaux</div>
+                            <div class="h1">{{ stats.revenue_total|number_format(2, ',', ' ') }}€</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-euro-sign fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <small class="text-white">
+                        Toutes les ventes
+                    </small>
+                    <div class="text-white">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small text-white-50">Revenus (7 jours)</div>
+                            <div class="h1">{{ stats.revenue_week|number_format(2, ',', ' ') }}€</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-week fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <small class="text-white">
+                        Cette semaine
+                    </small>
+                    <div class="text-white">
+                        <i class="fas fa-trending-up"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="card mb-4">
@@ -140,6 +243,10 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span><i class="fas fa-folder-plus text-primary"></i> Nouvelles catégories</span>
                             <span class="badge bg-primary rounded-pill">{{ stats.recent_categories }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-shopping-cart text-warning"></i> Nouvelles commandes</span>
+                            <span class="badge bg-warning rounded-pill">{{ stats.recent_orders }}</span>
                         </li>
                     </ul>
                 </div>
