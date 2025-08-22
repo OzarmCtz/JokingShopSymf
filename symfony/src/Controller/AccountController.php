@@ -7,6 +7,7 @@ use App\Entity\Order;
 use App\Form\ProfileEditFormType;
 use App\Security\EmailVerifier;
 use App\Service\JokeEmailService;
+use App\Service\UserAnonymizationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +18,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 #[IsGranted('ROLE_USER')]
@@ -24,7 +26,9 @@ final class AccountController extends AbstractController
 {
     public function __construct(
         private EmailVerifier $emailVerifier,
-        private JokeEmailService $jokeEmailService
+        private JokeEmailService $jokeEmailService,
+        private UserAnonymizationService $anonymizationService,
+        private TokenStorageInterface $tokenStorage
     ) {}
 
     #[Route('/account', name: 'app_account')]
@@ -178,5 +182,42 @@ final class AccountController extends AbstractController
         $this->addFlash('success', 'Your email address has been verified.');
 
         return $this->redirectToRoute('app_account');
+    }
+
+    #[Route('/account/delete', name: 'app_account_delete', methods: ['POST'])]
+    public function deleteAccount(Request $request): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Vérifier le token CSRF
+        if (!$this->isCsrfTokenValid('delete-account', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de sécurité invalide.');
+            return $this->redirectToRoute('app_account');
+        }
+
+        try {
+            // Stocker les informations nécessaires avant suppression
+            $userEmail = $user->getEmail();
+
+            // Déconnecter l'utilisateur AVANT la suppression
+            $this->tokenStorage->setToken(null);
+            $request->getSession()->invalidate();
+
+            // Supprimer l'utilisateur et anonymiser ses commandes
+            $result = $this->anonymizationService->deleteUserWithAnonymization($user);
+
+            // Créer une nouvelle session pour le message flash
+            $request->getSession()->start();
+            $this->addFlash('success', sprintf(
+                'Votre compte a été supprimé avec succès. %d commande(s) ont été anonymisées.',
+                $result['anonymized_orders_count']
+            ));
+
+            return $this->redirectToRoute('app_login');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de la suppression de votre compte : ' . $e->getMessage());
+            return $this->redirectToRoute('app_account');
+        }
     }
 }

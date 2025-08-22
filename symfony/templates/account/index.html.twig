@@ -102,9 +102,9 @@
           </div>
 
             <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
-            <a  class="btn btn-danger">
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
               <i class="fas fa-trash me-2"></i>Supprimer mon compte
-            </a>
+            </button>
             <a href="{{ path('app_account_edit') }}" class="btn btn-primary">
               <i class="fas fa-edit me-2"></i>Modifier mon profil
             </a>
@@ -289,5 +289,76 @@
 </div>
 
 {% endif %}
+
+<!-- Modal de suppression de compte -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header text-white border-0">
+        <h5 class="modal-title" id="deleteAccountModalLabel">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Supprimer définitivement mon compte
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="alert alert-warning border-0" role="alert">
+          <div class="d-flex align-items-start">
+            <i class="fas fa-exclamation-triangle text-warning me-3 mt-1"></i>
+            <div>
+              <h6 class="alert-heading mb-2">Action irréversible</h6>
+              <p class="mb-0">Cette action est définitive et ne peut pas être annulée.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <h6 class="mb-3">Que va-t-il se passer ?</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2">
+              <i class="fas fa-user-times text-danger me-2"></i>
+              Votre compte sera définitivement supprimé
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-shopping-cart text-warning me-2"></i>
+              Vos commandes seront anonymisées (email remplacé)
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-database text-info me-2"></i>
+              L'historique des commandes sera conservé pour la comptabilité
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-sign-out-alt text-muted me-2"></i>
+              Vous serez automatiquement déconnecté
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-light rounded p-3 mb-3">
+          <p class="mb-0 small text-muted">
+            <i class="fas fa-info-circle me-1"></i>
+            Conformément au RGPD, vos données personnelles seront supprimées, 
+            mais les données de commande nécessaires à la gestion comptable seront anonymisées.
+          </p>
+        </div>
+
+        <p class="text-center mb-0">
+          <strong>Êtes-vous vraiment sûr(e) de vouloir supprimer votre compte ?</strong>
+        </p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Annuler
+        </button>
+        <form action="{{ path('app_account_delete') }}" method="post" class="d-inline">
+          <input type="hidden" name="_token" value="{{ csrf_token('delete-account') }}">
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash me-2"></i>Oui, supprimer définitivement
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

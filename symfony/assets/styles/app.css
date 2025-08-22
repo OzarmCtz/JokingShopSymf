@@ -1591,19 +1591,56 @@ img[loading="lazy"].lazy-loaded {
 /* ============================================
    STICKY FOOTER - Footer toujours en bas
    ============================================ */
-.min-vh-100 {
-}
-
-.flex-grow-1 {
-}
 
 /* S'assurer que le footer ne remonte jamais */
 .footer-custom {
   flex-shrink: 0;
 }
 
-/* Amélioration pour les petits écrans */
-@media (max-height: 600px) {
-  .footer-custom {
-  }
+/* ============================================
+   MODAL DE SUPPRESSION DE COMPTE
+   ============================================ */
+#deleteAccountModal .modal-content {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+#deleteAccountModal .modal-header.bg-danger {
+  background-color: var(--danger) !important;
+}
+
+#deleteAccountModal .alert-warning {
+  background-color: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  color: var(--text-primary);
+}
+
+#deleteAccountModal .bg-light {
+  background-color: var(--bg-input) !important;
+  border: 1px solid var(--border-color-simple);
+}
+
+#deleteAccountModal .list-unstyled li {
+  padding: 0.25rem 0;
+}
+
+#deleteAccountModal .btn-danger {
+  background-color: var(--danger);
+  border-color: var(--danger);
+}
+
+#deleteAccountModal .btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+#deleteAccountModal .btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+#deleteAccountModal .btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
 }

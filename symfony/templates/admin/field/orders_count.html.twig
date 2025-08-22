@@ -1,0 +1,32 @@
+{# templates/admin/field/orders_count.html.twig #}
+{% set user = entity.instance %}
+
+{# Utilisation d'une approche plus simple pour compter les commandes #}
+{% set successfulOrders = 0 %}
+{% if app.user and is_granted('ROLE_ADMIN') %}
+    {# On va créer une route AJAX ou utiliser une méthode du repository #}
+    {% set successfulOrders = user.successfulOrdersCount %}
+{% endif %}
+
+<span class="badge bg-success">
+    <i class="fas fa-shopping-cart me-1"></i>
+    <span class="orders-count" data-user-id="{{ user.id }}">...</span>
+</span>
+
+<script>
+// Charger le nombre de commandes via AJAX
+document.addEventListener('DOMContentLoaded', function() {
+    const orderCountSpans = document.querySelectorAll('.orders-count');
+    orderCountSpans.forEach(span => {
+        const userId = span.getAttribute('data-user-id');
+        fetch(`/admin/user/${userId}/orders-count`)
+            .then(response => response.json())
+            .then(data => {
+                span.textContent = data.count || 0;
+            })
+            .catch(error => {
+                span.textContent = '0';
+            });
+    });
+});
+</script>

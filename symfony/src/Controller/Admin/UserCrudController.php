@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -26,15 +27,21 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\Regex;
+use App\Service\UserAnonymizationService;
+use App\Repository\OrderRepository;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
 
 #[IsGranted('ROLE_ADMIN')]
 class UserCrudController extends AbstractCrudController
 {
-    private UserPasswordHasherInterface $passwordHasher;
-
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
-    {
-        $this->passwordHasher = $passwordHasher;
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher,
+        private UserAnonymizationService $anonymizationService,
+        private OrderRepository $orderRepository
+    ) {
     }
 
     public static function getEntityFqcn(): string
@@ -54,8 +61,15 @@ class UserCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
+        $anonymizeAction = Action::new('anonymizeAndDelete', 'Supprimer (avec anonymisation)', 'fas fa-user-slash')
+            ->linkToCrudAction('anonymizeAndDelete')
+            ->addCssClass('btn btn-danger')
+            ->setHtmlAttributes(['onclick' => 'return confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ? Ses commandes seront anonymisées.")']);
+
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_INDEX, $anonymizeAction)
+            ->add(Crud::PAGE_DETAIL, $anonymizeAction)
             ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
                 return $action->setIcon('fa fa-plus')->setLabel('Nouvel utilisateur');
             })
@@ -63,7 +77,11 @@ class UserCrudController extends AbstractCrudController
                 return $action->setIcon('fa fa-edit');
             })
             ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
-                return $action->setIcon('fa fa-trash');
+                return $action
+                    ->setIcon('fa fa-trash')
+                    ->setLabel('Suppression simple')
+                    ->addCssClass('btn btn-warning')
+                    ->setHtmlAttributes(['onclick' => 'return confirm("Attention: Suppression sans anonymisation des commandes !")']);
             });
     }
 
@@ -104,7 +122,7 @@ class UserCrudController extends AbstractCrudController
                     ],
                 ]);
         } else {
-            // Pour l'édition, on utilise un champ non mappé
+            // Pour l'édition, afficher un champ mot de passe simple
             yield TextField::new('newPassword')
                 ->setFormType(PasswordType::class)
                 ->setLabel('Nouveau mot de passe')
@@ -113,21 +131,15 @@ class UserCrudController extends AbstractCrudController
                 ->setFormTypeOptions([
                     'mapped' => false,
                     'attr' => ['autocomplete' => 'new-password'],
-                    'constraints' => [
-                        new Length([
-                            'min' => 8,
-                            'minMessage' => 'Votre mot de passe doit contenir au minimum {{ limit }} caractères.',
-                            'max' => 4096,
-                        ]),
-                        new Regex([
-                            'pattern' => '/^(?=.*[A-Za-z])(?=.*\d).+|^$/',
-                            'message' => 'Votre mot de passe doit contenir au moins une lettre et un chiffre.',
-                        ]),
-                        new NotCompromisedPassword([
-                            'message' => 'Ce mot de passe a été exposé lors d’une fuite de données. Veuillez en choisir un autre.',
-                        ]),
-                    ],
-                ]);
+                ])
+                ->hideOnIndex(); // Masquer sur la liste
+        }
+
+        // Afficher le nombre de commandes réussies (seulement sur l'index)
+        if ($pageName === Crud::PAGE_INDEX) {
+            yield IntegerField::new('successfulOrdersCount', 'Commandes réussies')
+                ->setTemplatePath('admin/field/orders_count.html.twig')
+                ->setSortable(false);
         }
 
         yield ChoiceField::new('roles')
@@ -190,5 +202,47 @@ class UserCrudController extends AbstractCrudController
     {
         // La gestion des mots de passe est gérée par UserPasswordEventSubscriber
         parent::persistEntity($entityManager, $entityInstance);
+    }
+
+    public function anonymizeAndDelete(AdminContext $context): Response
+    {
+        $user = $context->getEntity()->getInstance();
+
+        if (!$user instanceof User) {
+            $this->addFlash('error', 'Utilisateur non trouvé.');
+            return $this->redirect($context->getReferrer());
+        }
+
+        try {
+            $result = $this->anonymizationService->deleteUserWithAnonymization($user);
+
+            $this->addFlash('success', sprintf(
+                'Utilisateur "%s" supprimé avec succès. %d commande(s) anonymisée(s).',
+                $result['user_email'],
+                $result['anonymized_orders_count']
+            ));
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de la suppression : ' . $e->getMessage());
+        }
+
+        return $this->redirect($this->generateUrl('admin', [
+            'crudAction' => 'index',
+            'crudControllerFqcn' => self::class
+        ]));
+    }
+
+    #[Route('/admin/user/{id}/orders-count', name: 'admin_user_orders_count', methods: ['GET'])]
+    public function getOrdersCount(User $user): JsonResponse
+    {
+        $count = $this->orderRepository->createQueryBuilder('o')
+            ->select('COUNT(o.id)')
+            ->where('(o.user = :user OR o.email = :email) AND o.status = :status')
+            ->setParameter('user', $user)
+            ->setParameter('email', $user->getEmail())
+            ->setParameter('status', 'paid')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return new JsonResponse(['count' => (int) $count]);
     }
 }

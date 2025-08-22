@@ -179,4 +179,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->updatedAt = new \DateTimeImmutable();
     }
+
+    /**
+     * Méthode virtuelle pour EasyAdmin - calcule le nombre de commandes réussies
+     * Cette propriété n'existe pas en BDD mais est utilisée pour l'affichage
+     */
+    public function getSuccessfulOrdersCount(): int
+    {
+        // Cette méthode sera utilisée par EasyAdmin avec le template personnalisé
+        // Le calcul réel se fait dans le template Twig
+        return 0;
+    }
 }
