@@ -41,8 +41,7 @@ class UserCrudController extends AbstractCrudController
         private UserPasswordHasherInterface $passwordHasher,
         private UserAnonymizationService $anonymizationService,
         private OrderRepository $orderRepository
-    ) {
-    }
+    ) {}
 
     public static function getEntityFqcn(): string
     {

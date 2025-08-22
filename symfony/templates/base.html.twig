@@ -37,7 +37,7 @@
                             aria-expanded="false">
                             Parcourir les situations
                         </a>
-                        <div class="dropdown-menu jk-menu p-3" aria-labelledby="categoriesDropdown" style="min-width: 600px;">
+                        <div class="dropdown-menu jk-menu jk-categories-dropdown p-3" aria-labelledby="categoriesDropdown" style="min-width: 600px;">
                             <div class="row g-2">
                                 <div class="col-12">
                                     <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ path('shop_home') }}">
@@ -49,7 +49,7 @@
                                     <hr class="dropdown-divider">
                                 </div>
                                 {% for category in global_categories ?? [] %}
-                                    <div class="col-4">
+                                    <div class="col-4 jk-category-item">
                                         <a class="dropdown-item d-flex justify-content-between align-items-center py-2" style="background-color: {{category.color}} !important;" href="{{ path('shop_home', {'category': category.id}) }}">
                                             <span><i class="{{ category.icon }} me-2"></i>{{ category.name }}</span>
                                             {% if app.request.query.get('category') == category.id %}<i class="fa-solid fa-check jk-check"></i>{% endif %}
