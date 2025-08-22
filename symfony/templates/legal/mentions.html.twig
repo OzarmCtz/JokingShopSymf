@@ -1,0 +1,232 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions Légales - {{ app_settings.companyName }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+        <div class="legal-container">
+            <div class="legal-header text-center mb-5">
+                <h1 class="legal-title">
+                    <i class="fas fa-gavel me-3"></i>
+                    Mentions Légales
+                </h1>
+                <p class="legal-subtitle">Informations légales relatives au site {{ app_settings.companyName }}</p>
+            </div>
+
+            <div class="legal-content">
+                <!-- Éditeur du site -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-building me-2"></i>
+                        Éditeur du site
+                    </h2>
+                    <div class="section-content">
+                        <p><strong>Dénomination sociale :</strong> {{ app_settings.companyName }}</p>
+                        <p><strong>Forme juridique :</strong> {{ app_settings.legalForm }}</p>
+                        <p><strong>Adresse du siège social :</strong><br>
+                        {{ app_settings.companyAddress }}<br>
+                        {{ app_settings.companyPostalCode }} {{ app_settings.companyCity }}<br>
+                        France</p>
+                        <p><strong>SIRET :</strong> {{ app_settings.companySiret }}</p>
+                        {% if app_settings.companyRcs %}<p><strong>RCS :</strong> {{ app_settings.companyRcs }}</p>{% endif %}
+                        {% if app_settings.companyCapital %}<p><strong>Capital social :</strong> {{ app_settings.companyCapital }} €</p>{% endif %}
+                        {% if app_settings.companyVat %}<p><strong>Numéro de TVA intracommunautaire :</strong> {{ app_settings.companyVat }}</p>{% endif %}
+                        <p><strong>Directeur de la publication :</strong> {{ app_settings.legalRepresentative }}</p>
+                        <p><strong>Email :</strong> {{ app_settings.contactEmail }}</p>
+                        {% if app_settings.contactPhone %}<p><strong>Téléphone :</strong> {{ app_settings.contactPhone }}</p>{% endif %}
+                    </div>
+                </section>
+
+                <!-- Hébergeur -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-server me-2"></i>
+                        Hébergement
+                    </h2>
+                    <div class="section-content">
+                        <p><strong>Hébergeur :</strong> {{ app_settings.hostingProvider }}</p>
+                        <p><strong>Adresse :</strong><br>
+                        {{ app_settings.hostingAddress }}</p>
+                        {% if app_settings.hostingPhone %}<p><strong>Téléphone :</strong> {{ app_settings.hostingPhone }}</p>{% endif %}
+                        {% if app_settings.hostingWebsite %}<p><strong>Site web :</strong> <a href="{{ app_settings.hostingWebsite }}" target="_blank">{{ app_settings.hostingWebsite }}</a></p>{% endif %}
+                    </div>
+                </section>
+
+                <!-- Propriété intellectuelle -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-copyright me-2"></i>
+                        Propriété intellectuelle
+                    </h2>
+                    <div class="section-content">
+                        <p>L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.</p>
+                        
+                        <p>La reproduction de tout ou partie de ce site sur un support électronique quel qu'il soit est formellement interdite sauf autorisation expresse du directeur de la publication.</p>
+                        
+                        <p>Les marques et logos reproduits sur ce site sont déposés par les sociétés qui en sont propriétaires.</p>
+                    </div>
+                </section>
+
+                <!-- Responsabilité -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Responsabilité
+                    </h2>
+                    <div class="section-content">
+                        <p>Les informations contenues sur ce site sont aussi précises que possible et le site remis à jour à différentes périodes de l'année, mais peut toutefois contenir des inexactitudes ou des omissions.</p>
+                        
+                        <p>Si vous constatez une lacune, erreur ou ce qui parait être un dysfonctionnement, merci de bien vouloir le signaler par email à l'adresse {{ app_settings.contactEmail }}, en décrivant le problème de la manière la plus précise possible.</p>
+                        
+                        <p>{{ app_settings.companyName }} ne pourra être tenu responsable des dommages directs et indirects causés au matériel de l'utilisateur, lors de l'accès au site, et résultant soit de l'utilisation d'un matériel ne répondant pas aux spécifications techniques requises, soit de l'apparition d'un bug ou d'une incompatibilité.</p>
+                    </div>
+                </section>
+
+                <!-- Liens hypertextes -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-link me-2"></i>
+                        Liens hypertextes
+                    </h2>
+                    <div class="section-content">
+                        <p>Des liens hypertextes peuvent être présents sur le site. L'utilisateur est informé qu'en cliquant sur ces liens, il sortira du site jo-king.fr. Ce dernier n'a pas de contrôle sur les pages web sur lesquelles aboutissent ces liens et ne saurait, en aucun cas, être responsable de leur contenu.</p>
+                    </div>
+                </section>
+
+                <!-- Droit applicable -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-balance-scale me-2"></i>
+                        Droit applicable et juridiction compétente
+                    </h2>
+                    <div class="section-content">
+                        <p>Tout litige en relation avec l'utilisation du site jo-king.fr est soumis au droit français. Il est fait attribution exclusive de juridiction aux tribunaux compétents de [Votre ville].</p>
+                    </div>
+                </section>
+
+                <!-- Contact -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-envelope me-2"></i>
+                        Contact
+                    </h2>
+                    <div class="section-content">
+                        <p>Pour toute question relative aux présentes mentions légales, vous pouvez nous contacter :</p>
+                        <ul>
+                            <li><strong>Par email :</strong> {{ app_settings.contactEmail }}</li>
+                            <li><strong>Par courrier :</strong> [Votre adresse postale]</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <div class="legal-footer text-center mt-5">
+                    <p class="text-muted">
+                        <small>Dernière mise à jour : {{ "now"|date("d/m/Y") }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.legal-container {
+    padding: 2rem 0;
+}
+
+.legal-header {
+    border-bottom: 2px solid var(--color-button);
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+}
+
+.legal-title {
+    color: var(--text-primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.legal-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.legal-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.1);
+}
+
+.section-title {
+    color: var(--color-button);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color-simple);
+}
+
+.section-content {
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+.section-content p {
+    margin-bottom: 1rem;
+}
+
+.section-content strong {
+    color: var(--color-button);
+    font-weight: 600;
+}
+
+.section-content ul {
+    padding-left: 1.5rem;
+}
+
+.section-content ul li {
+    margin-bottom: 0.5rem;
+}
+
+.section-content a {
+    color: var(--color-button);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.section-content a:hover {
+    color: var(--color-button-hover);
+    text-decoration: underline;
+}
+
+.legal-footer {
+    border-top: 1px solid var(--border-color-simple);
+    padding-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .legal-title {
+        font-size: 2rem;
+    }
+    
+    .legal-section {
+        padding: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+}
+</style>
+{% endblock %}

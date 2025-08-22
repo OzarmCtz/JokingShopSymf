@@ -35,4 +35,7 @@ return [
         'version' => '5.3.7',
         'type' => 'css',
     ],
+    '@symfony/ux-lazy-image' => [
+        'version' => '2.29.2',
+    ],
 ];

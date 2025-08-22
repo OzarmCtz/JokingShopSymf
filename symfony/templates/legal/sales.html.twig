@@ -1,0 +1,473 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions Générales de Vente - {{ app_settings.companyName }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+        <div class="legal-container">
+            <div class="legal-header text-center mb-5">
+                <h1 class="legal-title">
+                    <i class="fas fa-shopping-cart me-3"></i>
+                    Conditions Générales de Vente
+                </h1>
+                <p class="legal-subtitle">Conditions de vente des produits {{ app_settings.companyName }}</p>
+            </div>
+
+            <div class="legal-content">
+                <!-- Préambule -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Préambule
+                    </h2>
+                    <div class="section-content">
+                        <p>Les présentes Conditions Générales de Vente (CGV) s'appliquent à toutes les ventes de produits numériques (blagues) réalisées par {{ app_settings.companyName }} via le site web [votre-domaine.fr].</p>
+                        
+                        <p>Toute commande implique l'acceptation sans réserve des présentes CGV.</p>
+                        
+                        <p><strong>Vendeur :</strong> {{ app_settings.companyName }}<br>
+                        <strong>Siège social :</strong> [Votre adresse]<br>
+                        <strong>SIRET :</strong> [Votre SIRET]<br>
+                        <strong>Email :</strong> {{ app_settings.contactEmail }}</p>
+                    </div>
+                </section>
+
+                <!-- Produits -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-laugh me-2"></i>
+                        Produits proposés
+                    </h2>
+                    <div class="section-content">
+                        <h4>Description des produits :</h4>
+                        <p>{{ app_settings.companyName }} propose à la vente des contenus numériques sous forme de blagues et histoires humoristiques. Chaque produit est accompagné d'une description détaillée incluant :</p>
+                        <ul>
+                            <li>Le titre et la description du contenu</li>
+                            <li>La catégorie (situation)</li>
+                            <li>Le prix unitaire TTC</li>
+                            <li>Un aperçu du contenu</li>
+                        </ul>
+
+                        <h4>Nature des produits :</h4>
+                        <p>Il s'agit de contenus numériques dématérialisés, livrés instantanément après paiement. Aucun support physique n'est expédié.</p>
+
+                        <h4>Disponibilité :</h4>
+                        <p>Les produits sont disponibles tant qu'ils sont affichés sur le site. {{ app_settings.companyName }} se réserve le droit de retirer un produit à tout moment.</p>
+                    </div>
+                </section>
+
+                <!-- Tarifs et paiement -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-euro-sign me-2"></i>
+                        Tarifs et paiement
+                    </h2>
+                    <div class="section-content">
+                        <h4>Tarifs :</h4>
+                        <ul>
+                            <li>Les prix sont affichés en euros, toutes taxes comprises (TTC)</li>
+                            <li>Les prix peuvent être modifiés à tout moment</li>
+                            <li>Le prix applicable est celui affiché au moment de la validation de la commande</li>
+                            <li>Aucun frais de port ne s'applique (produits dématérialisés)</li>
+                        </ul>
+
+                        <h4>Moyens de paiement :</h4>
+                        <p>Le paiement s'effectue exclusivement par carte bancaire via notre prestataire sécurisé Stripe.</p>
+                        
+                        <p>Les cartes acceptées sont :</p>
+                        <ul>
+                            <li>Visa</li>
+                            <li>Mastercard</li>
+                            <li>American Express</li>
+                        </ul>
+
+                        <h4>Sécurité :</h4>
+                        <p>Toutes les transactions sont sécurisées par le protocole SSL et gérées par Stripe (certifié PCI DSS niveau 1). {{ app_settings.companyName }} ne stocke aucune donnée bancaire.</p>
+
+                        <h4>Validation du paiement :</h4>
+                        <p>La commande est validée après encaissement effectif du paiement. En cas de refus de paiement, la commande est automatiquement annulée.</p>
+                    </div>
+                </section>
+
+                <!-- Processus de commande -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-shopping-basket me-2"></i>
+                        Processus de commande
+                    </h2>
+                    <div class="section-content">
+                        <h4>Étapes de commande :</h4>
+                        <ol>
+                            <li><strong>Sélection :</strong> Choisir le produit désiré</li>
+                            <li><strong>Ajout au panier :</strong> Cliquer sur "Acheter"</li>
+                            <li><strong>Identification :</strong> Se connecter ou créer un compte</li>
+                            <li><strong>Vérification :</strong> Contrôler les informations de commande</li>
+                            <li><strong>Paiement :</strong> Procéder au paiement sécurisé</li>
+                            <li><strong>Confirmation :</strong> Recevoir la confirmation par email</li>
+                            <li><strong>Livraison :</strong> Accès immédiat au contenu</li>
+                        </ol>
+
+                        <h4>Validation de commande :</h4>
+                        <p>En cliquant sur "Confirmer le paiement", le client :</p>
+                        <ul>
+                            <li>Reconnaît avoir pris connaissance des présentes CGV</li>
+                            <li>Accepte expressément les présentes CGV</li>
+                            <li>Confirme l'exactitude des informations fournies</li>
+                            <li>Valide sa commande et s'engage à la payer</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Livraison -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-download me-2"></i>
+                        Livraison
+                    </h2>
+                    <div class="section-content">
+                        <h4>Modalités de livraison :</h4>
+                        <p>Les produits étant dématérialisés, la livraison s'effectue :</p>
+                        <ul>
+                            <li><strong>Instantanément</strong> après validation du paiement</li>
+                            <li><strong>Par email</strong> contenant le lien d'accès au contenu</li>
+                            <li><strong>Dans l'espace client</strong> accessible sur le site</li>
+                        </ul>
+
+                        <h4>Délai de livraison :</h4>
+                        <p>La livraison est immédiate (sous quelques minutes maximum). En cas de retard, contactez notre service client.</p>
+
+                        <h4>Problème de livraison :</h4>
+                        <p>En cas de non-réception du contenu :</p>
+                        <ul>
+                            <li>Vérifiez votre dossier spam/courrier indésirable</li>
+                            <li>Connectez-vous à votre espace client</li>
+                            <li>Contactez le service client avec votre numéro de commande</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Droit de rétractation -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-undo me-2"></i>
+                        Droit de rétractation
+                    </h2>
+                    <div class="section-content">
+                        <h4>Renonciation au droit de rétractation :</h4>
+                        <p>Conformément à l'article L.221-28 du Code de la consommation, <strong>le client renonce expressément à son droit de rétractation</strong> pour les contenus numériques non fournis sur un support matériel dont l'exécution a commencé après accord préalable exprès du consommateur et renoncement exprès à son droit de rétractation.</p>
+
+                        <h4>Conséquences :</h4>
+                        <p>Une fois le contenu numérique livré et consulté, aucun remboursement ne sera possible, sauf en cas de :</p>
+                        <ul>
+                            <li>Défaut de conformité du produit</li>
+                            <li>Erreur technique empêchant l'accès au contenu</li>
+                            <li>Problème imputable à {{ app_settings.companyName }}</li>
+                        </ul>
+
+                        <h4>Accord du client :</h4>
+                        <p>En passant commande, le client accepte expressément :</p>
+                        <ul>
+                            <li>Que la livraison commence immédiatement</li>
+                            <li>De renoncer à son droit de rétractation</li>
+                            <li>Que le contenu ne sera pas remboursable</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Garanties -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-certificate me-2"></i>
+                        Garanties et conformité
+                    </h2>
+                    <div class="section-content">
+                        <h4>Garantie de conformité :</h4>
+                        <p>{{ app_settings.companyName }} garantit que les contenus numériques sont :</p>
+                        <ul>
+                            <li>Conformes à la description fournie</li>
+                            <li>Accessibles et téléchargeables</li>
+                            <li>Exempts de virus ou logiciels malveillants</li>
+                            <li>De qualité conforme aux attentes légitimes</li>
+                        </ul>
+
+                        <h4>Recours en cas de défaut :</h4>
+                        <p>En cas de défaut de conformité, le client peut demander :</p>
+                        <ul>
+                            <li>La mise en conformité du contenu</li>
+                            <li>Le remboursement en cas d'impossibilité de mise en conformité</li>
+                        </ul>
+
+                        <h4>Limites de garantie :</h4>
+                        <p>{{ app_settings.companyName }} ne garantit pas :</p>
+                        <ul>
+                            <li>Que le contenu correspondra exactement aux goûts du client</li>
+                            <li>L'absence d'interruption ou d'erreur dans le service</li>
+                            <li>La compatibilité avec tous les appareils</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Propriété intellectuelle -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-copyright me-2"></i>
+                        Propriété intellectuelle et usage
+                    </h2>
+                    <div class="section-content">
+                        <h4>Droits du client :</h4>
+                        <p>L'achat d'un contenu confère au client un droit d'usage personnel, privé et non commercial. Le client peut :</p>
+                        <ul>
+                            <li>Consulter le contenu pour son usage personnel</li>
+                            <li>Le conserver dans sa bibliothèque privée</li>
+                            <li>L'imprimer pour usage personnel uniquement</li>
+                        </ul>
+
+                        <h4>Interdictions :</h4>
+                        <p>Il est strictement interdit de :</p>
+                        <ul>
+                            <li>Reproduire, distribuer ou diffuser le contenu</li>
+                            <li>Le revendre ou en faire un usage commercial</li>
+                            <li>Le modifier, adapter ou créer des œuvres dérivées</li>
+                            <li>Le partager sur des plateformes publiques</li>
+                            <li>Violer les droits d'auteur de {{ app_settings.companyName }}</li>
+                        </ul>
+
+                        <h4>Sanctions :</h4>
+                        <p>Toute violation des droits de propriété intellectuelle pourra donner lieu à des poursuites judiciaires et au paiement de dommages-intérêts.</p>
+                    </div>
+                </section>
+
+                <!-- Service client -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-headset me-2"></i>
+                        Service client
+                    </h2>
+                    <div class="section-content">
+                        <h4>Contact :</h4>
+                        <ul>
+                            <li><strong>Email :</strong> {{ app_settings.contactEmail }}</li>
+                            <li><strong>Horaires :</strong> Lundi au vendredi, 9h-18h</li>
+                            <li><strong>Délai de réponse :</strong> 48h maximum</li>
+                        </ul>
+
+                        <h4>Assistance :</h4>
+                        <p>Le service client peut vous aider pour :</p>
+                        <ul>
+                            <li>Questions avant achat</li>
+                            <li>Problèmes techniques</li>
+                            <li>Réclamations</li>
+                            <li>Gestion de compte</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Responsabilité -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Limitation de responsabilité
+                    </h2>
+                    <div class="section-content">
+                        <h4>Responsabilité de {{ app_settings.companyName }} :</h4>
+                        <p>La responsabilité de {{ app_settings.companyName }} est limitée au montant de la commande concernée. {{ app_settings.companyName }} ne saurait être tenu responsable de :</p>
+                        <ul>
+                            <li>Dommages indirects ou consécutifs</li>
+                            <li>Perte de données ou de profits</li>
+                            <li>Usage inapproprié du contenu par le client</li>
+                            <li>Problèmes liés à l'équipement du client</li>
+                        </ul>
+
+                        <h4>Force majeure :</h4>
+                        <p>{{ app_settings.companyName }} ne pourra être tenu responsable en cas de force majeure ou d'événements indépendants de sa volonté.</p>
+                    </div>
+                </section>
+
+                <!-- Données personnelles -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-shield me-2"></i>
+                        Données personnelles
+                    </h2>
+                    <div class="section-content">
+                        <p>Le traitement des données personnelles dans le cadre des commandes est détaillé dans notre <a href="{{ path('legal_privacy') }}">Politique de Confidentialité</a>.</p>
+                        
+                        <p>Les données collectées lors de la commande sont nécessaires à :</p>
+                        <ul>
+                            <li>L'exécution du contrat de vente</li>
+                            <li>La livraison du produit</li>
+                            <li>La facturation</li>
+                            <li>Le service après-vente</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Résolution des litiges -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-handshake me-2"></i>
+                        Résolution des litiges
+                    </h2>
+                    <div class="section-content">
+                        <h4>Réclamation amiable :</h4>
+                        <p>En cas de litige, contactez d'abord notre service client à {{ app_settings.contactEmail }} pour une résolution amiable.</p>
+
+                        <h4>Médiation :</h4>
+                        <p>En cas d'échec de la résolution amiable, le client peut saisir le médiateur de la consommation :</p>
+                        <ul>
+                            <li><strong>Médiateur :</strong> [Nom du médiateur]</li>
+                            <li><strong>Site web :</strong> [Site du médiateur]</li>
+                        </ul>
+
+                        <h4>Plateforme européenne :</h4>
+                        <p>Le client peut également utiliser la plateforme européenne de résolution des litiges : <a href="https://ec.europa.eu/consumers/odr/" target="_blank">https://ec.europa.eu/consumers/odr/</a></p>
+                    </div>
+                </section>
+
+                <!-- Droit applicable -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-balance-scale me-2"></i>
+                        Droit applicable
+                    </h2>
+                    <div class="section-content">
+                        <p>Les présentes CGV sont soumises au droit français.</p>
+                        
+                        <p>En cas de litige et à défaut de résolution amiable, les tribunaux français seront seuls compétents.</p>
+                        
+                        <p>Si une clause était déclarée nulle, les autres clauses resteraient applicables.</p>
+                    </div>
+                </section>
+
+                <!-- Modification -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Modification des CGV
+                    </h2>
+                    <div class="section-content">
+                        <p>{{ app_settings.companyName }} se réserve le droit de modifier les présentes CGV. Les CGV applicables sont celles en vigueur au moment de la commande.</p>
+                        
+                        <p>Les modifications n'affectent pas les commandes déjà validées.</p>
+                    </div>
+                </section>
+
+                <div class="legal-footer text-center mt-5">
+                    <p class="text-muted">
+                        <small>Dernière mise à jour : {{ "now"|date("d/m/Y") }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.legal-container {
+    padding: 2rem 0;
+}
+
+.legal-header {
+    border-bottom: 2px solid var(--color-button);
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+}
+
+.legal-title {
+    color: var(--text-primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.legal-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.legal-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.1);
+}
+
+.section-title {
+    color: var(--color-button);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color-simple);
+}
+
+.section-content {
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+.section-content p {
+    margin-bottom: 1rem;
+}
+
+.section-content h4 {
+    color: var(--color-button);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem 0;
+}
+
+.section-content strong {
+    color: var(--color-button);
+    font-weight: 600;
+}
+
+.section-content ul, .section-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-content ul li, .section-content ol li {
+    margin-bottom: 0.5rem;
+}
+
+.section-content a {
+    color: var(--color-button);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.section-content a:hover {
+    color: var(--color-button-hover);
+    text-decoration: underline;
+}
+
+.legal-footer {
+    border-top: 1px solid var(--border-color-simple);
+    padding-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .legal-title {
+        font-size: 2rem;
+    }
+    
+    .legal-section {
+        padding: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+}
+</style>
+{% endblock %}

@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Entity\Joke;
 use App\Entity\User;
 use App\Entity\Order;
+use App\Entity\AppSettings;
 use App\Repository\CategoryRepository;
 use App\Repository\JokeRepository;
 use App\Repository\UserRepository;
@@ -166,6 +167,9 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Utilisateurs');
         yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', User::class);
+
+        yield MenuItem::section('Configuration');
+        yield MenuItem::linkToCrud('Paramètres de l\'app', 'fas fa-cog', AppSettings::class);
 
         yield MenuItem::section('Retour au site');
         yield MenuItem::linkToRoute('Accueil', 'fas fa-home', 'shop_home');

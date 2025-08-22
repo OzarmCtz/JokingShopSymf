@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vérification de votre adresse email - Jo.King</title>
+    <title>Vérification de votre adresse email - {{ app_settings.companyName }}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -202,8 +202,8 @@
     <div class="email-container">
         <!-- Header -->
         <div class="email-header">
-            <img src="{{ absolute_url(asset('images/joke.png')) }}" alt="Jo.King" class="logo">
-            <h1 class="header-title">🎭 Bienvenue chez Jo.King !</h1>
+            <img src="{{ absolute_url(asset('images/joke.png')) }}" alt="{{ app_settings.companyName }}" class="logo">
+            <h1 class="header-title">🎭 Bienvenue chez {{ app_settings.companyName }} !</h1>
             <p class="header-subtitle">Vérifiez votre email pour commencer à rire</p>
         </div>
         
@@ -215,7 +215,7 @@
                     👋 Bonjour et merci !
                 </h2>
                 <p class="content-text">
-                    Merci de vous être inscrit sur Jo.King, votre nouvelle boutique de blagues préférée ! 
+                    Merci de vous être inscrit sur {{ app_settings.companyName }}, votre nouvelle boutique de blagues préférée ! 
                     Pour finaliser votre inscription et accéder à toutes nos fonctionnalités, 
                     veuillez confirmer votre adresse email.
                 </p>
@@ -266,9 +266,9 @@
                 Cet email a été envoyé automatiquement, merci de ne pas y répondre.
             </p>
             <p class="footer-text">
-                &copy; {{ "now"|date("Y") }} Jo.King - Tous droits réservés
+                &copy; {{ "now"|date("Y") }} {{ app_settings.companyName }} - Tous droits réservés
             </p>
-            <p class="footer-brand">Jo.King - La boutique du rire</p>
+            <p class="footer-brand">{{ app_settings.companyName }} - {{ app_settings.companyDescription }}</p>
         </div>
     </div>
 </body>

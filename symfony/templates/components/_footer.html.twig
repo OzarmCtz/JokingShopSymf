@@ -4,26 +4,34 @@
             {# Colonne principale #}
             <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
                 <div class="footer-brand">
-                    <img src="{{asset('images/joke.png')}}" alt="Jo.King" class="footer-logo me-2">
-                    <h5 class="footer-title">Jo.King</h5>
+                    <img src="{{asset('images/joke.png')}}" alt="{{ app_settings.companyName }}" class="footer-logo me-2" loading="lazy">
+                    <h5 class="footer-title">{{ app_settings.companyName }}</h5>
                 </div>
                 <p class="footer-description">
                     Découvrez notre collection de blagues hilarantes pour tous les goûts. 
                     Riez sans modération et partagez la bonne humeur !
                 </p>
                 <div class="footer-social">
-                    <a href="#" class="social-link" aria-label="Facebook">
+                    {% if app_settings.socialFacebook %}
+                    <a href="{{ app_settings.socialFacebook }}" class="social-link" aria-label="Facebook" target="_blank">
                         <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="#" class="social-link" aria-label="Twitter">
+                    {% endif %}
+                    {% if app_settings.socialTwitter %}
+                    <a href="{{ app_settings.socialTwitter }}" class="social-link" aria-label="Twitter" target="_blank">
                         <i class="fab fa-twitter"></i>
                     </a>
-                    <a href="#" class="social-link" aria-label="Instagram">
+                    {% endif %}
+                    {% if app_settings.socialInstagram %}
+                    <a href="{{ app_settings.socialInstagram }}" class="social-link" aria-label="Instagram" target="_blank">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="#" class="social-link" aria-label="LinkedIn">
+                    {% endif %}
+                    {% if app_settings.socialLinkedin %}
+                    <a href="{{ app_settings.socialLinkedin }}" class="social-link" aria-label="LinkedIn" target="_blank">
                         <i class="fab fa-linkedin-in"></i>
                     </a>
+                    {% endif %}
                 </div>
             </div>
             
@@ -61,16 +69,24 @@
                 <ul class="footer-contact">
                     <li>
                         <i class="fas fa-envelope me-2"></i>
-                        <a href="mailto:contact@joking.com">contact@joking.com</a>
+                        <a href="mailto:{{ app_settings.contactEmail }}">{{ app_settings.contactEmail }}</a>
                     </li>
+                    {% if app_settings.contactPhone %}
                     <li>
                         <i class="fas fa-phone me-2"></i>
-                        <a href="tel:+33123456789">+33 1 23 45 67 89</a>
+                        <a href="tel:{{ app_settings.contactPhone }}">{{ app_settings.contactPhone }}</a>
                     </li>
+                    {% endif %}
                     <li>
                         <i class="fas fa-map-marker-alt me-2"></i>
-                        <span>Paris, France</span>
+                        <span>{{ app_settings.companyCity }}, {{ app_settings.companyCountry }}</span>
                     </li>
+                    {% if app_settings.supportHours %}
+                    <li>
+                        <i class="fas fa-clock me-2"></i>
+                        <span>{{ app_settings.supportHours }}</span>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -81,14 +97,15 @@
         <div class="row">
             <div class="col-md-6">
                 <p class="footer-copyright">
-                    © {{ "now"|date("Y") }} Jo.King. Tous droits réservés.
+                    © {{ "now"|date("Y") }} {{ app_settings.companyName }}. Tous droits réservés.
                 </p>
             </div>
             <div class="col-md-6">
                 <ul class="footer-legal">
-                    <li><a href="#">Mentions légales</a></li>
-                    <li><a href="#">Politique de confidentialité</a></li>
-                    <li><a href="#">CGU</a></li>
+                    <li><a href="{{ path('legal_mentions') }}">Mentions légales</a></li>
+                    <li><a href="{{ path('legal_privacy') }}">Politique de confidentialité</a></li>
+                    <li><a href="{{ path('legal_terms') }}">CGU</a></li>
+                    <li><a href="{{ path('legal_sales') }}">CGV</a></li>
                 </ul>
             </div>
         </div>

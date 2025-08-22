@@ -1,0 +1,386 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de Confidentialité - {{ app_settings.companyName }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+        <div class="legal-container">
+            <div class="legal-header text-center mb-5">
+                <h1 class="legal-title">
+                    <i class="fas fa-user-shield me-3"></i>
+                    Politique de Confidentialité
+                </h1>
+                <p class="legal-subtitle">Protection et traitement de vos données personnelles</p>
+            </div>
+
+            <div class="legal-content">
+                <!-- Introduction -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Introduction
+                    </h2>
+                    <div class="section-content">
+                        <p>La présente Politique de Confidentialité décrit la façon dont {{ app_settings.companyName }} collecte, utilise et protège les informations que vous nous fournissez lorsque vous utilisez notre site web.</p>
+                        
+                        <p>Nous nous engageons à assurer la sécurité et la confidentialité de vos données personnelles et à respecter la réglementation en vigueur, notamment le Règlement Général sur la Protection des Données (RGPD).</p>
+                        
+                        <p><strong>Responsable du traitement :</strong> {{ app_settings.companyName }}<br>
+                        <strong>Contact :</strong> {{ app_settings.contactEmail }}</p>
+                    </div>
+                </section>
+
+                <!-- Données collectées -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-database me-2"></i>
+                        Données personnelles collectées
+                    </h2>
+                    <div class="section-content">
+                        <h4>Données d'identification :</h4>
+                        <ul>
+                            <li>Nom et prénom</li>
+                            <li>Adresse email</li>
+                            <li>Numéro de téléphone</li>
+                            <li>Adresse postale</li>
+                        </ul>
+
+                        <h4>Données de commande :</h4>
+                        <ul>
+                            <li>Historique des achats</li>
+                            <li>Préférences de produits</li>
+                            <li>Informations de paiement (via des prestataires sécurisés)</li>
+                        </ul>
+
+                        <h4>Données techniques :</h4>
+                        <ul>
+                            <li>Adresse IP</li>
+                            <li>Type de navigateur</li>
+                            <li>Système d'exploitation</li>
+                            <li>Pages visitées et durée des visites</li>
+                            <li>Cookies et technologies similaires</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Finalités du traitement -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-target me-2"></i>
+                        Finalités du traitement
+                    </h2>
+                    <div class="section-content">
+                        <p>Vos données personnelles sont collectées et traitées pour les finalités suivantes :</p>
+                        
+                        <h4>Exécution du contrat :</h4>
+                        <ul>
+                            <li>Traitement et livraison de vos commandes</li>
+                            <li>Gestion de votre compte client</li>
+                            <li>Service client et support technique</li>
+                            <li>Facturation et comptabilité</li>
+                        </ul>
+
+                        <h4>Intérêt légitime :</h4>
+                        <ul>
+                            <li>Amélioration de nos services</li>
+                            <li>Analyse statistique et optimisation du site</li>
+                            <li>Prévention de la fraude</li>
+                            <li>Sécurité du site</li>
+                        </ul>
+
+                        <h4>Consentement :</h4>
+                        <ul>
+                            <li>Envoi de newsletters et communications marketing</li>
+                            <li>Personnalisation de l'expérience utilisateur</li>
+                            <li>Utilisation de cookies non essentiels</li>
+                        </ul>
+
+                        <h4>Obligation légale :</h4>
+                        <ul>
+                            <li>Conservation des données de facturation</li>
+                            <li>Respect des obligations fiscales</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Destinataires -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-users me-2"></i>
+                        Destinataires des données
+                    </h2>
+                    <div class="section-content">
+                        <p>Vos données personnelles peuvent être partagées avec :</p>
+                        
+                        <ul>
+                            <li><strong>Prestataires de paiement :</strong> Stripe (pour le traitement sécurisé des paiements)</li>
+                            <li><strong>Prestataires d'hébergement :</strong> [Nom de votre hébergeur]</li>
+                            <li><strong>Services de livraison :</strong> [Transporteurs utilisés]</li>
+                            <li><strong>Services d'emailing :</strong> [Prestataire email si applicable]</li>
+                            <li><strong>Autorités compétentes :</strong> En cas d'obligation légale</li>
+                        </ul>
+                        
+                        <p>Tous nos prestataires sont liés par des accords de confidentialité et respectent le RGPD.</p>
+                    </div>
+                </section>
+
+                <!-- Durée de conservation -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-clock me-2"></i>
+                        Durée de conservation
+                    </h2>
+                    <div class="section-content">
+                        <ul>
+                            <li><strong>Données de compte :</strong> Jusqu'à suppression du compte + 3 ans</li>
+                            <li><strong>Données de commande :</strong> 10 ans (obligation comptable)</li>
+                            <li><strong>Données de facturation :</strong> 10 ans (obligation fiscale)</li>
+                            <li><strong>Cookies :</strong> 13 mois maximum</li>
+                            <li><strong>Données de navigation :</strong> 25 mois</li>
+                            <li><strong>Données marketing :</strong> 3 ans après dernier contact</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Droits des utilisateurs -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-cog me-2"></i>
+                        Vos droits
+                    </h2>
+                    <div class="section-content">
+                        <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+                        
+                        <ul>
+                            <li><strong>Droit d'accès :</strong> Connaître les données que nous détenons sur vous</li>
+                            <li><strong>Droit de rectification :</strong> Corriger vos données inexactes</li>
+                            <li><strong>Droit d'effacement :</strong> Supprimer vos données (sous conditions)</li>
+                            <li><strong>Droit d'opposition :</strong> Vous opposer au traitement de vos données</li>
+                            <li><strong>Droit à la portabilité :</strong> Récupérer vos données dans un format standard</li>
+                            <li><strong>Droit de limitation :</strong> Limiter le traitement de vos données</li>
+                            <li><strong>Droit de retirer votre consentement :</strong> À tout moment</li>
+                        </ul>
+                        
+                        <p>Pour exercer ces droits, contactez-nous à : <a href="mailto:{{ app_settings.contactEmail }}">{{ app_settings.contactEmail }}</a></p>
+                        
+                        <p>Vous avez également le droit de déposer une plainte auprès de la CNIL.</p>
+                    </div>
+                </section>
+
+                <!-- Cookies -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-cookie-bite me-2"></i>
+                        Politique des Cookies
+                    </h2>
+                    <div class="section-content">
+                        <h4>Cookies essentiels :</h4>
+                        <ul>
+                            <li>Session utilisateur</li>
+                            <li>Panier d'achat</li>
+                            <li>Sécurité (CSRF)</li>
+                            <li>Préférences de langue</li>
+                        </ul>
+
+                        <h4>Cookies analytiques :</h4>
+                        <ul>
+                            <li>Google Analytics (anonymisé)</li>
+                            <li>Statistiques de fréquentation</li>
+                        </ul>
+
+                        <h4>Cookies marketing :</h4>
+                        <ul>
+                            <li>Retargeting publicitaire</li>
+                            <li>Personnalisation du contenu</li>
+                        </ul>
+                        
+                        <p>Vous pouvez gérer vos préférences de cookies via les paramètres de votre navigateur ou notre bandeau de consentement.</p>
+                    </div>
+                </section>
+
+                <!-- Sécurité -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-lock me-2"></i>
+                        Sécurité des données
+                    </h2>
+                    <div class="section-content">
+                        <p>Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données personnelles :</p>
+                        
+                        <ul>
+                            <li>Chiffrement SSL/TLS pour toutes les communications</li>
+                            <li>Hachage sécurisé des mots de passe</li>
+                            <li>Accès restreint aux données personnelles</li>
+                            <li>Sauvegardes régulières et sécurisées</li>
+                            <li>Mise à jour régulière des systèmes de sécurité</li>
+                            <li>Formation du personnel à la protection des données</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Transferts internationaux -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-globe me-2"></i>
+                        Transferts internationaux
+                    </h2>
+                    <div class="section-content">
+                        <p>Certains de nos prestataires peuvent être situés en dehors de l'Union Européenne. Dans ce cas, nous nous assurons que :</p>
+                        
+                        <ul>
+                            <li>Le pays bénéficie d'une décision d'adéquation de la Commission européenne</li>
+                            <li>Des garanties appropriées sont mises en place (clauses contractuelles types)</li>
+                            <li>Votre consentement explicite est obtenu si nécessaire</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Modifications -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Modifications de la politique
+                    </h2>
+                    <div class="section-content">
+                        <p>Nous nous réservons le droit de modifier cette Politique de Confidentialité à tout moment. Les modifications seront publiées sur cette page avec une date de mise à jour.</p>
+                        
+                        <p>En cas de modification substantielle, nous vous en informerons par email ou via un avis sur notre site.</p>
+                    </div>
+                </section>
+
+                <!-- Contact -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-envelope me-2"></i>
+                        Contact
+                    </h2>
+                    <div class="section-content">
+                        <p>Pour toute question concernant cette Politique de Confidentialité ou vos données personnelles :</p>
+                        
+                        <ul>
+                            <li><strong>Email :</strong> {{ app_settings.contactEmail }}</li>
+                            <li><strong>Courrier :</strong> {{ app_settings.companyName }} - {{ app_settings.companyAddress }}, {{ app_settings.companyPostalCode }} {{ app_settings.companyCity }}</li>
+                            <li><strong>Délégué à la Protection des Données :</strong> dpo@jo-king.fr (si applicable)</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <div class="legal-footer text-center mt-5">
+                    <p class="text-muted">
+                        <small>Dernière mise à jour : {{ "now"|date("d/m/Y") }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.legal-container {
+    padding: 2rem 0;
+}
+
+.legal-header {
+    border-bottom: 2px solid var(--color-button);
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+}
+
+.legal-title {
+    color: var(--text-primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.legal-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.legal-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.1);
+}
+
+.section-title {
+    color: var(--color-button);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color-simple);
+}
+
+.section-content {
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+.section-content p {
+    margin-bottom: 1rem;
+}
+
+.section-content h4 {
+    color: var(--color-button);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem 0;
+}
+
+.section-content strong {
+    color: var(--color-button);
+    font-weight: 600;
+}
+
+.section-content ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-content ul li {
+    margin-bottom: 0.5rem;
+}
+
+.section-content a {
+    color: var(--color-button);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.section-content a:hover {
+    color: var(--color-button-hover);
+    text-decoration: underline;
+}
+
+.legal-footer {
+    border-top: 1px solid var(--border-color-simple);
+    padding-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .legal-title {
+        font-size: 2rem;
+    }
+    
+    .legal-section {
+        padding: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+}
+</style>
+{% endblock %}

@@ -1571,3 +1571,39 @@ i.joke-smiley {
   line-height: 1.2;
   text-shadow: 0 2px 10px rgba(0,0,0,.7);
 }
+
+/* ============================================
+   LAZY LOADING STYLES (Minimal et discret)
+   ============================================ */
+img[loading="lazy"] {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Animation douce pour les navigateurs anciens */
+img[loading="lazy"]:not(.lazy-loaded) {
+  opacity: 0.9;
+}
+
+img[loading="lazy"].lazy-loaded {
+  opacity: 1;
+}
+
+/* ============================================
+   STICKY FOOTER - Footer toujours en bas
+   ============================================ */
+.min-vh-100 {
+}
+
+.flex-grow-1 {
+}
+
+/* S'assurer que le footer ne remonte jamais */
+.footer-custom {
+  flex-shrink: 0;
+}
+
+/* Amélioration pour les petits écrans */
+@media (max-height: 600px) {
+  .footer-custom {
+  }
+}

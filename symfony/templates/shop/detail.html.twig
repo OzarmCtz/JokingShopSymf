@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-md-6">
         {% if joke.photo %}
-            <img src="{{ asset('uploads/jokes/' ~ joke.photo) }}" class="img-fluid" alt="{{ joke.title }}">
+            <img src="{{ asset('uploads/jokes/' ~ joke.photo) }}" class="img-fluid" alt="{{ joke.title }}" loading="lazy">
         {% endif %}
     </div>
     <div class="col-md-6">

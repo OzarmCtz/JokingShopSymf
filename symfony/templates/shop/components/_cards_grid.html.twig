@@ -12,9 +12,9 @@
     })">
       <div class="bundle-media">
         {% if joke.previewImage %}
-          <img src="{{ asset('uploads/jokes/' ~ joke.previewImage) }}" alt="{{ joke.title }}">
+          <img src="{{ asset('uploads/jokes/' ~ joke.previewImage) }}" alt="{{ joke.title }}" loading="lazy">
         {% else %}
-          <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder">
+          <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder" loading="lazy">
         {% endif %}
       </div>
       <div class="bundle-body">

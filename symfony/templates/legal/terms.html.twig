@@ -1,0 +1,393 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions Générales d'Utilisation - {{ app_settings.companyName }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+        <div class="legal-container">
+            <div class="legal-header text-center mb-5">
+                <h1 class="legal-title">
+                    <i class="fas fa-file-contract me-3"></i>
+                    Conditions Générales d'Utilisation
+                </h1>
+                <p class="legal-subtitle">Conditions d'utilisation du site {{ app_settings.companyName }}</p>
+            </div>
+
+            <div class="legal-content">
+                <!-- Préambule -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Préambule
+                    </h2>
+                    <div class="section-content">
+                        <p>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'utilisation du site web {{ app_settings.companyName }} accessible à l'adresse [votre-domaine.fr].</p>
+                        
+                        <p>L'utilisation du site implique l'acceptation pleine et entière des conditions générales d'utilisation décrites ci-après. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser le site.</p>
+                        
+                        <p><strong>Éditeur :</strong> {{ app_settings.companyName }}<br>
+                        <strong>Contact :</strong> {{ app_settings.contactEmail }}</p>
+                    </div>
+                </section>
+
+                <!-- Définitions -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-book me-2"></i>
+                        Définitions
+                    </h2>
+                    <div class="section-content">
+                        <ul>
+                            <li><strong>Site :</strong> Le site web {{ app_settings.companyName }} et l'ensemble de ses pages</li>
+                            <li><strong>Utilisateur :</strong> Toute personne qui accède et navigue sur le site</li>
+                            <li><strong>Client :</strong> Toute personne physique ou morale qui effectue un achat</li>
+                            <li><strong>Contenu :</strong> Ensemble des éléments constituants le site (textes, images, vidéos, etc.)</li>
+                            <li><strong>Services :</strong> Toutes fonctionnalités proposées par le site</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Accès au site -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-door-open me-2"></i>
+                        Accès au site
+                    </h2>
+                    <div class="section-content">
+                        <p>Le site est accessible gratuitement à tout utilisateur disposant d'un accès à Internet. Tous les frais nécessaires pour l'accès (matériel informatique, connexion Internet, etc.) sont à la charge de l'utilisateur.</p>
+                        
+                        <p>{{ app_settings.companyName }} se réserve le droit de suspendre, d'interrompre ou de limiter l'accès à tout ou partie du site, notamment en raison de :</p>
+                        <ul>
+                            <li>Opérations de maintenance</li>
+                            <li>Mise à jour ou modification du site</li>
+                            <li>Cas de force majeure</li>
+                            <li>Non-respect des présentes CGU</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Inscription et compte utilisateur -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Inscription et compte utilisateur
+                    </h2>
+                    <div class="section-content">
+                        <h4>Création de compte :</h4>
+                        <p>Pour effectuer des achats, l'utilisateur doit créer un compte en fournissant des informations exactes et à jour. L'utilisateur s'engage à :</p>
+                        <ul>
+                            <li>Fournir des informations véridiques et complètes</li>
+                            <li>Mettre à jour ses informations en cas de changement</li>
+                            <li>Garder ses identifiants confidentiels</li>
+                            <li>Signaler immédiatement toute utilisation non autorisée</li>
+                        </ul>
+
+                        <h4>Responsabilité du compte :</h4>
+                        <p>L'utilisateur est entièrement responsable de l'utilisation qui est faite de son compte. Il s'engage à utiliser le site de manière loyale et conformément aux présentes CGU.</p>
+
+                        <h4>Suppression de compte :</h4>
+                        <p>L'utilisateur peut demander la suppression de son compte à tout moment en contactant le service client. {{ app_settings.companyName }} se réserve le droit de suspendre ou supprimer un compte en cas de non-respect des CGU.</p>
+                    </div>
+                </section>
+
+                <!-- Utilisation du site -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-mouse-pointer me-2"></i>
+                        Utilisation du site
+                    </h2>
+                    <div class="section-content">
+                        <h4>Usage autorisé :</h4>
+                        <p>Le site est destiné à un usage personnel et non commercial. L'utilisateur s'engage à utiliser le site uniquement pour :</p>
+                        <ul>
+                            <li>Consulter les produits et services proposés</li>
+                            <li>Effectuer des achats pour son usage personnel</li>
+                            <li>Contacter le service client</li>
+                        </ul>
+
+                        <h4>Comportements interdits :</h4>
+                        <p>Il est strictement interdit de :</p>
+                        <ul>
+                            <li>Utiliser le site à des fins illégales ou frauduleuses</li>
+                            <li>Tenter de porter atteinte à la sécurité du site</li>
+                            <li>Diffuser des virus ou codes malveillants</li>
+                            <li>Collecter des données personnelles d'autres utilisateurs</li>
+                            <li>Reproduire, copier ou vendre le contenu du site</li>
+                            <li>Créer plusieurs comptes pour un même utilisateur</li>
+                            <li>Utiliser des robots ou scripts automatisés</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Propriété intellectuelle -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-copyright me-2"></i>
+                        Propriété intellectuelle
+                    </h2>
+                    <div class="section-content">
+                        <p>L'ensemble du contenu du site (textes, images, vidéos, logos, graphismes, etc.) est protégé par les droits de propriété intellectuelle et appartient à {{ app_settings.companyName }} ou à ses partenaires.</p>
+                        
+                        <h4>Droits d'utilisation :</h4>
+                        <p>L'utilisateur dispose d'un droit d'usage privé, non collectif et non exclusif sur le contenu du site. Ce droit est limité à :</p>
+                        <ul>
+                            <li>La consultation personnelle du contenu</li>
+                            <li>Le téléchargement temporaire pour affichage sur écran</li>
+                            <li>L'impression de pages pour usage personnel uniquement</li>
+                        </ul>
+
+                        <h4>Restrictions :</h4>
+                        <p>Toute autre utilisation est interdite sans autorisation écrite, notamment :</p>
+                        <ul>
+                            <li>La reproduction, modification, distribution</li>
+                            <li>L'utilisation commerciale</li>
+                            <li>La création d'œuvres dérivées</li>
+                            <li>La rétro-ingénierie</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Contenu utilisateur -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-comments me-2"></i>
+                        Contenu utilisateur
+                    </h2>
+                    <div class="section-content">
+                        <p>Si le site permet aux utilisateurs de publier du contenu (commentaires, avis, etc.), l'utilisateur :</p>
+                        
+                        <h4>S'engage à :</h4>
+                        <ul>
+                            <li>Publier uniquement du contenu licite et approprié</li>
+                            <li>Respecter les droits de propriété intellectuelle</li>
+                            <li>Ne pas diffuser de contenu offensant, discriminatoire ou illégal</li>
+                            <li>Ne pas usurper l'identité d'autrui</li>
+                        </ul>
+
+                        <h4>Concède à {{ app_settings.companyName }} :</h4>
+                        <ul>
+                            <li>Une licence d'utilisation du contenu publié</li>
+                            <li>Le droit de modérer et supprimer le contenu inapproprié</li>
+                            <li>Le droit d'utiliser le contenu à des fins promotionnelles</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Responsabilité -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Limitation de responsabilité
+                    </h2>
+                    <div class="section-content">
+                        <h4>Disponibilité du site :</h4>
+                        <p>{{ app_settings.companyName }} s'efforce d'assurer la disponibilité du site 24h/24 et 7j/7, mais ne peut garantir un accès ininterrompu. La responsabilité de {{ app_settings.companyName }} ne saurait être engagée en cas d'interruption du service.</p>
+
+                        <h4>Exactitude des informations :</h4>
+                        <p>{{ app_settings.companyName }} s'efforce de fournir des informations exactes mais ne peut garantir l'absence d'erreurs. L'utilisateur est invité à vérifier les informations importantes.</p>
+
+                        <h4>Liens externes :</h4>
+                        <p>Le site peut contenir des liens vers des sites tiers. {{ app_settings.companyName }} n'est pas responsable du contenu de ces sites externes.</p>
+
+                        <h4>Limitation :</h4>
+                        <p>En aucun cas {{ app_settings.companyName }} ne pourra être tenu responsable de dommages indirects tels que :</p>
+                        <ul>
+                            <li>Perte de données</li>
+                            <li>Perte de bénéfices</li>
+                            <li>Dommages consécutifs à l'utilisation du site</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Données personnelles -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-shield me-2"></i>
+                        Protection des données personnelles
+                    </h2>
+                    <div class="section-content">
+                        <p>Le traitement des données personnelles est régi par notre <a href="{{ path('legal_privacy') }}">Politique de Confidentialité</a>.</p>
+                        
+                        <p>En utilisant le site, l'utilisateur accepte le traitement de ses données personnelles conformément à cette politique.</p>
+                    </div>
+                </section>
+
+                <!-- Modification des CGU -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Modification des CGU
+                    </h2>
+                    <div class="section-content">
+                        <p>{{ app_settings.companyName }} se réserve le droit de modifier les présentes CGU à tout moment. Les modifications entrent en vigueur dès leur publication sur le site.</p>
+                        
+                        <p>L'utilisateur est invité à consulter régulièrement les CGU. L'utilisation continue du site après modification vaut acceptation des nouvelles conditions.</p>
+                        
+                        <p>En cas de modification substantielle, les utilisateurs seront informés par email ou notification sur le site.</p>
+                    </div>
+                </section>
+
+                <!-- Résiliation -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-times-circle me-2"></i>
+                        Résiliation
+                    </h2>
+                    <div class="section-content">
+                        <p>{{ app_settings.companyName }} peut résilier l'accès au site de tout utilisateur qui ne respecterait pas les présentes CGU, et ce sans préavis ni indemnité.</p>
+                        
+                        <p>L'utilisateur peut cesser d'utiliser le site à tout moment et demander la suppression de son compte.</p>
+                        
+                        <p>La résiliation n'affecte pas les droits et obligations nés antérieurement à celle-ci.</p>
+                    </div>
+                </section>
+
+                <!-- Droit applicable -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-balance-scale me-2"></i>
+                        Droit applicable et juridiction
+                    </h2>
+                    <div class="section-content">
+                        <p>Les présentes CGU sont régies par le droit français.</p>
+                        
+                        <p>En cas de litige, les parties s'efforceront de trouver une solution amiable. À défaut, tout litige sera porté devant les tribunaux compétents de [Votre ville].</p>
+                        
+                        <p>Si une clause des présentes CGU était déclarée nulle ou inapplicable, les autres clauses resteraient en vigueur.</p>
+                    </div>
+                </section>
+
+                <!-- Contact -->
+                <section class="legal-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-envelope me-2"></i>
+                        Contact
+                    </h2>
+                    <div class="section-content">
+                        <p>Pour toute question relative aux présentes CGU :</p>
+                        <ul>
+                            <li><strong>Email :</strong> contact@jo-king.fr</li>
+                            <li><strong>Courrier :</strong> {{ app_settings.companyName }} - [Votre adresse]</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <div class="legal-footer text-center mt-5">
+                    <p class="text-muted">
+                        <small>Dernière mise à jour : {{ "now"|date("d/m/Y") }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.legal-container {
+    padding: 2rem 0;
+}
+
+.legal-header {
+    border-bottom: 2px solid var(--color-button);
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+}
+
+.legal-title {
+    color: var(--text-primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.legal-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.legal-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.1);
+}
+
+.section-title {
+    color: var(--color-button);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color-simple);
+}
+
+.section-content {
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+.section-content p {
+    margin-bottom: 1rem;
+}
+
+.section-content h4 {
+    color: var(--color-button);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem 0;
+}
+
+.section-content strong {
+    color: var(--color-button);
+    font-weight: 600;
+}
+
+.section-content ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-content ul li {
+    margin-bottom: 0.5rem;
+}
+
+.section-content a {
+    color: var(--color-button);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.section-content a:hover {
+    color: var(--color-button-hover);
+    text-decoration: underline;
+}
+
+.legal-footer {
+    border-top: 1px solid var(--border-color-simple);
+    padding-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .legal-title {
+        font-size: 2rem;
+    }
+    
+    .legal-section {
+        padding: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+}
+</style>
+{% endblock %}
