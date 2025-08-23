@@ -35,7 +35,7 @@ docker-compose exec php php bin/console doctrine:fixtures:load
 ## 📊 Fonctionnalités
 
 - 🛒 Boutique de blagues avec filtres
-- 💳 Paiements Stripe sécurisés  
+- 💳 Paiements Stripe sécurisés
 - 👤 Comptes utilisateurs
 - 📱 Design responsive
 - 🎭 Administration complète

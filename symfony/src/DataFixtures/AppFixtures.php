@@ -19,10 +19,10 @@ class AppFixtures extends Fixture
     {
         // Créer les catégories
         $categories = $this->createCategories($manager);
-        
+
         // Créer les blagues
         $this->createJokes($manager, $categories);
-        
+
         // Créer l'utilisateur admin
         $this->createUsers($manager);
 
@@ -116,7 +116,7 @@ class AppFixtures extends Fixture
             ['Le comble du gâteau', 'Quel est le comble pour un gâteau d\'anniversaire ? Se faire couper la parole !', 'Un comble sucré à raconter le jour J.', 'Anniversaire'],
             ['Fête mortelle', 'Pourquoi les squelettes ne fêtent jamais leur anniversaire ? Parce qu\'ils n\'ont personne à inviter !', 'Même les squelettes ont leurs petits soucis d\'organisation.', 'Anniversaire'],
             ['Bougie retraitée', 'Que fait une bougie à la retraite ? Elle part en fumée !', 'Le repos bien mérité d\'une bougie de gâteau…', 'Anniversaire'],
-            
+
             // Fête des Pères  
             ['Marchandage', 'Un fils dit à son père : Si tu me donnes 30€, je serai sage. À ton âge, j\'étais sage gratuitement.', 'Une tentative d\'extorsion vite douchée par la mémoire paternelle.', 'Fête des Pères'],
             ['Papa esquimau', 'Comment appelle-t-on un père qui tombe sur la glace ? Un esquimau.', 'Un jeu de mots givré pour les papas maladroits.', 'Fête des Pères'],
@@ -126,7 +126,7 @@ class AppFixtures extends Fixture
             ['Papa parking', 'Pourquoi les pères sont-ils comme les places de parking ? C\'est facile, tous les bons sont déjà pris.', 'Une comparaison espiègle sur la rareté des perles rares.', 'Fête des Pères'],
             ['Salut Soif', 'Papa, j\'ai soif ! Enchanté Soif, moi c\'est Papa.', 'Le grand classique des jeux de mots paternels.', 'Fête des Pères'],
             ['Papa de l\'année', 'Le papa de l\'année, c\'est celui qui dit toujours oui et qui ne contrarie jamais maman.', 'Le secret (presque) sûr pour obtenir le trophée du meilleur papa.', 'Fête des Pères'],
-            
+
             // Apéro/Soirée
             ['Plouf au café', 'Un mec rentre dans un café. Et plouf.', 'Un grand classique des histoires de comptoir.', 'Apéro / Soirée'],
             ['Bouchons', 'Désolé pour le retard, il y avait des bouchons.', 'L\'excuse préférée des retardataires de l\'apéro.', 'Apéro / Soirée'],
@@ -165,7 +165,7 @@ class AppFixtures extends Fixture
         $admin->setEmail('ozarmctz@proton.me');
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setIsVerified(true);
-        
+
         // Mot de passe: admin123 (à changer en production)
         $hashedPassword = $this->passwordHasher->hashPassword($admin, 'admin123');
         $admin->setPassword($hashedPassword);
