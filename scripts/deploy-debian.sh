@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Déploiement MyBlogSymfony sur Debian/Ubuntu"
+echo "🚀 Déploiement Jo-King sur Debian/Ubuntu"
 echo "==============================================="
 
 # Couleurs
@@ -98,15 +98,15 @@ sudo systemctl enable docker
 # Configuration du projet
 echo -e "${BLUE}⚙️ Configuration de l'application...${NC}"
 
-# Créer le fichier .env.local pour la production
+# Créer le fichier .env.local pour la production avec MySQL
 cat > symfony/.env.local << EOF
 # Configuration de production
 APP_ENV=prod
 APP_DEBUG=0
 APP_SECRET=$(openssl rand -hex 32)
 
-# Base de données SQLite (simple)
-DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
+# Base de données MySQL (via Docker)
+DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony"
 
 # Email (sendmail local)
 MAILER_DSN=sendmail://default
@@ -135,9 +135,13 @@ echo -e "${BLUE}📦 Installation des dépendances...${NC}"
 docker-compose exec -T php composer install --no-dev --optimize-autoloader --no-interaction
 
 # Configuration de la base de données
-echo -e "${BLUE}🗄️ Configuration de la base de données...${NC}"
+echo -e "${BLUE}🗄️ Configuration de la base de données MySQL...${NC}"
 docker-compose exec -T php php bin/console doctrine:database:create --if-not-exists --no-interaction
 docker-compose exec -T php php bin/console doctrine:migrations:migrate --no-interaction
+
+# Charger les données avec les fixtures Doctrine (méthode professionnelle)
+echo -e "${BLUE}📊 Chargement des données (fixtures)...${NC}"
+docker-compose exec -T php php bin/console doctrine:fixtures:load --no-interaction
 
 # Permissions
 echo -e "${BLUE}🔐 Configuration des permissions...${NC}"

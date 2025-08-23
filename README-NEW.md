@@ -24,10 +24,9 @@ docker-compose up -d
 # Installer dépendances
 docker-compose exec php composer install
 
-# Base de données MySQL + Données
+# Base de données
 docker-compose exec php php bin/console doctrine:database:create
 docker-compose exec php php bin/console doctrine:migrations:migrate
-docker-compose exec php php bin/console doctrine:fixtures:load
 
 # Accès: http://localhost:8080
 ```
@@ -35,14 +34,15 @@ docker-compose exec php php bin/console doctrine:fixtures:load
 ## 📊 Fonctionnalités
 
 - 🛒 Boutique de blagues avec filtres
-- 💳 Paiements Stripe sécurisés  
+- 💳 Paiements Stripe sécurisés
 - 👤 Comptes utilisateurs
 - 📱 Design responsive
 - 🎭 Administration complète
-- 📊 **Données préchargées** (catégories + blagues)## 🛠️ Stack
+
+## 🛠️ Stack
 
 - **Symfony 7.3** + PHP 8.3
-- **MySQL 8.0** (base de données)
+- **SQLite** / MySQL
 - **Docker** + Nginx
 - **Stripe** API
 - **EasyAdmin** 4
@@ -52,14 +52,13 @@ docker-compose exec php php bin/console doctrine:fixtures:load
 ```bash
 # Créer symfony/.env.local
 APP_ENV=prod
-DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony"
+DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
 STRIPE_PUBLIC_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
 
 # Accès
-# Site: http://votre-ip:8080
-# Admin: http://votre-ip:8080/admin
-# Login: ozarmctz@proton.me / admin123
+# Site: http://votre-ip
+# Admin: http://votre-ip/admin
 ```
 
 ---
