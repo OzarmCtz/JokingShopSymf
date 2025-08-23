@@ -80,7 +80,8 @@ class JokeCrudController extends AbstractCrudController
         yield TextareaField::new('body_text')
             ->setLabel('Contenu')
             ->setNumOfRows(6)
-            ->setRequired(true);
+            ->setRequired(true)
+            ->hideOnIndex(); // Masquer sur la page index
 
         yield TextareaField::new('description')
             ->setLabel('Description')
@@ -99,7 +100,8 @@ class JokeCrudController extends AbstractCrudController
 
         yield TextField::new('price')
             ->setLabel('Prix (€)')
-            ->setHelp('Prix de la blague en euros (optionnel)');
+            ->setHelp('Prix de la blague en euros (optionnel)')
+            ->hideOnIndex(); // Masquer sur la page index
 
         yield ImageField::new('preview_image')
             ->setLabel('Image d\'aperçu (Card)')
@@ -107,7 +109,8 @@ class JokeCrudController extends AbstractCrudController
             ->setUploadDir('public/uploads/jokes')
             ->setUploadedFileNamePattern('preview-[slug]-[uuid].[extension]')
             ->setRequired(false)
-            ->setHelp('Image affichée sur les cartes de la boutique (format recommandé: 240x280px)');
+            ->setHelp('Image affichée sur les cartes de la boutique (format recommandé: 240x280px)')
+            ->hideOnIndex(); // Masquer sur la page index
 
         yield ImageField::new('view_image')
             ->setLabel('Image de vue (Modal)')
@@ -115,7 +118,8 @@ class JokeCrudController extends AbstractCrudController
             ->setUploadDir('public/uploads/jokes')
             ->setUploadedFileNamePattern('view-[slug]-[uuid].[extension]')
             ->setRequired(false)
-            ->setHelp('Image affichée dans la modal de détails (format recommandé: 400x400px ou plus)');
+            ->setHelp('Image affichée dans la modal de détails (format recommandé: 400x400px ou plus)')
+            ->hideOnIndex(); // Masquer sur la page index
 
         yield ChoiceField::new('language')
             ->setLabel('Langue')
@@ -127,7 +131,8 @@ class JokeCrudController extends AbstractCrudController
                 'Italien' => 'it',
             ])
             ->allowMultipleChoices(false)
-            ->renderExpanded(false);
+            ->renderExpanded(false)
+            ->hideOnIndex(); // Masquer sur la page index
 
         yield BooleanField::new('is_active')
             ->setLabel('Actif')
@@ -136,7 +141,8 @@ class JokeCrudController extends AbstractCrudController
         yield BooleanField::new('nsfw')
             ->setLabel('Contenu adulte (NSFW)')
             ->renderAsSwitch()
-            ->setHelp('Cochez si le contenu n\'est pas approprié pour tous les publics');
+            ->setHelp('Cochez si le contenu n\'est pas approprié pour tous les publics')
+            ->hideOnIndex(); // Masquer sur la page index
 
         yield DateTimeField::new('created_at')
             ->setLabel('Créé le')

@@ -149,7 +149,7 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Administration du Blog')
+            ->setTitle('Administration')
             ->setFaviconPath('favicon.ico')
             ->setTranslationDomain('admin');
     }

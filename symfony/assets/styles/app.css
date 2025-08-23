@@ -1716,6 +1716,323 @@ i.joke-smiley {
 }
 
 /* ============================================
+   EASYADMIN CUSTOMIZATIONS
+   ============================================ */
+
+/* Amélioration des couleurs de texte pour la lisibilité */
+.ea-main .card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ea-main .card-header {
+  background: var(--bg-navbar) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ea-main .card-title,
+.ea-main .card-header h1,
+.ea-main .card-header h2,
+.ea-main .card-header h3,
+.ea-main .card-header h4,
+.ea-main .card-header h5,
+.ea-main .card-header h6 {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+
+/* Cartes de statistiques du dashboard */
+.ea-main .card.bg-primary {
+  background: linear-gradient(135deg, #4285f4 0%, #3367d6 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.ea-main .card.bg-success {
+  background: linear-gradient(135deg, #34a853 0%, #2d7d32 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.ea-main .card.bg-warning {
+  background: linear-gradient(135deg, #fbbc04 0%, #f9ab00 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.ea-main .card.bg-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.ea-main .card.bg-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.ea-main .card.bg-dark {
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* Amélioration des textes dans les cartes colorées */
+.ea-main .card.bg-primary *,
+.ea-main .card.bg-success *,
+.ea-main .card.bg-info *,
+.ea-main .card.bg-danger *,
+.ea-main .card.bg-dark *,
+.ea-main .card.bg-warning * {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  font-weight: 600 !important;
+}
+
+/* Tableaux */
+.ea-main .table {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.ea-main .table th {
+  background: var(--bg-navbar) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+  font-weight: 600 !important;
+}
+
+.ea-main .table td {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ea-main .table-striped > tbody > tr:nth-of-type(odd) > td {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Boutons */
+.ea-main .btn-primary {
+  background: var(--color-button) !important;
+  border-color: var(--color-button) !important;
+  color: var(--text-dark) !important;
+  font-weight: 600 !important;
+}
+
+.ea-main .btn-primary:hover {
+  background: var(--color-button-hover) !important;
+  border-color: var(--color-button-hover) !important;
+}
+
+.ea-main .btn-secondary {
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ea-main .btn-outline-primary {
+  border-color: var(--color-button) !important;
+  color: var(--color-button) !important;
+}
+
+.ea-main .btn-outline-primary:hover {
+  background: var(--color-button) !important;
+  color: var(--text-dark) !important;
+}
+
+/* Formulaires */
+.ea-main .form-control {
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ea-main .form-control:focus {
+  background: var(--bg-input) !important;
+  border-color: var(--color-button) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
+}
+
+.ea-main .form-label {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+
+/* Header */
+.ea-header .navbar-brand {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+
+.ea-header .navbar-nav .nav-link {
+  color: var(--text-primary) !important;
+}
+
+.ea-header .navbar-nav .nav-link:hover {
+  color: var(--color-button) !important;
+}
+
+/* Badges et labels */
+.ea-main .badge {
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+}
+
+.ea-main .badge.bg-primary {
+  background: var(--color-button) !important;
+  color: var(--text-dark) !important;
+}
+
+.ea-main .badge.bg-success {
+  background: #28a745 !important;
+  color: #ffffff !important;
+}
+
+.ea-main .badge.bg-warning {
+  background: #ffc107 !important;
+  color: #1a1a1a !important;
+}
+
+.ea-main .badge.bg-danger {
+  background: #dc3545 !important;
+  color: #ffffff !important;
+}
+
+/* Alertes */
+.ea-main .alert {
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ea-main .alert-success {
+  background: rgba(40, 167, 69, 0.1) !important;
+  border-color: #28a745 !important;
+  color: #28a745 !important;
+}
+
+.ea-main .alert-warning {
+  background: rgba(255, 193, 7, 0.1) !important;
+  border-color: #ffc107 !important;
+  color: #856404 !important;
+}
+
+.ea-main .alert-danger {
+  background: rgba(220, 53, 69, 0.1) !important;
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+}
+
+.ea-main .alert-info {
+  background: rgba(23, 162, 184, 0.1) !important;
+  border-color: #17a2b8 !important;
+  color: #17a2b8 !important;
+}
+
+/* Pagination */
+.ea-main .pagination .page-link {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ea-main .pagination .page-link:hover {
+  background: var(--bg-input) !important;
+  color: var(--color-button) !important;
+}
+
+.ea-main .pagination .page-item.active .page-link {
+  background: var(--color-button) !important;
+  border-color: var(--color-button) !important;
+  color: var(--text-dark) !important;
+}
+
+/* Améliorations spécifiques pour les cartes de dashboard */
+.ea-main .dashboard-card {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  overflow: hidden !important;
+}
+
+.ea-main .dashboard-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+.ea-main .dashboard-card .card-body {
+  padding: 1.5rem !important;
+}
+
+.ea-main .dashboard-card h1,
+.ea-main .dashboard-card h2,
+.ea-main .dashboard-card h3 {
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.ea-main .dashboard-card .card-text {
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  opacity: 0.9 !important;
+}
+
+/* Amélioration des couleurs spécifiques */
+.ea-main .dashboard-card .card-footer {
+  border-top: none !important;
+  padding: 0.75rem 1.5rem !important;
+}
+
+.ea-main .dashboard-card .stretched-link {
+  text-decoration: none !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.ea-main .dashboard-card .stretched-link:hover {
+  opacity: 0.8 !important;
+}
+
+/* Icônes avec animation */
+.ea-main .dashboard-card .fa-3x {
+  transition: transform 0.2s ease !important;
+}
+
+.ea-main .dashboard-card:hover .fa-3x {
+  transform: scale(1.1) !important;
+}
+
+/* Messages d'alerte améliorés */
+.ea-main .alert-primary {
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.1) 0%, rgba(51, 103, 214, 0.1) 100%) !important;
+  border: 1px solid rgba(66, 133, 244, 0.3) !important;
+  color: #4285f4 !important;
+  border-radius: 8px !important;
+}
+
+.ea-main .alert-primary i {
+  color: #4285f4 !important;
+}
+
+/* Responsive pour les cartes dashboard */
+@media (max-width: 768px) {
+  .ea-main .dashboard-card .card-body {
+    padding: 1rem !important;
+  }
+  
+  .ea-main .dashboard-card h1 {
+    font-size: 2rem !important;
+  }
+  
+  .ea-main .dashboard-card .fa-3x {
+    font-size: 2rem !important;
+  }
+}
+
+/* ============================================
    UTILITAIRES
    ============================================ */
 .bg-custom-card {

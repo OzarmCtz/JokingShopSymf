@@ -1,5 +1,5 @@
 easy_admin:
-    site_name: "Administration Blog"
+    site_name: "Administration"
 
     formats:
         date: "d/m/Y"
@@ -7,4 +7,10 @@ easy_admin:
 
     design:
         brand:
-            color: "#007bff"
+            color: "#ffc107"
+
+        assets:
+            css:
+                - "assets/app.css"
+
+        color_scheme: "auto"
