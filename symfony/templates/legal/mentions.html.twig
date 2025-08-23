@@ -23,7 +23,10 @@
                     </h2>
                     <div class="section-content">
                         <p><strong>Dénomination sociale :</strong> {{ app_settings.companyName }}</p>
-                        <p><strong>Forme juridique :</strong> {{ app_settings.legalForm }}</p>
+                                        <div class="col-md-6">
+                    <h5 class="text-primary">Forme juridique</h5>
+                    <p>{{ app_settings.companyLegalForm }}</p>
+                </div>
                         <p><strong>Adresse du siège social :</strong><br>
                         {{ app_settings.companyAddress }}<br>
                         {{ app_settings.companyPostalCode }} {{ app_settings.companyCity }}<br>
@@ -115,7 +118,6 @@
                         <p>Pour toute question relative aux présentes mentions légales, vous pouvez nous contacter :</p>
                         <ul>
                             <li><strong>Par email :</strong> {{ app_settings.contactEmail }}</li>
-                            <li><strong>Par courrier :</strong> [Votre adresse postale]</li>
                         </ul>
                     </div>
                 </section>
