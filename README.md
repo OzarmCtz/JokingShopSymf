@@ -24,10 +24,9 @@ docker-compose up -d
 # Installer dépendances
 docker-compose exec php composer install
 
-# Base de données MySQL + Données
+# Base de données MySQL
 docker-compose exec php php bin/console doctrine:database:create
 docker-compose exec php php bin/console doctrine:migrations:migrate
-docker-compose exec php php bin/console doctrine:fixtures:load
 
 # Accès: http://localhost:8080
 ```
@@ -39,7 +38,9 @@ docker-compose exec php php bin/console doctrine:fixtures:load
 - 👤 Comptes utilisateurs
 - 📱 Design responsive
 - 🎭 Administration complète
-- 📊 **Données préchargées** (catégories + blagues)## 🛠️ Stack
+- 📧 Mailpit pour le développement, AWS SES pour la production
+
+## 🛠️ Stack
 
 - **Symfony 7.3** + PHP 8.3
 - **MySQL 8.0** (base de données)
@@ -53,11 +54,12 @@ docker-compose exec php php bin/console doctrine:fixtures:load
 # Créer symfony/.env.local
 APP_ENV=prod
 DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony"
+MAILER_DSN="ses+smtp://AWS_SES_KEY:AWS_SES_SECRET@default?region=eu-west-3"
 STRIPE_PUBLIC_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
 
 # Accès
-# Site: http://votre-ip:8080
+# Site: http://votre-ip:8080 (HTTPS possible via configuration Nginx)
 # Admin: http://votre-ip:8080/admin
 # Login: ozarmctz@proton.me / admin123
 ```

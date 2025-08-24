@@ -108,8 +108,8 @@ APP_SECRET=$(openssl rand -hex 32)
 # Base de données MySQL (via Docker)
 DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony"
 
-# Email (sendmail local)
-MAILER_DSN=sendmail://default
+  # Email (AWS SES placeholder)
+  MAILER_DSN="ses+smtp://AWS_SES_KEY:AWS_SES_SECRET@default?region=eu-west-3"
 
 # Stripe (remplacer par vos vraies clés)
 STRIPE_PUBLIC_KEY=pk_test_your_public_key_here
@@ -139,9 +139,7 @@ echo -e "${BLUE}🗄️ Configuration de la base de données MySQL...${NC}"
 docker-compose exec -T php php bin/console doctrine:database:create --if-not-exists --no-interaction
 docker-compose exec -T php php bin/console doctrine:migrations:migrate --no-interaction
 
-# Charger les données avec les fixtures Doctrine (méthode professionnelle)
-echo -e "${BLUE}📊 Chargement des données (fixtures)...${NC}"
-docker-compose exec -T php php bin/console doctrine:fixtures:load --no-interaction
+# Pas de fixtures en production
 
 # Permissions
 echo -e "${BLUE}🔐 Configuration des permissions...${NC}"
@@ -160,7 +158,7 @@ echo ""
 echo -e "${GREEN}🎉 DÉPLOIEMENT TERMINÉ !${NC}"
 echo "================================"
 echo -e "${BLUE}📍 IP du serveur:${NC} $SERVER_IP"
-echo -e "${BLUE}🌐 Site web:${NC} http://$SERVER_IP:8080"
+echo -e "${BLUE}🌐 Site web:${NC} http://$SERVER_IP:8080 (HTTPS via port 8443)"
 echo -e "${BLUE}🔧 Administration:${NC} http://$SERVER_IP:8080/admin"
 echo -e "${BLUE}📧 Test emails:${NC} http://$SERVER_IP:8025"
 echo ""
