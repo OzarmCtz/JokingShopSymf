@@ -31,10 +31,42 @@ COPY php-uploads.ini /usr/local/etc/php/conf.d/php-uploads.ini
 RUN addgroup --gid ${PGID} appgroup \
     && adduser --disabled-password --gecos "" --uid ${PUID} --gid ${PGID} appuser
 
+# Donner les permissions nécessaires à appuser pour php-fpm
+RUN chown -R appuser:appgroup /usr/local/etc/php-fpm.d/ \
+    && chown -R appuser:appgroup /var/log/ \
+    && mkdir -p /var/run/php && chown -R appuser:appgroup /var/run/php
+
+# Configurer php-fpm pour l'utilisateur non-root
+RUN echo '[global]' > /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'daemonize = no' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo '[www]' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'listen = 9000' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'listen.owner = appuser' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'listen.group = appgroup' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'listen.mode = 0660' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'user = appuser' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'group = appgroup' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'pm = dynamic' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'pm.max_children = 20' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'pm.start_servers = 2' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'pm.min_spare_servers = 1' >> /usr/local/etc/php-fpm.d/zz-docker.conf \
+    && echo 'pm.max_spare_servers = 3' >> /usr/local/etc/php-fpm.d/zz-docker.conf
+
 WORKDIR /var/www/html
 
 # Changer la propriété du répertoire de travail
 RUN chown -R appuser:appgroup /var/www/html
 
+# Créer un script d'entrée
+RUN echo '#!/bin/bash' > /usr/local/bin/entrypoint.sh \
+    && echo 'if [ ! -f vendor/autoload_runtime.php ]; then' >> /usr/local/bin/entrypoint.sh \
+    && echo '  composer install --no-interaction --prefer-dist' >> /usr/local/bin/entrypoint.sh \
+    && echo 'fi' >> /usr/local/bin/entrypoint.sh \
+    && echo 'exec "$@"' >> /usr/local/bin/entrypoint.sh \
+    && chmod +x /usr/local/bin/entrypoint.sh
+
 # Basculer sur l'utilisateur non-root
 USER appuser
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm", "-F"]
