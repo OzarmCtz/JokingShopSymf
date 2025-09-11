@@ -15,10 +15,10 @@
         <h1>{{ joke.title }}</h1>
         <p class="lead">{{ joke.bodyText }}</p>
         {% if joke.price %}
-            <p class="h4">{{ joke.price }} €</p>
+            <p class="h4">€{{ joke.price }}</p>
         {% endif %}
         <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#paymentModal" data-joke-id="{{ joke.id }}" data-joke-title="{{ joke.title }}" data-joke-price="{{ joke.price }}">
-            <i class="fas fa-credit-card me-2"></i>Acheter pour {{ joke.price }}€
+            <i class="fas fa-credit-card me-2"></i>Acheter pour €{{ joke.price }}
         </button>
     </div>
 </div>
@@ -213,7 +213,7 @@ function openPaymentModal(jokeId, jokeTitle, jokePrice) {
     showStep(1);
     updateModalFooter();
     document.getElementById('paymentModalLabel').innerHTML = 
-        `<i class="fas fa-credit-card me-2"></i>Acheter "${jokeTitle}" - ${jokePrice}€`;
+        `<i class="fas fa-credit-card me-2"></i>Acheter "${jokeTitle}" - €${jokePrice}`;
 }
 
 // Écouter les clics sur les boutons d'achat
