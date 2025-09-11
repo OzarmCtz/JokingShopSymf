@@ -45,3 +45,5 @@ symfony console make:entity
  symfony console make:migration
 symfony console doctrine:migrations:migrate
 exit
+composer
+exit

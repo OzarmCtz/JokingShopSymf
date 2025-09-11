@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -126,6 +127,24 @@ class CategoryCrudController extends AbstractCrudController
                     htmlspecialchars($value)
                 );
             });
+
+        yield ImageField::new('preview_image')
+            ->setLabel('Image d\'aperçu (Card)')
+            ->setBasePath('uploads/categories')
+            ->setUploadDir('public/uploads/categories')
+            ->setUploadedFileNamePattern('preview-[slug]-[uuid].[extension]')
+            ->setRequired(false)
+            ->setHelp('Image affichée sur les cartes de la boutique pour les jokes de cette catégorie (format recommandé: 240x280px)')
+            ->hideOnIndex();
+
+        yield ImageField::new('view_image')
+            ->setLabel('Image de vue (Modal)')
+            ->setBasePath('uploads/categories')
+            ->setUploadDir('public/uploads/categories')
+            ->setUploadedFileNamePattern('view-[slug]-[uuid].[extension]')
+            ->setRequired(false)
+            ->setHelp('Image affichée dans la modal de détails pour les jokes de cette catégorie (format recommandé: 400x400px ou plus)')
+            ->hideOnIndex();
 
         yield BooleanField::new('is_active')
             ->setLabel('Actif')

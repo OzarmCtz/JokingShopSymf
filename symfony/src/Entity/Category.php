@@ -47,6 +47,12 @@ class Category
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $icon = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $preview_image = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $view_image = null;
+
     public function __construct()
     {
         $this->is_active = true;
@@ -183,6 +189,30 @@ class Category
     public function setIcon(?string $icon): static
     {
         $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function getPreviewImage(): ?string
+    {
+        return $this->preview_image;
+    }
+
+    public function setPreviewImage(?string $preview_image): static
+    {
+        $this->preview_image = $preview_image;
+
+        return $this;
+    }
+
+    public function getViewImage(): ?string
+    {
+        return $this->view_image;
+    }
+
+    public function setViewImage(?string $view_image): static
+    {
+        $this->view_image = $view_image;
 
         return $this;
     }

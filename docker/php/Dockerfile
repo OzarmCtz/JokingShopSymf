@@ -54,16 +54,28 @@ RUN echo '[global]' > /usr/local/etc/php-fpm.d/zz-docker.conf \
 
 WORKDIR /var/www/html
 
-# Changer la propriété du répertoire de travail
-RUN chown -R appuser:appgroup /var/www/html
+# S'assurer que le répertoire de travail existe et appartient à appuser
+RUN mkdir -p /var/www/html && chown -R appuser:appgroup /var/www/html
 
-# Créer un script d'entrée
+# Créer un script d'entrée qui gère les permissions au démarrage
 RUN echo '#!/bin/bash' > /usr/local/bin/entrypoint.sh \
+    && echo '# Fix permissions for mounted volume' >> /usr/local/bin/entrypoint.sh \
+    && echo 'if [ -d "/var/www/html" ]; then' >> /usr/local/bin/entrypoint.sh \
+    && echo '  sudo chown -R appuser:appgroup /var/www/html' >> /usr/local/bin/entrypoint.sh \
+    && echo 'fi' >> /usr/local/bin/entrypoint.sh \
+    && echo '' >> /usr/local/bin/entrypoint.sh \
+    && echo '# Install dependencies if needed' >> /usr/local/bin/entrypoint.sh \
     && echo 'if [ ! -f vendor/autoload_runtime.php ]; then' >> /usr/local/bin/entrypoint.sh \
     && echo '  composer install --no-interaction --prefer-dist' >> /usr/local/bin/entrypoint.sh \
     && echo 'fi' >> /usr/local/bin/entrypoint.sh \
+    && echo '' >> /usr/local/bin/entrypoint.sh \
     && echo 'exec "$@"' >> /usr/local/bin/entrypoint.sh \
     && chmod +x /usr/local/bin/entrypoint.sh
+
+# Install sudo for permission fixes
+RUN apt-get update && apt-get install -y sudo \
+    && echo 'appuser ALL=(ALL) NOPASSWD: /bin/chown' >> /etc/sudoers.d/appuser \
+    && rm -rf /var/lib/apt/lists/*
 
 # Basculer sur l'utilisateur non-root
 USER appuser

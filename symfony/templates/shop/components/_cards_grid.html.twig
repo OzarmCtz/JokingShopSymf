@@ -4,15 +4,15 @@
         id: {{ joke.id }}, 
         title: '{{ joke.title|e('js') }}', 
         description: '{{ joke.description|e('js')|raw }}', 
-        image: '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', 
+        image: '{{ joke.category and joke.category.viewImage ? asset('uploads/categories/' ~ joke.category.viewImage) : (joke.category and joke.category.previewImage ? asset('uploads/categories/' ~ joke.category.previewImage) : asset('images/placeholder.jpg')) }}', 
         price: {{ joke.price }}, 
         category: '{{ joke.category ? joke.category.name : 'Non catégorisé' }}', 
         categoryColor: '{{ joke.category ? joke.category.color : '#ccc' }}', 
         categoryIcon: '{{ joke.category and joke.category.icon ? joke.category.icon : '' }}'
     })">
       <div class="bundle-media">
-        {% if joke.previewImage %}
-          <img src="{{ asset('uploads/jokes/' ~ joke.previewImage) }}" alt="{{ joke.title }}" loading="lazy">
+        {% if joke.category and joke.category.previewImage %}
+          <img src="{{ asset('uploads/categories/' ~ joke.category.previewImage) }}" alt="{{ joke.title }}" loading="lazy">
         {% else %}
           <img src="{{ asset('images/placeholder.jpg') }}" alt="Placeholder" loading="lazy">
         {% endif %}
@@ -32,7 +32,7 @@
                     id: {{ joke.id }}, 
                     title: '{{ joke.title|e('js') }}', 
                     description: '{{ joke.description|e('js')|raw }}', 
-                    image: '{{ joke.viewImage ? asset('uploads/jokes/' ~ joke.viewImage) : (joke.previewImage ? asset('uploads/jokes/' ~ joke.previewImage) : asset('images/placeholder.jpg')) }}', 
+                    image: '{{ joke.category and joke.category.viewImage ? asset('uploads/categories/' ~ joke.category.viewImage) : (joke.category and joke.category.previewImage ? asset('uploads/categories/' ~ joke.category.previewImage) : asset('images/placeholder.jpg')) }}', 
                     price: {{ joke.price }}, 
                     category: '{{ joke.category ? joke.category.name : 'Non catégorisé' }}', 
                     categoryColor: '{{ joke.category ? joke.category.color : '#ccc' }}', 

@@ -103,24 +103,6 @@ class JokeCrudController extends AbstractCrudController
             ->setHelp('Prix de la blague en euros (optionnel)')
             ->hideOnIndex(); // Masquer sur la page index
 
-        yield ImageField::new('preview_image')
-            ->setLabel('Image d\'aperçu (Card)')
-            ->setBasePath('uploads/jokes')
-            ->setUploadDir('public/uploads/jokes')
-            ->setUploadedFileNamePattern('preview-[slug]-[uuid].[extension]')
-            ->setRequired(false)
-            ->setHelp('Image affichée sur les cartes de la boutique (format recommandé: 240x280px)')
-            ->hideOnIndex(); // Masquer sur la page index
-
-        yield ImageField::new('view_image')
-            ->setLabel('Image de vue (Modal)')
-            ->setBasePath('uploads/jokes')
-            ->setUploadDir('public/uploads/jokes')
-            ->setUploadedFileNamePattern('view-[slug]-[uuid].[extension]')
-            ->setRequired(false)
-            ->setHelp('Image affichée dans la modal de détails (format recommandé: 400x400px ou plus)')
-            ->hideOnIndex(); // Masquer sur la page index
-
         yield ChoiceField::new('language')
             ->setLabel('Langue')
             ->setChoices([

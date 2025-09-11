@@ -1,38 +1,5 @@
 ## 🏗️ Développement Local
 
-### Démarrage rapide
-
-```bash
-# Démarrage automatique de l'environnement complet
-./start-dev.sh
-
-# Ou manuellement :
-docker-compose up -d
-./dev.sh migrate
-```
-
-### Scripts utilitaires
-
-```bash
-# Script principal de développement
-./dev.sh start              # Démarrer l'environnement
-./dev.sh stop               # Arrêter l'environnement
-./dev.sh restart            # Redémarrer l'environnement
-./dev.sh logs [service]     # Voir les logs
-./dev.sh console [command]  # Commandes Symfony
-./dev.sh composer [command] # Commandes Composer
-./dev.sh migrate            # Exécuter les migrations
-./dev.sh cache-clear        # Nettoyer le cache
-./dev.sh status             # Statut des containers
-./dev.sh build              # Rebuilder les images
-./dev.sh reset              # Reset complet
-
-# Exemples d'utilisation
-./dev.sh logs php           # Logs du container PHP
-./dev.sh console debug:router # Lister les routes Symfony
-./dev.sh composer require symfony/mailer # Ajouter une dépendance
-```
-
 ### Services disponibles
 
 - **Application Symfony** : http://localhost:8080
@@ -96,3 +63,5 @@ STRIPE_SECRET_KEY=sk_test_...
 ---
 
 **Version :** 1.0.1 | **Serveur :** Debian/Ubuntu
+
+# docker-compose exec php bash
